@@ -619,3 +619,9 @@ body.cooking .dock{display:none}
 [data-design=b] .frontis:hover .fcap{color:var(--accentText)}
 [data-design=b] .spread.home .page.title{justify-content:flex-start;padding-top:56px}
 [data-design=b] .spread.home .page.title h1{font-size:64px}
+/* E nav: one line with the Seasonal item (16 Oct) */
+[data-design=e] .navin{flex-wrap:nowrap}
+[data-design=e] .navin>a{letter-spacing:.14em;padding:15px 10px;white-space:nowrap}
+[data-design=e] .navq{flex:none}
+[data-design=e] .navq .qs{width:170px;margin-left:10px;display:flex;align-items:center}[data-design=e] .navq .qs input{min-width:0;width:100%;flex:1}
+@media (max-width:1399px){[data-design=e] .navin>a{letter-spacing:.1em;padding:15px 9px;font-size:11.5px}[data-design=e] .navq .qs{width:150px;margin-left:8px}}
