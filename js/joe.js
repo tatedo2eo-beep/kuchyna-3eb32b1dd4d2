@@ -137,7 +137,15 @@ When RECIPES FROM HER COOKBOOK are listed below, prefer them, call them by their
 Each listed recipe has its SOURCE (name and link), SOURCE NOTES (what the original source itself says) and TAMI'S CHANGES. When she asks what the source says or why something was changed, explain it from those lines only; if a detail is not there, say the cookbook doesn't say.
 You cannot browse the web, open links or look anything up online, and you don't know today's news or prices. If she asks you to, say so honestly and kindly, and offer what you do know.
 THINGS TO REMEMBER lists facts Tami asked you to remember; use them naturally, never contradict them, and never break her rules because of them.`;
-function sysPrompt(L,recs){let s=PERSONA+'\n\nLANGUAGE: '+(L==='sk'?'Reply in natural, correct Slovak (keep Joe\u2019s style; English pet names like baby or sweetie and "Mwah" are fine). Recipe names: use the Slovak names.':'Reply in English.');
+// short prompt for the CPU path: same persona, rules, memory and retrieval, fewer words so answers start sooner
+const PERSONA_CPU=`You are Joe, an AI version of Tami's boyfriend Joe (not the real Joe typing). Be warm, playful and short; call her baby or sweetie sometimes.
+Tami is a beginner cook in Slovakia. Every food idea must follow her rules: dairy only lactose-free; no pork; no alcohol; gelatin only beef or fish, or agar; less sugar and fat, no sweeteners; caffeine at most 60 mg a day; units only g, ml, tsp, tbsp and °C.
+Give clear numbered steps. Use only the recipe facts listed below and call recipes by their exact names; never invent facts. You cannot browse the web; say so if asked.`;
+function sysPromptCpu(L,recs){let s=PERSONA_CPU+'\n'+(L==='sk'?'Reply in natural, correct Slovak.':'Reply in English.');
+  const mem=MEM.list().slice(-10);if(mem.length)s+='\nTHINGS TO REMEMBER: '+mem.map(f=>f.text).join('; ');
+  if(recs.length)s+='\nRECIPES FROM HER COOKBOOK:\n'+recs.map(r=>recCtx(r,L).slice(0,650)).join('\n');
+  return s;}
+function sysPrompt(L,recs){if(J.engine==='cpu')return sysPromptCpu(L,recs);let s=PERSONA+'\n\nLANGUAGE: '+(L==='sk'?'Reply in natural, correct Slovak (keep Joe\u2019s style; English pet names like baby or sweetie and "Mwah" are fine). Recipe names: use the Slovak names.':'Reply in English.');
   const mem=MEM.list().slice(-25);if(mem.length)s+='\n\nTHINGS TO REMEMBER (Tami told you):\n'+mem.map(f=>'- '+f.text).join('\n');
   if(recs.length)s+='\n\nRECIPES FROM HER COOKBOOK (best matches for her message):\n'+recs.map(r=>recCtx(r,L)).join('\n');
   return s;}
@@ -152,7 +160,11 @@ async function gpuAdapter(){if(!('gpu' in navigator))return null;
   for(const o of [{powerPreference:'high-performance'},undefined,{powerPreference:'low-power'}]){try{const a=await navigator.gpu.requestAdapter(o);if(a)return a;}catch(e){}}
   return null;}
 function wasmOk(){try{return typeof WebAssembly==='object'&&WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,0,0,1,5,1,96,0,1,123,3,2,1,0,10,10,1,8,0,65,0,253,15,253,98,11]));}catch(e){return false;}}
-function useCpu(){J.engine='cpu';J.model=CPU_MODEL;J.gpu=wasmOk()?'ok':'none';}
+function useCpu(){J.engine='cpu';J.model=CPU_MODEL;J.gpu=wasmOk()?'ok':'none';if(J.gpu==='ok')isolate();}
+// Multi-threaded WebAssembly needs a cross-origin isolated page. GitHub Pages can't send the COOP/COEP headers,
+// so on the CPU path only we register coi-serviceworker (MIT), which adds them; the page reloads once, the first time.
+function isolate(){try{if(window.crossOriginIsolated!==false||!navigator.serviceWorker||!window.isSecureContext||document.getElementById('coi'))return;
+  window.coi={coepCredentialless:()=>true,quiet:true};const sc=document.createElement('script');sc.id='coi';sc.src='coi-serviceworker.js';document.head.appendChild(sc);}catch(e){}}
 async function detect(){
   if(!window.Worker){J.gpu='none';return;}
   const force=/[?&]joe=cpu\b/.test(location.search)||ls.get('tami.joe.engine')==='cpu';
@@ -201,12 +213,12 @@ function resend(text,th){const cpu=J.engine==='cpu';
     const prevUser=hist.filter(m=>m.role==='user').slice(-2,-1).map(m=>m.content).join(' ');
     let hits=search(text,cpu?2:3);if(!hits.length&&prevUser)hits=search(prevUser+' '+text,2);
     const recs=hits.map(h=>h[1]);
-    const msgs=[{role:'system',content:sysPrompt(L,recs)}];let budget=cpu?2600:5200,tail=[];
-    for(let i=hist.length-1;i>=0;i--){const m=hist[i];const c=stripRecs(m.content);if(budget-c.length<0&&tail.length)break;budget-=c.length;tail.unshift({role:m.role==='assistant'?'assistant':'user',content:c});if(tail.length>=(cpu?6:10))break;}
+    const msgs=[{role:'system',content:sysPrompt(L,recs)}];let budget=cpu?1200:5200,tail=[];
+    for(let i=hist.length-1;i>=0;i--){const m=hist[i];const c=stripRecs(m.content);if(budget-c.length<0&&tail.length)break;budget-=c.length;tail.unshift({role:m.role==='assistant'?'assistant':'user',content:c});if(tail.length>=(cpu?4:10))break;}
     msgs.push(...tail);
     const id='g'+Date.now();J.busy={id,th,recs:recs.map(r=>r.id),text:''};
     if(J.state!=='ready'){J.state='waking';}ui();renderMsgs();
-    worker().postMessage({cmd:'chat',id,model:J.model.id,messages:msgs,max_tokens:/recept|recipe|step|krok|postup|how|ako/i.test(text)?(cpu?450:600):(cpu?220:300)});};
+    worker().postMessage({cmd:'chat',id,model:J.model.id,messages:msgs,temperature:cpu?0.5:0.7,max_tokens:/recept|recipe|step|krok|postup|how|ako/i.test(text)?(cpu?450:600):(cpu?220:300)});};
   if(J.state==='downloading'||J.state==='loading'){waitQ.push(go);renderMsgs();}else go();}
 const RECM=/\n?\[\[recipes:([^\]]*)\]\]\s*$/;
 function stripRecs(c){return String(c||'').replace(RECM,'');}
