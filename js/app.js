@@ -199,7 +199,7 @@ function vSearch(params){
     if(tm&&!(r.total&&r.total<=tm))return false;if(h&&!r.h)return false;if(af&&!r.af)return false;if(ns&&r.sp)return false;
     if(no.length&&(r.nal||no.some(a=>r.al.includes(a))))return false;return true;});
   const sel=(name,val,opts)=>'<label class="sel"><span>'+esc(name)+'</span><select data-f="'+opts.k+'"><option value="">'+esc(t.any)+'</option>'+opts.o.map(o=>'<option value="'+esc(o[0])+'"'+(o[0]===val?' selected':'')+'>'+esc(o[1])+'</option>').join('')+'</select></label>';
-  const cos=Object.entries(S.meta.countries).map(([k,v])=>[k,S.lang==='sk'?v[1]:v[0]]).sort((a,b)=>a[1].localeCompare(b[1],S.lang));
+  const coUsed=new Set(S.idx.flatMap(r=>r.co));const cos=Object.entries(S.meta.countries).filter(([k])=>coUsed.has(k)).map(([k,v])=>[k,S.lang==='sk'?v[1]:v[0]]).sort((a,b)=>a[1].localeCompare(b[1],S.lang));
   const show=list.slice(0,+params.get('n')||60);
   const head='<div class="sh2"><h1>'+esc(t.search)+'</h1><span>'+list.length+' '+esc(t.results)+'</span></div>';
   const box='<form class="sbox" data-act="sq">'+ICON.search+'<input name="q" type="search" value="'+esc(q)+'" placeholder="'+esc(t.searchPh)+'"><button class="go">'+esc(t.go)+'</button></form>';
@@ -215,8 +215,22 @@ function vSearch(params){
   return '<section class="esearch"><div class="wrap"><span class="kicker">'+esc(t.issue)+'</span><h1>'+esc(t.search)+'</h1>'+box+'</div></section><div class="fbar"><div class="wrap filters"><div class="frow">'+sels+'</div><div class="frow">'+alc+togs+'</div></div></div><section class="sec"><div class="wrap"><div class="sh2"><h2>'+list.length+' '+esc(t.results)+'</h2></div>'+res+'</div></section>';
 }
 function vHealthy(){const t=T();const list=S.idx.filter(r=>r.h);return '<section class="sec"><div class="wrap"><div class="sh2"><h1>'+esc(t.healthyH)+'</h1><span>'+esc(t.recipes(list.length))+'</span></div><p class="lead">'+esc(t.healthyP)+'</p>'+grid(list)+'</div></section>';}
-function vCountries(){const t=T();const cnt={};S.idx.forEach(r=>r.co.forEach(c=>cnt[c]=(cnt[c]||0)+1));const cos=Object.entries(S.meta.countries).filter(([k])=>cnt[k]).map(([k,v])=>[k,S.lang==='sk'?v[1]:v[0]]).sort((a,b)=>a[1].localeCompare(b[1],S.lang));
-  return '<section class="sec"><div class="wrap"><div class="sh2"><h1>'+esc(t.countriesH)+'</h1></div><p class="lead">'+esc(t.countriesP)+'</p><div class="cobtns">'+cos.map(c=>'<a class="cobtn" href="#/search?co='+c[0]+'"><b>'+esc(c[1])+'</b><span>'+esc(t.recipes(cnt[c[0]]))+'</span></a>').join('')+'</div></div></section>';}
+function coName(c){const v=S.meta.countries[c];return v?(S.lang==='sk'?v[1]:v[0]):c;}
+function coLine(o,link){const t=T();if(!o||!o.codes||!o.codes.length)return '';
+  const nm=o.codes.map(c=>link?'<a href="#/countries/'+c+'">'+esc(coName(c))+'</a>':esc(coName(c))).join(' / ');
+  const dis=o.note==='disputed'?' <span class="tsrc">· '+esc(t.coDisputed)+'</span>':'';
+  if(o.basis==='source')return nm+' <span class="tag src">'+esc(t.coSource)+'</span>'+dis+' <span class="coq">'+(S.lang==='sk'?'„'+esc(o.quote)+'“ (EN)':'“'+esc(o.quote)+'”')+' — '+linkify(o.url)+'</span>';
+  return nm+' <span class="tag own">'+esc(t.coOwn)+'</span>'+dis;}
+function vCountries(code){const t=T();const cnt={},src={};S.idx.forEach(r=>r.co.forEach(c=>{cnt[c]=(cnt[c]||0)+1;if(r.cob==='s')src[c]=(src[c]||0)+1;}));
+  const none=S.idx.filter(r=>!r.co.length).length,withS=S.idx.filter(r=>r.cob==='s').length,withO=S.idx.filter(r=>r.cob==='o').length;
+  const G=S.meta.cgroups||{};const gOf=c=>(S.meta.cgroup||{})[c]||'';
+  const groups=Object.keys(G).map(g=>[g,Object.keys(cnt).filter(c=>gOf(c)===g).sort((a,b)=>cnt[b]-cnt[a]||coName(a).localeCompare(coName(b),S.lang))]).filter(g=>g[1].length);
+  let h='<section class="sec"><div class="wrap"><div class="sh2"><h1>'+esc(t.countriesH)+'</h1><span>'+esc(t.recipes(withS+withO))+'</span></div><p class="lead">'+esc(t.countriesP)+'</p>'+
+   '<p class="nutnote"><span class="tag src">'+esc(t.coSource)+'</span> '+esc(t.coSourceP(withS))+' &nbsp; <span class="tag own">'+esc(t.coOwn)+'</span> '+esc(t.coOwnP(withO))+' &nbsp; '+esc(t.coNoneP(none))+'</p>'+
+   groups.map(g=>'<div class="grp"><h3>'+esc(S.lang==='sk'?G[g[0]][1]:G[g[0]][0])+'</h3></div><div class="cobtns">'+g[1].map(c=>'<a class="cobtn'+(c===code?' on':'')+'" href="#/countries/'+c+'"><b>'+esc(coName(c))+'</b><span>'+esc(t.recipes(cnt[c]))+(src[c]?' · '+esc(t.coSourceN(src[c])):'')+'</span></a>').join('')+'</div>').join('');
+  if(code&&cnt[code]){const list=S.idx.filter(r=>r.co.includes(code)).sort((a,b)=>(a.cob===b.cob?0:a.cob==='s'?-1:1)||L(a.t).localeCompare(L(b.t),S.lang));
+    h+='<div class="sh2" id="co-list"><h2>'+esc(coName(code))+'</h2><span>'+esc(t.recipes(list.length))+'</span></div><div class="rgrid">'+list.map(r=>'<div class="favitem">'+card(r)+'<div class="frmeta"><span>'+(r.cob==='s'?'<span class="tag src">'+esc(t.coSource)+'</span>':'<span class="tag own">'+esc(t.coOwn)+'</span>')+(r.co.length>1?' '+esc(r.co.map(coName).join(' / ')):'')+'</span></div></div>').join('')+'</div>';}
+  return h+'</div></section>';}
 function vChefs(){const t=T();return '<section class="sec"><div class="wrap"><div class="sh2"><h1>'+esc(t.chefs)+'</h1></div><p class="lead">'+esc(t.chefsP)+'</p><div class="chefs">'+S.meta.chefs.map(c=>{const r=S.idx.find(x=>x.id===c.open);return '<div class="chef">'+(r&&r.img?'<a href="#/r/'+r.id+'"><img loading="lazy" src="'+r.img+'" alt=""></a>':'')+'<div class="chefb"><span class="kicker">'+esc(c.chef)+'</span><h3>'+esc(S.lang==='sk'?c.sk:c.en)+'</h3><p>'+esc(S.lang==='sk'?c.d_sk:c.d_en)+'</p>'+(c.url?'<p class="src">'+esc(t.source)+': '+linkify(c.url)+'</p>':'')+(r?'<a class="btn" href="#/r/'+r.id+'">'+esc(t.viewRecipe)+'</a>':'')+'</div></div>';}).join('')+'</div></div></section>';}
 function vFav(){const t=T();
   const rows=(store)=>Object.entries(store).sort((a,b)=>(b[1].t||0)-(a[1].t||0)).map(([k,v])=>{const id=k.split('|')[0];const r=S.idx.find(x=>x.id===id);return r?{r,k,v}:null;}).filter(Boolean);
@@ -336,6 +350,7 @@ function rParts(r){
   P.crumbs='<div class="crumbs"><a href="#/c/'+r.ch+'">'+esc(chName(r.ch))+'</a> · '+esc(lvlName(r.lvl))+'</div>';
   P.h1='<h1>'+esc(L(r.t))+(en?'':'<i>'+esc(r.t.en)+'</i>')+'</h1>';
   P.src='<div class="src">'+esc(t.source)+': '+esc(r.src||'')+(r.urls.length?' · '+r.urls.map(u=>linkify(u)).join(' · '):'')+'</div>';
+  if(r.origin&&r.origin.codes&&r.origin.codes.length)P.src+='<div class="origin"><b>'+esc(t.origin)+':</b> '+coLine(r.origin,true)+'</div>';
   P.stats='<div class="stats">'+timeStats(L(r.time))+'</div>';
   P.badges='<div class="badges">'+(r.spicy?'<span class="bdg sp">🌶 '+esc(t.spicy)+'</span>':'')+(lac?'<span class="bdg lac">'+esc(t.lowLac)+'</span>':'')+(r.healthy&&r.healthy.ok?'<span class="bdg h">'+esc(t.healthyBadge)+'</span>':'')+(r.af?'<span class="bdg">'+esc(t.af)+'</span>':'')+(r.caf?'<span class="bdg">'+esc(t.caf)+'</span>':'')+(r.mild?'<span class="bdg">'+esc(t.mild)+'</span>':'')+'</div>';
   P.scaler=base?'<div class="scaler"><span class="sl">'+esc(t.servings)+'</span><button class="sb" data-act="serv" data-d="-1" aria-label="−">−</button><span class="sn">'+fmtServ(want)+'</span><button class="sb" data-act="serv" data-d="1" aria-label="+">+</button><span class="so">'+esc(t.origServ)+': '+esc(L(r.servT)||'')+'</span></div>':'<div class="scaler"><span class="sl">'+esc(t.servings)+'</span><span class="so">'+esc(L(r.servT)||'')+'</span></div>';
@@ -434,7 +449,7 @@ async function route(){
     else if(name==='c'){render=()=>vChapter(parts[1],params);chrome='chapters';}
     else if(name==='search')render=()=>vSearch(params);
     else if(name==='healthy')render=vHealthy;
-    else if(name==='countries')render=vCountries;
+    else if(name==='countries')render=()=>vCountries(parts[1]||'');
     else if(name==='chefs')render=vChefs;
     else if(name==='soon')render=()=>vSoon(parts[1]);
     else if(name==='favorites')render=vFav;

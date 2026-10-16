@@ -296,5 +296,5 @@ body.cooking .mainnav,body.cooking .foot{display:none}
 .frmeta{margin-top:8px;display:flex;flex-direction:column;gap:2px;font-size:13.5px}.frmeta b{color:var(--accentText)}.frmeta span{color:var(--muted)}.frmeta .ok{color:var(--accentText)}
 
 /* country of origin (grokbot 2026-10-16) */
-.rhero .origin{margin-top:10px;font-size:14px;line-height:1.5}.rhero .origin a{color:var(--accentText)}.origin .coq{display:block;color:var(--muted);font-size:13px;font-style:italic;margin-top:2px}
+.origin{margin-top:8px;font-size:14px;line-height:1.5;max-width:900px}.origin a{color:var(--accentText)}.origin .tag{vertical-align:1px}.origin .coq{display:block;color:var(--muted);font-size:13px;font-style:italic;margin-top:2px}
 .cobtn.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}

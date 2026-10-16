@@ -227,7 +227,7 @@
 .cnote::before{content:'';position:absolute;top:-8px;left:50%;width:16px;height:16px;border-radius:50%;background:var(--accent);transform:translateX(-50%);box-shadow:0 2px 4px rgba(0,0,0,.35)}
 .cnote.pink{background:#FFD9E1;color:#3a1c22;transform:rotate(1.6deg)}
 .cnote.blue{background:#D7E9FF;color:#152a44;transform:rotate(-1.3deg)}
-[data-design=c] .cnote .src,[data-design=c] .cnote .crumbs,[data-design=c] .cnote .tsrc,[data-design=c] .cnote .sel span,[data-design=c] .cnote .fl,[data-design=c] .cnote .unit,[data-design=c] .cnote .stats small,[data-design=c] .cnote .so,[data-design=c] .cnote .sl{color:inherit;opacity:.78}
+[data-design=c] .cnote .src,[data-design=c] .cnote .crumbs,[data-design=c] .cnote .tsrc,[data-design=c] .cnote .sel span,[data-design=c] .cnote .fl,[data-design=c] .cnote .unit,[data-design=c] .cnote .stats small,[data-design=c] .cnote .so,[data-design=c] .cnote .sl,[data-design=c] .cnote .origin .coq{color:inherit;opacity:.78}
 [data-design=c] .cnote a[target=_blank]{color:inherit}
 [data-design=c] .cnote .stats,[data-design=c] .cnote .stats div{border-color:rgba(0,0,0,.18)}
 [data-design=c] .cnote .scaler,[data-design=c] .cnote .heart,[data-design=c] .cnote .stamp:not(.on){background:rgba(255,255,255,.6);border-color:rgba(0,0,0,.2);color:inherit}
@@ -519,3 +519,9 @@ body.cooking .dock{display:none}
 .gsel{grid-row:span 3;display:flex;flex-direction:column;gap:12px}
 .gsel .sel select{width:100%;max-width:none}
 .gal,.gtog{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+/* country of origin line in the recipe heads (grokbot 2026-10-16) */
+.ehero .origin{color:#E9DFCC}.ehero .origin .coq{color:#D9CDB6}.ehero .origin a{color:#F0D79A}.ehero .origin .tag{color:#F0D79A;border-color:#F0D79A;background:transparent}
+[data-design=c] .cnote .origin a,[data-design=c] .cnote .origin .tag{color:inherit;border-color:currentColor;background:transparent}
+.drh .origin{margin-top:6px}
+.spread.rec .origin{text-align:center}
