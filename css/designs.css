@@ -611,3 +611,11 @@ body.cooking .dock{display:none}
 .gseas b{font-size:34px;line-height:1.05}
 [data-design=c] .cnotes{gap:10px}[data-design=c] .cnotes a{padding:11px 10px;font-size:21px}
 @media (max-width:1399px){[data-design=c] .cnotes{gap:7px}[data-design=c] .cnotes a{padding:10px 8px;font-size:19px}}
+/* B home: frontispiece plate above the title */
+[data-design=b] .frontis{display:flex;flex-direction:column;align-items:center;margin:0 0 18px;width:min(360px,100%)}
+[data-design=b] .frontis .fpl{display:block;width:100%;padding:9px;background:var(--bg);border:1px solid color-mix(in srgb,var(--gilt) 70%,transparent);box-shadow:0 0 0 4px var(--bg),0 0 0 5px color-mix(in srgb,var(--gilt) 45%,transparent),0 10px 22px rgba(var(--shade),.16)}
+[data-design=b] .frontis img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;filter:sepia(.08) saturate(.95)}
+[data-design=b] .frontis .fcap{margin-top:12px;font-family:var(--fh);font-style:italic;font-size:14px;color:var(--muted);letter-spacing:.02em}
+[data-design=b] .frontis:hover .fcap{color:var(--accentText)}
+[data-design=b] .spread.home .page.title{justify-content:flex-start;padding-top:56px}
+[data-design=b] .spread.home .page.title h1{font-size:64px}

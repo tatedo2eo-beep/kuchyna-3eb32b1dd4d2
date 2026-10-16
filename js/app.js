@@ -142,7 +142,7 @@ function vHome(){
   const featSec=(cls)=>'<section class="sec" data-slot="feat"><div class="wrap"><div class="sh2"><h2>'+esc(t.featured)+'</h2></div>'+grid(featL,cls)+'</div></section>';
   if(d==='b'){
     const toc=G.map(g=>'<div class="ctg"><h3>'+esc(g.name)+'</h3>'+M.chapters.filter(g.f).map(c=>'<a class="ctl" href="#/c/'+c.stem+'"><span class="cn">'+String(c.num).padStart(2,'0')+'</span><span class="ct">'+esc(S.lang==='sk'?c.sk:c.en)+'</span><em></em><b>'+c.n+'</b></a>').join('')+'</div>').join('');
-    return '<section class="book wrap"><div class="spread home"><div class="page left title"><span class="kicker">'+esc(t.heroK)+' · SK / EN</span><h1>'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></h1><div class="orn">❦</div><p>'+sub+'. '+esc(t.heroP)+'</p>'+sform()+quick+'<span class="folio">i</span></div>'+
+    return '<section class="book wrap"><div class="spread home"><div class="page left title">'+(()=>{const r=pr(P0.plate);return r?'<a class="frontis" data-slot="plate" href="#/r/'+r.id+'"><span class="fpl"><img src="'+r.img+'" alt="'+esc(L(r.t))+'"></span><span class="fcap">'+esc(L(r.t))+'</span></a>':'';})()+'<span class="kicker">'+esc(t.heroK)+' · SK / EN</span><h1>'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></h1><div class="orn">❦</div><p>'+sub+'. '+esc(t.heroP)+'</p>'+sform()+quick+'<span class="folio">i</span></div>'+
      '<div class="page right"><div class="runhead"><span>'+esc(t.contents)+'</span><span>'+sub+'</span></div><h2 class="pageh">'+esc(t.contents)+'</h2>'+toc+'<span class="folio">ii</span></div></div></section>'+featSec();
   }
   if(d==='c'){
