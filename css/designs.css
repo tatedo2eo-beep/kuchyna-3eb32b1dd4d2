@@ -294,6 +294,10 @@
 [data-design=c] .fcard .cat .pl{color:#9a5a20}
 [data-design=c] .fcard .heart,[data-design=c] .fcard .stamp:not(.on){background:#fff;color:#2a1a14;border-color:#e5d5c5}
 [data-design=c] .fcard a[target=_blank]{color:#1f5f99}
+[data-design=c] .fcard .fchg{border-top-color:#eadcb4}[data-design=c] .fcard .fchg>summary,[data-design=c] .fcard .fgl{color:#9a5a20}
+[data-design=c] .fcard .tsrc,[data-design=c] .fcard .fsame,[data-design=c] .fcard .fnote{color:#6b574d}
+[data-design=c] .fcard .fal{background:#FFF4D6;border-left-color:#d9a441}[data-design=c] .fcard .ing>li{border-bottom-color:#f0e4d4}
+[data-design=c] .fcard .tag{color:#6b574d;border-color:#e5d5c5}[data-design=c] .fcard .tag.own{background:#FBEADF}
 .chead{display:grid;grid-template-columns:1fr 360px;gap:60px;padding:46px 0 36px;align-items:center}
 .chead h1{font-family:'Caveat',cursive;font-size:84px;line-height:.95;letter-spacing:0}
 [data-design=c] .fbar{border:0;border-top:2px dashed var(--line);border-bottom:2px dashed var(--line)}

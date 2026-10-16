@@ -420,7 +420,7 @@ function rParts(r){
   P.imgUrl=r.img?new URL(r.img,location.href).href:'';
   P.warns=(spicy||lac)?'<section class="wrap warns">'+(spicy?'<div class="warn sp"><b>🌶 '+esc(spicy.k)+': '+esc(spicy.v)+'</b>'+(spn?'<p>'+linkify(spn.v)+'</p>':'')+'</div>':'')+(lac?'<div class="warn lac"><b>'+esc(lac.k)+': '+esc(lac.v)+'</b>'+(lacn?'<p>'+linkify(lacn.v)+'</p>':'')+'</div>':'')+'</section>':'';
   const nut=L(r.nut);
-  P.allerg='<span class="alh">'+esc(t.allergens)+'</span><div class="algrid">'+Object.entries(t.al).map(([a,v])=>'<span class="al'+(r.al.includes(a)?' on':'')+'">'+esc(v)+'</span>').join('')+'</div>';
+  P.allerg='<span class="alh">'+esc(t.allergens)+'</span><div class="algrid">'+Object.entries(t.al).map(([a,v])=>'<span class="al'+(r.al.includes(a)?' on':'')+'">'+esc(v)+'</span>').join('')+'</div>'+flvAlAll(r);
   P.ingTitle=esc(t.ingredients);
   P.ing=P.origNote+'<p class="unit">'+esc(showT?t.tamiV:t.origV)+(k!==1?' · '+esc(t.scaled):'')+'</p>'+tree(ingN,{scale:k,cls:'ing'});
   P.chg=chg&&chg.length?'<div class="chgbox"><h4>'+esc(t.changes)+'</h4>'+tree(chg,{tag:true})+'</div>':'';
@@ -430,7 +430,7 @@ function rParts(r){
   P.cat=catCard(r);
   P.info=(cafF||sug)?'<div class="infobox"><h4>'+(cafF?esc(t.caffeine)+(sug?' · ':''):'')+(sug?esc(t.sugarShort):'')+'</h4>'+(cafF?'<div class="caf"><b>'+esc(t.caffeine)+'</b>'+(cafF.v?'<p>'+linkify(cafF.v)+'</p>':'')+tree(cafF.c)+'</div>':'')+sugarBox(sug)+'</div>':'';
   P.misc=(L(r.equip)?'<h4>'+esc(t.equipment)+'</h4>'+fieldBlock(L(r.equip),'s'):'')+(L(r.store)?'<h4>'+esc(t.storage)+'</h4>'+fieldBlock(L(r.store),'s'):'')+otherM.map(f=>'<h4>'+esc(f.k)+'</h4>'+fieldBlock(f,'s')).join('');
-  P.flv=r.flavors.length?'<section class="wrap flv"><h2>'+esc(t.flavors)+'</h2><div class="flgrid">'+r.flavors.map(f=>'<div class="fcard">'+(f.img?'<img loading="lazy" src="'+f.img+'" alt="'+esc(L(f))+'">':'')+'<div class="fb2"><h3>'+esc(cap(L(f)))+'</h3>'+markBtns(r.id,f)+(f.tip?'<div class="cat mini">'+(f.cat?'<img loading="lazy" src="'+f.cat+'" alt="'+esc(t.catAlt)+'">':'')+'<div><span class="pl">'+ICON.cat+esc(t.catTip[f.tip.type]||t.catTip.tip)+'</span><p>'+esc(L(f.tip))+'</p>'+(f.tip.url?'<span class="tsrc">'+linkify(f.tip.url)+'</span>':'')+'</div></div>':'')+'</div></div>').join('')+'</div></section>':'';
+  P.flv=r.flavors.length?'<section class="wrap flv"><h2>'+esc(t.flavors)+'</h2><div class="flgrid">'+r.flavors.map(f=>'<div class="fcard">'+(f.img?'<img loading="lazy" src="'+f.img+'" alt="'+esc(L(f))+'">':'')+'<div class="fb2"><h3>'+esc(cap(L(f)))+'</h3>'+markBtns(r.id,f)+(f.tip?'<div class="cat mini">'+(f.cat?'<img loading="lazy" src="'+f.cat+'" alt="'+esc(t.catAlt)+'">':'')+'<div><span class="pl">'+ICON.cat+esc(t.catTip[f.tip.type]||t.catTip.tip)+'</span><p>'+esc(L(f.tip))+'</p>'+(f.tip.url?'<span class="tsrc">'+linkify(f.tip.url)+'</span>':'')+'</div></div>':'')+flvChg(f,k)+'</div></div>').join('')+'</div></section>':'';
   P.nutTitle='<h2>'+esc(t.nutrition)+' <small>('+esc(t.tamiV)+')</small></h2>';
   P.nutT=nutTable(nut);
   P.nutX=(nut&&nut.vit?'<h3 class="h4s">'+esc(t.vit)+'</h3><div class="vit">'+nut.vit.split(';').map(s=>'<span>'+esc(s.trim())+'</span>').join('')+'</div>':'')+
@@ -440,6 +440,21 @@ function rParts(r){
   P.notes=L(r.notes)?'<section class="wrap notes"><h2>'+esc(t.notesSrc)+'</h2>'+fieldBlock(L(r.notes))+'</section>':'';
   return P;
 }
+// flavour changes vs the main recipe: ingredients to add/swap/leave out, steps that change, source
+function flvChg(f,k){const t=T(),c=f.chg&&L(f.chg);if(!c)return '';
+  const grp=(arr,lab)=>arr&&arr.length?'<div class="fgrp"><span class="fgl">'+esc(lab)+'</span>'+tree(arr.map(x=>({t:x})),{scale:k,tag:true,cls:'ing fing'})+'</div>':'';
+  const ing=grp(c.keep,t.flvKeep)+grp(c.add,t.flvAdd)+grp(c.swap,t.flvSwap)+grp(c.omit,t.flvOmit);
+  const al=(f.al||[]).filter(a=>t.al[a]);
+  return '<details class="fchg"><summary>'+esc(t.flvShow)+'</summary><div class="fchgb">'+
+   (f.same?'<p class="fsame">'+esc(t.flvSame)+'</p>':'')+
+   (ing?'<h4>'+esc(t.flvIng)+'</h4>'+ing:'')+
+   (c.steps&&c.steps.length?'<h4>'+esc(t.flvSteps)+'</h4>'+tree(c.steps.map(x=>({t:x})),{tag:true,cls:'lst fsteps'}):'')+
+   (c.note?'<p class="fnote">'+tagLine(c.note)+'</p>':'')+
+   (al.length?'<p class="fal"><b>'+esc(t.flvAl)+':</b> '+al.map(a=>esc(t.al[a])).join(', ')+'</p>':'')+
+   (f.src&&f.src.url?'<p class="tsrc fsrc"><b>'+esc(t.flvSrc)+':</b> '+(f.src.name?esc(f.src.name)+' · ':'')+linkify(f.src.url)+'</p>':'')+
+   '</div></details>';}
+function flvAlAll(r){const t=T();const m={};(r.flavors||[]).forEach(f=>(f.al||[]).forEach(a=>{if(!r.al.includes(a)&&t.al[a])(m[a]=m[a]||[]).push(cap(L(f)));}));
+  const e=Object.entries(m);return e.length?'<p class="flval"><b>'+esc(t.flvAlAll)+':</b> '+e.map(([a,fs])=>esc(t.al[a])+' ('+esc(fs.join(', '))+')').join('; ')+'</p>':'';}
 function vRecipe(r){const P=rParts(r);return ({b:recB,c:recC,d:recD,g:recG}[S.design]||recE)(P,r);}
 function recE(P,r){
   return '<section class="ehero rh" style="--hero-img:url(&quot;'+P.imgUrl+'&quot;)"><div class="eshade"></div><div class="wrap ehin">'+P.crumbs+P.h1+P.src+'</div></section>'+
