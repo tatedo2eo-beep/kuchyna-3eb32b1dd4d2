@@ -13,7 +13,7 @@ export function make(){
   async function load(model){
     if(loaded===model&&ll&&ll.isModelLoaded())return post({type:'ready',model});
     const was=await cached(model);
-    await inst().loadModelFromUrl(URLS[model],{n_ctx:4096,n_gpu_layers:0,useCache:true,
+    await inst().loadModelFromUrl(URLS[model],{n_ctx:8192,n_gpu_layers:0,useCache:true,
       progressCallback:({loaded:l,total:t})=>post({type:'progress',model,progress:t?Math.min(0.99,l/t):0,text:was?'load':'download'})});
     loaded=model;post({type:'ready',model,threads:ll.isMultithread()?'multi':'single'});
   }
