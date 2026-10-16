@@ -1,0 +1,94 @@
+/* Shopping list. Colours from the theme variables; each design gets its own layout below. */
+.shop .shhead{margin-bottom:8px}
+.shgrid{display:grid;grid-template-columns:320px 1fr;gap:28px;align-items:start}
+.shside{display:flex;flex-direction:column;gap:16px;position:sticky;top:20px}
+.shloc{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--surface)}
+.shloc p{margin:0 0 10px}.shwhere{font-weight:600}.shmsg{color:var(--accentText);font-size:14px}
+.shnote{font-size:12.5px;color:var(--muted);margin:8px 0 0}
+.btn.ghost{background:transparent;color:var(--accentText);border:1px solid var(--accent)}
+.btn[disabled]{opacity:.5;cursor:wait}
+.shstores{display:flex;flex-direction:column;gap:6px}
+.shpick{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.shstore{display:grid;grid-template-columns:1fr auto;gap:2px 10px;text-align:left;font:inherit;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:var(--rs);padding:9px 12px;cursor:pointer}
+.shstore.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.shstore .shpl{grid-column:1;font-size:12.5px;color:var(--muted)}.shstore .shkm{grid-column:2;grid-row:1;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.shstore .shkind{grid-column:2;grid-row:2;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--accentText);text-align:right}
+/* store names: neat coloured text labels (no logos) */
+.shlab{display:inline-block;font-weight:700;font-size:13px;letter-spacing:.02em;padding:1px 8px;border-radius:999px;border:1.5px solid currentColor;line-height:1.5;background:var(--surface)}
+.shlab-tesco{color:#1f5fae}.shlab-lidl{color:#1a4fa0}.shlab-billa{color:#d4161e}.shlab-kaufland{color:#c8101a}.shlab-coop{color:#0f7a3f}.shlab-osm{color:var(--accentText)}
+[data-pal=noir-gold] .shlab-tesco,[data-pal=emerald-brass] .shlab-tesco,[data-pal=leather-gilt] .shlab-tesco,[data-pal=espresso-apricot] .shlab-tesco,[data-pal=black-cream] .shlab-tesco,[data-pal=midnight-rose-gold] .shlab-tesco{color:#8fb8ff}
+[data-pal=noir-gold] .shlab-lidl,[data-pal=emerald-brass] .shlab-lidl,[data-pal=leather-gilt] .shlab-lidl,[data-pal=espresso-apricot] .shlab-lidl,[data-pal=black-cream] .shlab-lidl,[data-pal=midnight-rose-gold] .shlab-lidl{color:#ffd84d}
+[data-pal=noir-gold] .shlab-billa,[data-pal=emerald-brass] .shlab-billa,[data-pal=leather-gilt] .shlab-billa,[data-pal=espresso-apricot] .shlab-billa,[data-pal=black-cream] .shlab-billa,[data-pal=midnight-rose-gold] .shlab-billa,
+[data-pal=noir-gold] .shlab-kaufland,[data-pal=emerald-brass] .shlab-kaufland,[data-pal=leather-gilt] .shlab-kaufland,[data-pal=espresso-apricot] .shlab-kaufland,[data-pal=black-cream] .shlab-kaufland,[data-pal=midnight-rose-gold] .shlab-kaufland{color:#ff7b7f}
+[data-pal=noir-gold] .shlab-coop,[data-pal=emerald-brass] .shlab-coop,[data-pal=leather-gilt] .shlab-coop,[data-pal=espresso-apricot] .shlab-coop,[data-pal=black-cream] .shlab-coop,[data-pal=midnight-rose-gold] .shlab-coop{color:#6fd69a}
+.shtrip{font-family:var(--fh);font-size:22px;margin:0 0 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.shtrip small{font-family:var(--fb);font-size:13px;color:var(--muted)}
+.shflag{border-left:3px solid var(--accent);background:var(--surface);padding:10px 14px;margin:0 0 14px;font-size:14px;border-radius:0 var(--rs) var(--rs) 0}
+.shby{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin:0 0 20px;background:var(--surface)}
+.shby h2{font-size:15px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 8px;color:var(--muted)}.shby h3{margin:0 0 8px;font-size:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.shby h3 small{color:var(--muted);font-weight:400}
+.shbtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.shlists{display:flex;flex-direction:column;gap:20px}
+.shrec{display:grid;grid-template-columns:150px 1fr;gap:18px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);overflow:hidden}
+.shpic{display:block;background:center/cover no-repeat var(--surface2);min-height:150px}
+.shbody{padding:14px 16px 14px 0}.shbody header{display:flex;justify-content:space-between;gap:10px;align-items:start}
+.shrt{font-family:var(--fh);font-size:20px;color:var(--text)}
+.shx{font:inherit;font-size:22px;line-height:1;background:none;border:0;color:var(--muted);cursor:pointer;padding:0 4px}.shx:hover{color:var(--accentText)}
+.shitems{list-style:none;margin:10px 0 0;padding:0}
+.shitems li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:7px 0;border-top:1px solid var(--line)}
+.shitems label{display:flex;align-items:center;gap:10px;cursor:pointer;min-width:0}
+.shitems input{accent-color:var(--accent);width:16px;height:16px;flex:none}
+.shitems li.done .shn{text-decoration:line-through;color:var(--muted)}
+.shn{display:flex;flex-direction:column}.shn small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.shic{width:22px;height:22px;flex:none;fill:none;stroke:var(--accentText);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.shlinks{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none}
+.shgo{font-size:13px;font-weight:600;color:var(--accentText);white-space:nowrap}.shgo:hover{text-decoration:underline}
+.shalt .shgo{font-weight:400;color:var(--muted)}
+.shopbtn{background:transparent;color:var(--accentText);border:1px solid var(--accent);cursor:pointer;font:inherit;font-weight:600;font-size:14px}
+.shopbtn.on{background:var(--accent);color:var(--onaccent)}
+.shopbtn .ic{width:18px;height:18px}
+@media(max-width:900px){.shgrid{grid-template-columns:1fr}.shside{position:static}.shrec{grid-template-columns:1fr}.shpic{min-height:160px}.shbody{padding:0 14px 14px}}
+
+/* E · Magazine: editorial ledger, sidebar on the right, wide photo banner, numbered rules */
+.shop-e .shgrid{grid-template-columns:1fr 300px}.shop-e .shside{order:2}
+.shop-e .shrec{grid-template-columns:1fr;border:0;border-top:3px double var(--accent);border-radius:0;background:transparent}
+.shop-e .shpic{min-height:190px}.shop-e .shbody{padding:14px 0}
+.shop-e .shrt{font-size:28px;font-style:italic}
+.shop-e .shitems{counter-reset:li}.shop-e .shitems li{counter-increment:li}.shop-e .shitems li::before{content:counter(li,decimal-leading-zero);font-family:var(--fh);color:var(--accentText);font-size:13px;width:24px}
+.shop-e .shstore,.shop-e .shloc,.shop-e .shby,.shop-e .shlab{border-radius:0}
+/* B · Book: an index page; photo as a small plate on the left, dotted leaders to the store link */
+.shop-b .shgrid{grid-template-columns:1fr;max-width:860px}
+.shop-b .shside{position:static;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.shop-b .shrec{grid-template-columns:110px 1fr;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;padding:0 0 18px}
+.shop-b .shpic{min-height:110px;border:6px solid var(--surface);box-shadow:0 0 0 1px var(--line);border-radius:2px}
+.shop-b .shitems li{border-top:0}.shop-b .shitems li label{flex:none}
+.shop-b .shitems li::after{content:'';order:1;flex:1;border-bottom:1px dotted var(--muted);margin:0 6px;align-self:flex-end;transform:translateY(-6px)}
+.shop-b .shlinks{order:2}.shop-b .shrt{font-variant:small-caps;font-size:22px}
+.shop-b .shtrip{font-style:italic}
+/* C · Sticky notes: each recipe list is a pinned note, photo as a polaroid, stores as tabs across the top */
+.shop-c .shgrid{grid-template-columns:1fr}.shop-c .shside{position:static;flex-direction:row;flex-wrap:wrap;align-items:flex-start}
+.shop-c .shloc{flex:1 1 300px;background:#fff8c4;color:#3a2f1c;border-color:#e8d98a;transform:rotate(-.6deg)}
+.shop-c .shloc .shnote,.shop-c .shloc .shwhere{color:#3a2f1c}
+.shop-c .shstores{flex:2 1 500px;flex-direction:row;flex-wrap:wrap}.shop-c .shpick{width:100%}
+.shop-c .shstore{width:auto;border-radius:3px 3px 0 0;border-bottom-width:3px}
+.shop-c .shlists{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:26px}
+.shop-c .shrec{grid-template-columns:1fr;border-radius:2px;box-shadow:0 8px 20px rgba(0,0,0,.12)}
+.shop-c .shrec:nth-child(odd){transform:rotate(-.7deg)}.shop-c .shrec:nth-child(even){transform:rotate(.6deg)}
+.shop-c .shpic{margin:12px 12px 0;min-height:170px;border:8px solid #fff;border-bottom-width:22px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.shop-c .shbody{padding:10px 16px 16px}
+/* D · Storybook: centred, round cards, photo as a circle, chips for stores */
+.shop-d .shhead{text-align:center}.shop-d .shhead .lead{margin-left:auto;margin-right:auto}
+.shop-d .shgrid{grid-template-columns:1fr;max-width:900px;margin:0 auto}
+.shop-d .shside{position:static}.shop-d .shloc{border-radius:28px;text-align:center}
+.shop-d .shstores{flex-direction:row;flex-wrap:wrap;justify-content:center}.shop-d .shpick{width:100%;text-align:center}
+.shop-d .shstore{border-radius:999px;width:auto;padding:8px 16px}
+.shop-d .shrec{grid-template-columns:130px 1fr;border-radius:28px;padding:16px;border-style:dashed}
+.shop-d .shpic{min-height:130px;height:130px;border-radius:50%}.shop-d .shbody{padding:0}
+.shop-d .shby,.shop-d .shflag{border-radius:24px}
+/* G · Bento: tiles; stores as a tile grid, lists in two columns, photo as a tile header */
+.shop-g .shgrid{grid-template-columns:1fr}
+.shop-g .shside{position:static;display:grid;grid-template-columns:minmax(260px,1fr) 2fr;gap:16px}
+.shop-g .shloc,.shop-g .shby,.shop-g .shrec{border-radius:22px}
+.shop-g .shstores{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;align-content:start}.shop-g .shpick{grid-column:1/-1}
+.shop-g .shstore{border-radius:16px}
+.shop-g .shlists{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.shop-g .shrec{grid-template-columns:1fr}.shop-g .shpic{min-height:120px}.shop-g .shbody{padding:0 16px 14px}
+@media(max-width:900px){.shop-e .shgrid,.shop-b .shside,.shop-g .shside,.shop-g .shlists{grid-template-columns:1fr}.shop-c .shlists{grid-template-columns:1fr}}

@@ -84,9 +84,9 @@ const NI={home:'<svg viewBox="0 0 24 24" class="ic" fill="none" stroke="currentC
 function renderChrome(route){
   const t=T(),d=S.design;document.documentElement.lang=S.lang;document.title=t.brand1+' '+t.brand2;
   const nav=[['#/',t.home,'home'],['#/chapters',t.chapters,'chapters'],['#/search',t.search,'search'],['#/healthy',t.healthy,'healthy'],['#/countries',t.countries,'countries'],['#/meals',t.meals,'meals'],['#/seasonal',t.seasonal,'seasonal'],['#/chefs',t.chefsShort,'chefs'],['#/fridge',t.fridgeShort,'fridge'],['#/favorites',t.favorites,'favorites']];
-  const soon=[['shopping',t.shopping],['joe',t.joe]];
+  const soon=[['shopping',t.shopping],['joe',t.joe],['about',S.lang==='sk'?'O kuchárke':'About']];
   const links=(icons)=>nav.map(n=>'<a href="'+n[0]+'" class="'+(route===n[2]?'on':'')+'"'+(icons?' title="'+esc(n[1])+'"':'')+'>'+(icons?'<span class="ni">'+NI[n[2]]+'</span>':'')+'<span class="nl">'+esc(n[1])+'</span></a>').join('');
-  const soonL='<span class="soonwrap"><span class="soonlab">'+esc(t.more)+':</span>'+soon.map(s=>s[0]==='joe'?'<a href="#" data-joeopen class="soon joelink">'+esc(s[1])+' <i class="joeai">AI</i></a>':'<a href="#/soon/'+s[0]+'" class="soon">'+esc(s[1])+'</a>').join('')+'</span>';
+  const soonL='<span class="soonwrap"><span class="soonlab">'+esc(t.more)+':</span>'+soon.map(s=>s[0]==='joe'?'<a href="#" data-joeopen class="soon joelink">'+esc(s[1])+' <i class="joeai">AI</i></a>':'<a href="'+({shopping:'#/shop',about:'#/about'}[s[0]]||'#/soon/'+s[0])+'" class="soon'+((s[0]==='shopping'&&route==='shop')||(s[0]==='about'&&route==='about')?' on':'')+'">'+esc(s[1])+'</a>').join('')+'</span>';
   const tools='<div class="tools"><div class="lang" role="group" aria-label="Language"><button data-act="lang" data-l="sk" class="'+(S.lang==='sk'?'on':'')+'">SK</button><button data-act="lang" data-l="en" class="'+(S.lang==='en'?'on':'')+'">EN</button></div>'+
    '<button class="palbtn" data-act="pal" title="'+esc(t.theme)+'" aria-label="'+esc(t.theme)+'">'+ICON.pal+'<span>'+esc(t.theme)+'</span></button></div>';
   const qs='<form class="qs" data-act="qs"><span class="qsi">'+ICON.search+'</span><input name="q" type="search" placeholder="'+esc(t.searchPh)+'" aria-label="'+esc(t.search)+'"></form>';
@@ -97,14 +97,14 @@ function renderChrome(route){
     top='<div class="topbar"><div class="wrap topin"><span class="runner">'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></span>'+qs+tools+'</div></div>';
     const groups=[[t.savory,c=>c.num<24],[t.sweet,c=>c.num>=24&&c.num<34],[t.drinks,c=>c.num===34]];
     const roman=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
-    toc=S.meta?'<a class="tocbrand" href="#/">'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></a><div class="toch">'+esc(t.contents)+'</div><nav class="tocnav">'+nav.map((n,i)=>'<a href="'+n[0]+'" class="'+(route===n[2]?'on':'')+'"><span class="rn">'+roman[i]+'.</span><span>'+esc(n[1])+'</span></a>').join('')+'</nav><details class="tocch"'+(S.tocOpen!==false&&(S.tocOpen||innerWidth>=1100)?' open':'')+'><summary class="toch"><span>'+esc(t.chapters)+'</span><b>'+S.meta.chapters.length+'</b></summary>'+groups.map(g=>'<div class="tocg">'+esc(g[0])+'</div>'+S.meta.chapters.filter(g[1]).map(c=>'<a href="#/c/'+c.stem+'" class="tc'+(location.hash.split('?')[0]==='#/c/'+c.stem?' on':'')+'"><span>'+esc(S.lang==='sk'?c.sk:c.en)+'</span><em></em><b>'+c.n+'</b></a>').join('')).join('')+'</details><div class="toch">'+esc(t.more)+'</div>'+soon.map(s=>'<a href="#/soon/'+s[0]+'" class="tc soon">'+esc(s[1])+'</a>').join(''):'';
+    toc=S.meta?'<a class="tocbrand" href="#/">'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></a><div class="toch">'+esc(t.contents)+'</div><nav class="tocnav">'+nav.map((n,i)=>'<a href="'+n[0]+'" class="'+(route===n[2]?'on':'')+'"><span class="rn">'+roman[i]+'.</span><span>'+esc(n[1])+'</span></a>').join('')+'</nav><details class="tocch"'+(S.tocOpen!==false&&(S.tocOpen||innerWidth>=1100)?' open':'')+'><summary class="toch"><span>'+esc(t.chapters)+'</span><b>'+S.meta.chapters.length+'</b></summary>'+groups.map(g=>'<div class="tocg">'+esc(g[0])+'</div>'+S.meta.chapters.filter(g[1]).map(c=>'<a href="#/c/'+c.stem+'" class="tc'+(location.hash.split('?')[0]==='#/c/'+c.stem?' on':'')+'"><span>'+esc(S.lang==='sk'?c.sk:c.en)+'</span><em></em><b>'+c.n+'</b></a>').join('')).join('')+'</details><div class="toch">'+esc(t.more)+'</div>'+soon.map(s=>'<a href="'+({shopping:'#/shop',about:'#/about'}[s[0]]||'#/soon/'+s[0])+'" class="tc soon">'+esc(s[1])+'</a>').join(''):'';
   }else if(d==='c'){
     top='<div class="cbar"><div class="wrap cbarin">'+brand+'<nav class="cnotes">'+links(false)+'</nav></div><div class="wrap cbar2">'+qs+tools+soonL+'</div></div>';
   }else if(d==='d'){
     top='<div class="wrap dtop">'+brand+qs+tools+'</div><nav class="dock">'+links(true)+'</nav>';
   }else if(d==='g'){
     top='<div class="wrap gtop"><div class="greet"><b>'+esc(S.lang==='sk'?'Ahoj, Tami':'Hi, Tami')+'</b><span>'+esc(t.recipes(nRec))+'</span></div>'+qs+tools+'</div>';
-    toc='<a class="glogo" href="#/" title="'+esc(t.brand1+' '+t.brand2)+'">T</a><nav class="rail">'+links(true)+'</nav><div class="railsoon"><span>'+esc(t.soon)+'</span>'+soon.map(s=>'<a href="#/soon/'+s[0]+'" title="'+esc(s[1])+'">'+esc(s[1])+'</a>').join('')+'</div>';
+    toc='<a class="glogo" href="#/" title="'+esc(t.brand1+' '+t.brand2)+'">T</a><nav class="rail">'+links(true)+'</nav><div class="railsoon"><span>'+esc(t.soon)+'</span>'+soon.map(s=>'<a href="'+({shopping:'#/shop',about:'#/about'}[s[0]]||'#/soon/'+s[0])+'" title="'+esc(s[1])+'">'+esc(s[1])+'</a>').join('')+'</div>';
   }else{ // e · magazine
     top='<div class="mast"><div class="wrap mastin"><span class="dateline">'+esc(t.issue)+' · '+esc(t.recipes(nRec))+'</span>'+brand+tools+'</div></div><nav class="mainnav"><div class="wrap navin">'+links(false)+'<span class="navq">'+qs+'</span></div></nav>';
   }
@@ -422,7 +422,7 @@ function rParts(r){
   P.badges='<div class="badges">'+(r.spicy?'<span class="bdg sp">🌶 '+esc(t.spicy)+'</span>':'')+(lac?'<span class="bdg lac">'+esc(t.lowLac)+'</span>':'')+(r.healthy&&r.healthy.ok?'<span class="bdg h">'+esc(t.healthyBadge)+'</span>':'')+(r.af?'<span class="bdg">'+esc(t.af)+'</span>':'')+(r.caf?'<span class="bdg">'+esc(t.caf)+'</span>':'')+(r.mild?'<span class="bdg">'+esc(t.mild)+'</span>':'')+'</div>';
   P.scaler=base?'<div class="scaler"><span class="sl">'+esc(t.servings)+'</span><button class="sb" data-act="serv" data-d="-1" aria-label="−">−</button><span class="sn">'+fmtServ(want)+'</span><button class="sb" data-act="serv" data-d="1" aria-label="+">+</button><span class="so">'+esc(t.origServ)+': '+esc(L(r.servT)||'')+'</span></div>':'<div class="scaler"><span class="sl">'+esc(t.servings)+'</span><span class="so">'+esc(L(r.servT)||'')+'</span></div>';
   P.vtog='<div class="vtoggle"><button data-act="ver" data-v="tami" class="'+(ver==='tami'?'on':'')+'">'+esc(t.tamiV)+'</button><button data-act="ver" data-v="orig" class="'+(ver==='orig'?'on':'')+'">'+esc(t.origV)+'</button></div>';
-  P.marks=markBtns(r.id);P.cook='<a class="btn cookbtn" href="#/cook/'+r.id+'">▶ '+esc(t.cook)+'</a>';
+  P.marks=markBtns(r.id);P.cook='<a class="btn cookbtn" href="#/cook/'+r.id+'">▶ '+esc(t.cook)+'</a>'+(window.TamiShop?TamiShop.btn(r.id):'');
   P.ctrls='<div class="ctrls">'+P.scaler+P.vtog+'</div><div class="ctrls">'+P.marks+P.cook+'</div>';
   P.img=r.img?'<img class="rimg-main" src="'+r.img+'" alt="'+esc(L(r.t))+'">':'';
   P.imgUrl=r.img?new URL(r.img,location.href).href:'';
@@ -522,6 +522,8 @@ async function route(){
     else if(name==='chefs')render=vChefs;
     else if(name==='soon')render=()=>vSoon(parts[1]);
     else if(name==='favorites')render=vFav;
+    else if(name==='about'&&window.TamiAbout){await TamiAbout.load();if(my!==navSeq)return false;render=TamiAbout.view;}
+    else if(name==='shop'&&window.TamiShop){await TamiShop.load();if(my!==navSeq)return false;render=TamiShop.view;}
     else if(name==='fridge'){await loadFridge();if(my!==navSeq)return false;render=()=>vFridge(params);}
     else if(name==='cook'||name==='r'){const id=parts.slice(1).join('/');const d=await loadCh(parts[1]);if(my!==navSeq)return false;const r=d.find(x=>x.id===id);chrome='chapters';
       if(!r)render=vNotFound;else if(name==='cook'){cook=r;render=()=>vCook(r);}else{rec=r;render=()=>vRecipe(r);}}
@@ -566,5 +568,6 @@ document.addEventListener('submit',e=>{const f=e.target.closest('[data-act]');if
   const h=location.hash.replace(/^#/,'');const [p,qs]=h.split('?');const ps=new URLSearchParams(f.dataset.act==='sq'?(qs||''):'');q?ps.set('q',q):ps.delete('q');ps.delete('n');location.hash='#/search?'+ps.toString();});
 document.addEventListener('change',e=>{const s=e.target.closest('select[data-f]');if(!s)return;const h=location.hash.replace(/^#/,'');const [p,qs]=h.split('?');const ps=new URLSearchParams(qs||'');ps.delete('n');s.value?ps.set(s.dataset.f,s.value):ps.delete(s.dataset.f);location.hash='#/search?'+ps.toString();});
 applyTheme(S.design,S.pal);
+window.TamiShop&&TamiShop.init({S,rerender});window.TamiAbout&&TamiAbout.init({S,rerender});
 route();
 })();
