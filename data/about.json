@@ -1,0 +1,107 @@
+{
+"recipes": 885,
+"chapters": 34,
+"countries": 83,
+"spicy": 26,
+"mild": 202,
+"airfryer": 92,
+"healthy": 13,
+"caffeine": 34,
+"cafLimit": 60,
+"allergens": [
+"celery",
+"crustaceans",
+"eggs",
+"fish",
+"gluten",
+"milk",
+"molluscs",
+"mustard",
+"nuts",
+"peanuts",
+"sesame",
+"soybeans",
+"sulphites"
+],
+"sugar": {
+"en": "Free sugars under 50 g a day, ideally about 25 g (WHO). The share shown is the share of one serving.",
+"sk": "Voľné cukry menej ako 50 g denne, ideálne okolo 25 g (WHO). Uvedený podiel platí pre jednu porciu.",
+"url": "https://www.who.int/publications/i/item/9789241549028"
+},
+"meals": 31,
+"sources": [
+[
+"Serious Eats",
+566
+],
+[
+"America's Test Kitchen",
+186
+],
+[
+"King Arthur Baking",
+74
+],
+[
+"Yotam Ottolenghi",
+12
+],
+[
+"Gordon Ramsay",
+10
+],
+[
+"James Hoffmann",
+9
+],
+[
+"Jacques Pépin",
+5
+],
+[
+"Le Cordon Bleu",
+4
+],
+[
+"NYT Cooking",
+3
+],
+[
+"Christina Tosi (Milk Bar)",
+3
+],
+[
+"The Guardian",
+3
+],
+[
+"Gastón Acurio (RPP)",
+3
+],
+[
+"Dominique Ansel",
+2
+],
+[
+"Food Network Kitchen",
+1
+],
+[
+"Ferran Adrià",
+1
+],
+[
+"Cédric Grolet",
+1
+],
+[
+"Gourmet Traveller",
+1
+],
+[
+"Sami Tamimi",
+1
+]
+],
+"sourcesOther": 0
+}
