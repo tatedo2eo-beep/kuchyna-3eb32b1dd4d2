@@ -601,3 +601,78 @@ body.cooking .dock{display:none}
  [data-design=b] .nut{table-layout:fixed;font-size:12px}[data-design=b] .nut th{font-size:9.5px;letter-spacing:0;padding:6px 2px;overflow-wrap:anywhere;hyphens:auto}[data-design=b] .nut td{padding:7px 2px;overflow-wrap:anywhere}[data-design=b] .nut th:first-child,[data-design=b] .nut td:first-child{width:30%}
  [data-design=b] .rcb{grid-template-columns:1fr}[data-design=b] .rc .meta{white-space:normal}
 }
+
+/* ---------------------------------------------------------------------
+   B · COOKBOOK v3 (grokbot 2026-10-16): no sidebar; slim top bar with a Chapters dropdown;
+   one centred open book on the page
+   --------------------------------------------------------------------- */
+[data-design=b] .shell{display:block}
+[data-design=b] .toc{display:none!important}
+[data-design=b] .wrap{width:min(1180px,calc(100% - 48px))}
+[data-design=b] .btop{position:sticky;top:0;z-index:30;background:var(--paper),var(--bg);border-bottom:1px solid color-mix(in srgb,var(--gilt) 55%,var(--line));box-shadow:0 1px 0 var(--bg),0 2px 0 color-mix(in srgb,var(--gilt) 30%,transparent),0 8px 18px rgba(var(--shade),.06)}
+[data-design=b] .btopin{display:flex;align-items:center;gap:22px;height:58px;position:relative}
+[data-design=b] .bbrand{font-family:var(--fh);font-size:24px;white-space:nowrap;letter-spacing:.01em}
+[data-design=b] .bbrand i{color:var(--accentText)}
+[data-design=b] .bnav{display:flex;align-items:center;gap:2px;margin:0 auto;flex-wrap:nowrap}
+[data-design=b] .bnav>a,[data-design=b] .bdd>summary{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;padding:8px 9px;white-space:nowrap;color:var(--text);position:relative;cursor:pointer}
+[data-design=b] .bnav>a:hover,[data-design=b] .bdd>summary:hover,[data-design=b] .bnav>a.on,[data-design=b] .bdd>summary.on{color:var(--accentText)}
+[data-design=b] .bnav>a.on::after,[data-design=b] .bdd>summary.on::after{content:'';position:absolute;left:9px;right:9px;bottom:2px;height:1px;background:var(--gilt);box-shadow:0 2px 0 -1px var(--gilt)}
+[data-design=b] .bdd>summary{list-style:none;display:flex;align-items:center;gap:5px}
+[data-design=b] .bdd>summary::-webkit-details-marker{display:none}
+[data-design=b] .bdd .car{font-size:10px;transition:transform .2s;letter-spacing:0}
+[data-design=b] .bdd[open] .car{transform:rotate(180deg)}
+[data-design=b] .bchp,[data-design=b] .bmp{position:absolute;top:calc(100% + 1px);left:50%;transform:translateX(-50%);width:min(900px,100%);z-index:40;
+ background:var(--paper),var(--surface);border:1px solid color-mix(in srgb,var(--gilt) 50%,var(--line));box-shadow:inset 0 0 0 6px transparent,inset 0 0 0 7px color-mix(in srgb,var(--gilt) 30%,transparent),0 22px 44px rgba(var(--shade),.22);padding:26px 34px 22px;columns:3;column-gap:34px;text-transform:none;letter-spacing:0}
+[data-design=b] .bdd{position:static}
+[data-design=b] .bchg{break-inside:avoid-column;margin-bottom:12px}
+[data-design=b] .bchg:first-child{break-inside:auto}
+[data-design=b] .bchg h4{font-family:var(--fh);font-style:italic;font-weight:500;font-size:19px;color:var(--accentText);margin:0 0 4px;break-after:avoid}
+[data-design=b] .bchp a{display:flex;align-items:baseline;gap:8px;padding:3px 0;font-size:14px;break-inside:avoid;border-bottom:1px dotted color-mix(in srgb,var(--line) 70%,transparent)}
+[data-design=b] .bchp a .cn{font-family:var(--fh);font-style:italic;color:var(--muted);width:20px;flex:none}
+[data-design=b] .bchp a .ct{flex:1;min-width:0}
+[data-design=b] .bchp a b{font-weight:500;font-size:12.5px;color:var(--muted)}
+[data-design=b] .bchp a:hover,[data-design=b] .bchp a.on{color:var(--accentText)}
+[data-design=b] .bchp .ball{border:0;font-style:italic;font-family:var(--fh);font-size:16px;margin-top:6px;color:var(--accentText)}
+[data-design=b] .bmenu{display:none}
+[data-design=b] .bmp{columns:1;padding:20px 24px}
+[data-design=b] .bmp .bchp{position:static;transform:none;width:auto;box-shadow:none;border:0;border-top:1px solid var(--line);padding:14px 0 0;background:none;columns:2}
+[data-design=b] .bmnav{display:flex;flex-wrap:wrap;gap:4px 18px;margin-bottom:12px}
+[data-design=b] .bmnav a{font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;padding:5px 0}
+[data-design=b] .bmnav a.on{color:var(--accentText)}
+[data-design=b] .btopin .tools{margin-left:0;flex:none}
+/* one centred book; home = one calm page */
+[data-design=b] .book{padding:34px 0 50px}
+[data-design=b] .spread.bhome{max-width:860px;margin:0 auto}
+[data-design=b] .spread.bhome::before{left:auto;right:56px}
+[data-design=b] .bhome .page.title{justify-content:flex-start;padding:64px 80px 84px}
+[data-design=b] .bhome .page.title h1{font-size:68px}
+[data-design=b] .bhome .page.title>p{max-width:520px}
+[data-design=b] .bhome .sbox{max-width:560px}
+[data-design=b] .hcont{width:100%;margin-top:40px;text-align:left}
+[data-design=b] .hctg{margin:16px 0 4px}
+[data-design=b] .hctg h3{font-family:var(--fh);font-style:italic;font-weight:500;font-size:21px;color:var(--accentText);margin-bottom:4px}
+[data-design=b] .hctg p{font-size:15px;line-height:1.85;max-width:none}
+[data-design=b] .hctg a:hover{color:var(--accentText);text-decoration:underline;text-decoration-color:var(--gilt)}
+[data-design=b] .hctg .hsep{color:var(--gilt)}
+[data-design=b] .bhome .catcard{margin-top:34px}
+[data-design=b] .view>.sec>.wrap,[data-design=b] .view>section.wrap:not(.book){width:min(1180px,calc(100% - 48px))}
+@media (max-width:1279px){
+ [data-design=b] .bnav{display:none}
+ [data-design=b] .bmenu{display:block;margin-left:auto}
+}
+@media (max-width:700px){
+ [data-design=b] .btop{position:static}
+ [data-design=b] .btopin{height:auto;flex-wrap:wrap;padding:10px 0;row-gap:6px}
+ [data-design=b] .bbrand{font-size:21px;flex:1 1 100%}
+ [data-design=b] .bmenu{margin-left:0;margin-right:auto}
+ [data-design=b] .bmp .bchp{columns:1}
+ [data-design=b] .wrap,[data-design=b] .view>.sec>.wrap,[data-design=b] .view>section.wrap:not(.book){width:calc(100% - 20px)}
+ [data-design=b] .bhome .page.title{padding:40px 22px 64px}
+ [data-design=b] .bhome .page.title h1{font-size:46px}
+}
+@media (min-width:1280px) and (max-width:1439px){
+ [data-design=b] .btopin{gap:12px}
+ [data-design=b] .bbrand{font-size:21px}
+ [data-design=b] .bnav>a,[data-design=b] .bdd>summary{letter-spacing:.07em;padding:8px 6px;font-size:11.5px}
+ [data-design=b] .bnav>a.on::after,[data-design=b] .bdd>summary.on::after{left:6px;right:6px}
+}
