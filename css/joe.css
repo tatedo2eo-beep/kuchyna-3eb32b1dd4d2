@@ -130,3 +130,4 @@
 /* "How to make Joe faster" link (CPU path) */
 .joefaster{display:inline-block;margin:6px 0 0 4px;padding:0;border:0;background:none;font:inherit;font-size:.82rem;color:var(--accentText);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .joetipmsg .joeb{white-space:normal}
+.joedbg{font:11px/1.35 ui-monospace,Consolas,monospace;white-space:pre-wrap;word-break:break-all;background:var(--surface2);color:var(--text);border:1px dashed var(--line);padding:8px;margin:0 0 10px;border-radius:6px;user-select:all}

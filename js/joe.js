@@ -21,7 +21,7 @@ const TX={
   cpuNote:'Na tomto notebooku bežím bez grafickej karty, takže odpovedám pomalšie. Chvíľku strpenia, baby 😊',
   faster:'Ako Joea zrýchliť',
   // Chrome's own Slovak labels (Chromium generated_resources_sk.xtb): Nastavenia, Systém, „Používať akceleráciu grafiky, keď bude k dispozícii“, Reštartovať
-  tip:'Baby, mám pre teba malú radu, aby som ti odpovedal oveľa rýchlejšie 💛\nTvoj prehliadač mi teraz nedovolí použiť grafickú kartu, takže bežím len na procesore. Fungujem, iba pomalšie. Takto to zapneš v Chrome:\n1. Vpravo hore klikni na tri bodky ⋮ a vyber Nastavenia.\n2. Vľavo klikni na Systém.\n3. Zapni „Používať akceleráciu grafiky, keď bude k dispozícii“.\n4. Klikni na Reštartovať.\nSkratka: do adresného riadka napíš chrome://settings/system a stlač Enter.\nAk používaš Edge: tri bodky … › Nastavenia › Systém a výkon, tam zapni hardvérovú akceleráciu a klikni na Reštartovať (skratka edge://settings/system).\nKým to nezapneš, som tu pre teba stále, len trochu pomalší. Mwah 😘',
+  tip:'Baby, mám pre teba malú radu, aby som ti odpovedal oveľa rýchlejšie 💛\nTvoj prehliadač mi teraz nedovolí použiť grafickú kartu, takže bežím len na procesore. Fungujem, iba pomalšie. Takto to zapneš v Chrome:\n1. Vpravo hore klikni na tri bodky ⋮ a vyber Nastavenia.\n2. Vľavo klikni na Systém.\n3. Zapni „Používať akceleráciu grafiky, keď bude k dispozícii“.\n4. Klikni na Reštartovať.\nSkratka: do adresného riadka napíš chrome://settings/system a stlač Enter.\nAk používaš Edge: tri bodky … › Nastavenia › Systém a výkon, tam zapni hardvérovú akceleráciu a klikni na Reštartovať (skratka edge://settings/system).\nAk je akcelerácia zapnutá a stále som pomalý, Chrome má tvoju grafickú kartu na zozname zablokovaných. Do adresného riadka napíš chrome://flags/#ignore-gpu-blocklist, pri „Override software rendering list“ vyber Enabled a klikni na Relaunch (táto stránka je len po anglicky).\nKým to nezapneš, som tu pre teba stále, len trochu pomalší. Mwah 😘',
   metered:'Joe sa zatiaľ nestiahol, lebo vyzerá, že si na pomalom alebo mobilnom pripojení.',dlNow:'Stiahnuť teraz',size:'asi {n} GB, iba raz',
   err:'Joe sa nevedel spustiť. Skús stránku obnoviť.',retry:'Skúsiť znova',recs:'Recepty z kuchárky',empty:'Napíš mi, čo chceš variť, alebo sa len ozvi 😊',
   mem:'Pamäť',memP:'Toto si AI Joe pamätá a pridáva do každého chatu.',memNone:'Zatiaľ si nič nepamätá. Napíš napríklad: „Zapamätaj si, že nemám rada koriander.“',memDel:'Zabudnúť',memAdd:'Pridať vec na zapamätanie…',prep:'Joe sa pripravuje…',chats:'Predošlé chaty',newChat:'Nový chat',noChats:'Zatiaľ žiadne chaty',msgs:'správ',back:'Späť na chat',dlHint:'Joe sa ešte sťahuje ({p} %). Hneď ako bude hotový, môžeš písať.',you:'Ty',thinking:'Joe píše…'},
@@ -32,7 +32,7 @@ const TX={
   noGpu:['Oh no baby 💔','I couldn\u2019t start on this laptop. Try opening the cookbook in the latest Chrome or Edge and I\u2019ll be right there for you.','Mwah 😘'],
   cpuNote:'On this laptop I run without the graphics card, so my answers come a bit slower. Bear with me, baby 😊',
   faster:'How to make Joe faster',
-  tip:'Baby, here\u2019s a little tip so I can answer you much faster 💛\nRight now your browser won\u2019t let me use the graphics card, so I\u2019m running on the processor only. I still work, just slower. Here\u2019s how to turn it on in Chrome:\n1. Click the three dots ⋮ in the top right and choose Settings.\n2. On the left, click System.\n3. Turn on \u201cUse graphics acceleration when available\u201d.\n4. Click Relaunch.\nShortcut: type chrome://settings/system in the address bar and press Enter.\nIf you use Edge: three dots … › Settings › System and performance, turn on \u201cUse hardware acceleration when available\u201d and click Restart (shortcut edge://settings/system).\nUntil then I\u2019m still here for you, just a little slower. Mwah 😘',
+  tip:'Baby, here\u2019s a little tip so I can answer you much faster 💛\nRight now your browser won\u2019t let me use the graphics card, so I\u2019m running on the processor only. I still work, just slower. Here\u2019s how to turn it on in Chrome:\n1. Click the three dots ⋮ in the top right and choose Settings.\n2. On the left, click System.\n3. Turn on \u201cUse graphics acceleration when available\u201d.\n4. Click Relaunch.\nShortcut: type chrome://settings/system in the address bar and press Enter.\nIf you use Edge: three dots … › Settings › System and performance, turn on \u201cUse hardware acceleration when available\u201d and click Restart (shortcut edge://settings/system).\nIf acceleration is on and I\u2019m still slow, Chrome has your graphics card on its blocklist. Type chrome://flags/#ignore-gpu-blocklist in the address bar, set \u201cOverride software rendering list\u201d to Enabled and click Relaunch.\nUntil then I\u2019m still here for you, just a little slower. Mwah 😘',
   metered:'Joe hasn\u2019t downloaded yet because you seem to be on a slow or mobile connection.',dlNow:'Download now',size:'about {n} GB, only once',
   err:'Joe couldn\u2019t start. Try reloading the page.',retry:'Try again',recs:'Recipes from the cookbook',empty:'Tell me what you want to cook, or just say hi 😊',
   mem:'Memory',memP:'AI Joe remembers these and adds them to every chat.',memNone:'Nothing remembered yet. Try: "Remember that I don\u2019t like coriander."',memDel:'Forget',memAdd:'Add something to remember…',prep:'Joe is getting ready…',chats:'Past chats',newChat:'New chat',noChats:'No chats yet',msgs:'messages',back:'Back to the chat',dlHint:'Joe is still downloading ({p}%). You can write as soon as he is ready.',you:'You',thinking:'Joe is typing…'}};
@@ -90,7 +90,7 @@ function search(q,n){if(!IDX)return [];const qt=[...new Set(toks(q))].filter(w=>
       const b=Math.max(bt*3,bc*1.2,bi*1);if(b>0)hit++;s+=b;}
     if(s>0){s*=(.5+.5*hit/qt.length);out.push([s,r]);}}
   out.sort((a,b)=>b[0]-a[0]);return out.slice(0,n||3).filter(x=>x[0]>=1.6);}
-function recCtx(r,L){const sk=L==='sk';const t=sk?r.t[1]:r.t[0];const ing=(sk?r.is:r.ie)||[];let s='RECIPE: '+t+(sk?' (EN: '+r.t[0]+')':' (SK: '+r.t[1]+')')+' — '+(sk?r.c[1]:r.c[0])+(r.tm?' · '+r.tm+' min':'')+'\n';
+function recCtx(r,L,deep){const sk=L==='sk';const t=sk?r.t[1]:r.t[0];const ing=(sk?r.is:r.ie)||[];let s='RECIPE: '+t+(sk?' (EN: '+r.t[0]+')':' (SK: '+r.t[1]+')')+' — '+(sk?r.c[1]:r.c[0])+(r.tm?' · '+r.tm+' min':'')+'\n';
   let ii=ing.join('; ');if(ii.length>520)ii=ii.slice(0,520)+'…';s+="Tami's version ingredients: "+ii+'\n';
   if(r.al&&r.al.length)s+='Allergens: '+r.al.join(', ')+'\n';
   if(r.cf&&r.cf[0])s+='Caffeine: '+(sk?r.cf[1]||r.cf[0]:r.cf[0]).slice(0,160)+'\n';
@@ -98,8 +98,8 @@ function recCtx(r,L){const sk=L==='sk';const t=sk?r.t[1]:r.t[0];const ing=(sk?r.
   if(r.fl&&r.fl.length)s+='Flavour variants: '+r.fl.map(f=>sk?f[1]:f[0]).join(', ')+'\n';
   if(r.ct&&(r.ct[0]||r.ct[1]))s+='Cat tip: '+(sk?r.ct[1]||r.ct[0]:r.ct[0]).slice(0,200)+'\n';
   if(r.sr)s+='SOURCE: '+r.sr+(r.u?' — '+r.u:'')+'\n';
-  if(r.sn)s+='SOURCE NOTES: '+(sk?r.sn[1]||r.sn[0]:r.sn[0])+'\n';
-  if(r.tc)s+="TAMI'S CHANGES: "+(sk?r.tc[1]||r.tc[0]:r.tc[0])+'\n';return s;}
+  if(deep&&r.sn)s+='SOURCE NOTES: '+(sk?r.sn[1]||r.sn[0]:r.sn[0])+'\n';
+  if(deep&&r.tc)s+="TAMI'S CHANGES: "+(sk?r.tc[1]||r.tc[0]:r.tc[0])+'\n';return s;}
 
 // ---------- language of her message ----------
 function msgLang(s){const n=' '+norm(s)+' ';if(/[áäčďéíĺľňóôŕšťúýž]/i.test(s))return 'sk';
@@ -138,13 +138,14 @@ Every food suggestion must follow Tami's rules:
 - caffeine at most 60 mg per day from everything together
 - units only g, ml, tsp, tbsp and °C; never cups, ounces or °F
 She is a beginner: give clear numbered steps and small practical tips.
-When RECIPES FROM HER COOKBOOK are listed below, prefer them, call them by their exact names and use Tami's version ingredients. Do not invent facts about them. The site shows links to them under your message, so don't write URLs.
-Each listed recipe has its SOURCE (name and link), SOURCE NOTES (what the original source itself says) and TAMI'S CHANGES. When she asks what the source says or why something was changed, explain it from those lines only; if a detail is not there, say the cookbook doesn't say.
+When RECIPES FROM HER COOKBOOK are listed with her message, prefer them, call them by their exact names and use Tami's version ingredients. Do not invent facts about them. The site shows links to them under your message, so don't write URLs.
+Each listed recipe has its SOURCE (name and link); when she asks about the source or the changes, its SOURCE NOTES (what the original source itself says) and TAMI'S CHANGES are listed too. When she asks what the source says or why something was changed, explain it from those lines only; if a detail is not there, say the cookbook doesn't say.
 You cannot browse the web, open links or look anything up online, and you don't know today's news or prices. If she asks you to, say so honestly and kindly, and offer what you do know.
 THINGS TO REMEMBER lists facts Tami asked you to remember; use them naturally, never contradict them, and never break her rules because of them.`;
+const DEEP=/zdroj|source|pre[čc]o|why|zmen|change|upravil|adjust|origin[aá]l|p[oô]vodn/i;
+function recBlock(L,recs,text){return recs.length?'RECIPES FROM HER COOKBOOK (best matches for her message):\n'+recs.map(r=>recCtx(r,L,DEEP.test(text))).join('\n')+'\n\nTAMI WRITES:\n':'';}
 function sysPrompt(L,recs){let s=PERSONA+'\n\nLANGUAGE: '+(L==='sk'?'Reply in natural, correct Slovak (keep Joe\u2019s style; English pet names like baby or sweetie and "Mwah" are fine). Recipe names: use the Slovak names.':'Reply in English.');
   const mem=MEM.list().slice(-25);if(mem.length)s+='\n\nTHINGS TO REMEMBER (Tami told you):\n'+mem.map(f=>'- '+f.text).join('\n');
-  if(recs.length)s+='\n\nRECIPES FROM HER COOKBOOK (best matches for her message):\n'+recs.map(r=>recCtx(r,L)).join('\n');
   return s;}
 
 // ---------- model / worker ----------
@@ -152,10 +153,14 @@ const J={gpu:'unknown',model:null,state:'idle',p:0,worker:null,waiters:{},open:f
 function pickedModel(){return MODELS[ls.get(LS.model)]||null;}
 function metered(){const c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;if(!c)return false;
   return !!(c.saveData||/(^|-)2g|3g/.test(c.effectiveType||'')||c.type==='cellular'||(c.downlink&&c.downlink<1.5));}
-async function gpuAdapter(){if(!('gpu' in navigator))return null;
-  // some laptops return no adapter for 'high-performance' but do for the default or 'low-power' request
-  for(const o of [{powerPreference:'high-performance'},undefined,{powerPreference:'low-power'}]){try{const a=await navigator.gpu.requestAdapter(o);if(a)return a;}catch(e){}}
-  return null;}
+async function gpuAdapter(){
+  // why WebGPU is unavailable, for the console and the tip: no navigator.gpu = WebGPU off/unsupported in this browser;
+  // no adapter = graphics acceleration off, or Chrome blocklists this GPU/driver (chrome://gpu shows "WebGPU: Disabled")
+  if(!('gpu' in navigator)){J.gpuWhy='navigator.gpu missing (WebGPU not available in this browser)';console.info('[joe] WebGPU:',J.gpuWhy);return null;}
+  const tries=[undefined,{powerPreference:'low-power'},{powerPreference:'high-performance'},{featureLevel:'compatibility'}],errs=[];
+  for(const o of tries){try{const a=await navigator.gpu.requestAdapter(o);if(a){J.gpuWhy='';const i=a.info||{};J.ad={via:JSON.stringify(o||{}),vendor:i.vendor,arch:i.architecture,desc:i.description,f16:a.features.has('shader-f16'),maxBuf:a.limits.maxBufferSize,maxSB:a.limits.maxStorageBufferBindingSize};console.info('[joe] WebGPU adapter',J.ad);return a;}}catch(e){errs.push(String(e&&e.message||e));}}
+  J.gpuWhy='requestAdapter returned null for every option'+(errs.length?' ('+errs[0]+')':'')+' — graphics acceleration off or GPU blocklisted (see chrome://gpu)';
+  console.info('[joe] WebGPU:',J.gpuWhy);return null;}
 function wasmOk(){try{return typeof WebAssembly==='object'&&WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,0,0,1,5,1,96,0,1,123,3,2,1,0,10,10,1,8,0,65,0,253,15,253,98,11]));}catch(e){return false;}}
 function useCpu(){J.engine='cpu';J.model=CPU_MODEL;J.gpu=wasmOk()?'ok':'none';if(J.gpu==='ok')isolate();}
 // Multi-threaded WebAssembly needs a cross-origin isolated page. GitHub Pages can't send the COOP/COEP headers,
@@ -178,20 +183,31 @@ function cpuWorker(){const q=[];const w={onmessage:null,onerror:null,postMessage
   cpuP.then(mod=>{const real=mod.make();real.onmessage=e=>w.onmessage&&w.onmessage(e);w.postMessage=m=>real.postMessage(m);w.terminate=()=>real.terminate();q.splice(0).forEach(m=>real.postMessage(m));})
     .catch(e=>{console.warn('[joe] cpu engine',e);J.state='error';J.gpu='none';J.err=String(e&&e.message||e);ui();});
   return w;}
-function gpuFailed(err){if(J.engine!=='gpu'||J.fellBack)return false;J.fellBack=true;console.warn('[joe] WebGPU start failed, switching to CPU:',err);
-  try{J.worker&&J.worker.terminate&&J.worker.terminate();}catch(e){}J.worker=null;useCpu();if(J.gpu!=='ok')return false;
-  const pend=J.busy;J.busy=null;J.state='downloading';ui();isCached().then(()=>{startDownload(!J.open);if(pend)setTimeout(()=>{const th=pend.th;const last=store.list(th).filter(m=>m.role==='user').slice(-1)[0];if(last)resend(last.content,th);},0);});return true;}
+function requeue(pend){setTimeout(()=>{const th=pend.th;const last=store.list(th).filter(m=>m.role==='user').slice(-1)[0];if(last)resend(last.content,th);},0);}
+// WebGPU engine failed to start: log the exact error, retry once on the GPU with the 1.5B q4f32 build (no shader-f16, smaller buffers), then CPU
+function gpuFailed(err){if(J.engine!=='gpu')return false;J.gpuErr=String(err||'');console.warn('[joe] WebGPU engine error:',J.gpuErr);
+  if(J.state==='ready')return false;
+  const pend=J.busy;J.busy=null;const kill=()=>{try{J.worker&&J.worker.terminate&&J.worker.terminate();}catch(e){}J.worker=null;};
+  if(!J.gpuRetry&&J.model!==MODELS['1.5b32']){J.gpuRetry=true;kill();J.model=MODELS['1.5b32'];ls.set(LS.model,'1.5b32');console.warn('[joe] retrying WebGPU with',J.model.id);
+    J.state='downloading';ui();startDownload(!J.open);if(pend)requeue(pend);return true;}
+  if(J.fellBack)return false;J.fellBack=true;console.warn('[joe] WebGPU unusable, switching to CPU');kill();useCpu();if(J.gpu!=='ok')return false;
+  J.state='downloading';ui();isCached().then(()=>{startDownload(!J.open);if(pend)requeue(pend);});return true;}
 function worker(){if(J.worker)return J.worker;const w=J.engine==='cpu'?cpuWorker():new Worker('js/joe-worker.js',{type:'module'});J.worker=w;
   w.onmessage=e=>{const m=e.data;
     if(m.type==='progress'){J.p=m.progress||0;if(J.state!=='ready')J.state=J.p>=1?'loading':(J.state==='waking'?'waking':'downloading');ui();}
-    else if(m.type==='ready'){if(m.threads)J.threads=m.threads;J.state='ready';J.p=1;ui();if(!J.open&&!J.busy&&J.bg){J.bg=false;w.postMessage({cmd:'unload'});}flushWait();}
+    else if(m.type==='ready'){if(m.adapter)J.wad=m.adapter;if(m.threads)J.threads=m.threads;J.state='ready';J.p=1;ui();if(J.engine==='cpu'){J.bg=false;warm();}else if(!J.open&&!J.busy&&J.bg){J.bg=false;w.postMessage({cmd:'unload'});}flushWait();}
+    else if(m.type==='warmed'){J.warm=Date.now();}
     else if(m.type==='unloaded'){J.state='cached';ui();}
     else if(m.type==='cached'){const f=J.waiters['c'+m.id];delete J.waiters['c'+m.id];f&&f(m.cached);}
     else if(m.type==='delta'||m.type==='done'){onGen(m);}
-    else if(m.type==='error'){console.warn('[joe]',m.error);if((m.cmd==='load'||(m.cmd==='chat'&&J.state!=='ready'))&&gpuFailed(m.error))return;if(m.cmd==='chat'&&J.busy){onGen({type:'done',id:m.id,text:'',error:m.error});}else{J.state='error';J.err=m.error;ui();}}};
+    else if(m.type==='error'){console.warn('[joe]',m.error);if(m.adapter)J.wad=m.adapter;if((m.cmd==='load'||(m.cmd==='chat'&&J.state!=='ready'))&&gpuFailed(m.error))return;if(m.cmd==='chat'&&J.busy){onGen({type:'done',id:m.id,text:'',error:m.error});}else{J.state='error';J.err=m.error;ui();}}};
   w.onerror=e=>{console.warn('[joe] worker',e.message);if(gpuFailed(e.message))return;J.state='error';J.err=e.message||'worker';ui();};return w;}
 function isCached(){return new Promise(res=>{const id=Math.random();J.waiters['c'+id]=res;worker().postMessage({cmd:'cached',id,model:J.model.id});setTimeout(()=>{if(J.waiters['c'+id]){delete J.waiters['c'+id];res(false);}},20000);});}
 function startDownload(bg){if(!J.model)return;J.bg=!!bg;J.state='downloading';ui();try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){}worker().postMessage({cmd:'load',model:J.model.id});}
+// CPU path: llama.cpp keeps the KV cache of the longest common prefix, so warming it with the (stable) system prompt
+// means later messages only process the new tokens. Re-warm when the prompt changes (language, memory).
+let warmed='';function warm(){if(J.engine!=='cpu'||J.busy||!J.worker)return;const sp=sysPrompt(lang(),[]);if(sp===warmed)return;warmed=sp;
+  J.worker.postMessage({cmd:'warm',model:J.model.id,messages:[{role:'system',content:sp}]});}
 let waitQ=[];function flushWait(){const q=waitQ;waitQ=[];q.forEach(f=>f());}
 async function boot(){await detect();if(J.open){maybeTip();renderMsgs();}ui();if(J.gpu!=='ok')return;
   const c=await isCached();if(c){J.state='cached';ui();return;}
@@ -212,6 +228,7 @@ function resend(text,th){
     const recs=hits.map(h=>h[1]);
     const msgs=[{role:'system',content:sysPrompt(L,recs)}];let budget=5200,tail=[];
     for(let i=hist.length-1;i>=0;i--){const m=hist[i];const c=stripRecs(m.content);if(budget-c.length<0&&tail.length)break;budget-=c.length;tail.unshift({role:m.role==='assistant'?'assistant':'user',content:c});if(tail.length>=10)break;}
+    const lu=tail.length&&tail[tail.length-1].role==='user'?tail[tail.length-1]:null;if(lu)lu.content=recBlock(L,recs,text)+lu.content;
     msgs.push(...tail);
     const id='g'+Date.now();J.busy={id,th,recs:recs.map(r=>r.id),text:''};
     if(J.state!=='ready'){J.state='waking';}ui();renderMsgs();
@@ -263,7 +280,7 @@ function build(){root=document.createElement('div');root.id='joe';root.innerHTML
 const TIPKEY='tami.joe.gputip';
 function maybeTip(){if(!J.noAd||J.engine!=='cpu'||J.tip)return;const last=+ls.get(TIPKEY)||0;if(Date.now()-last>7*864e5){J.tip=true;ls.set(TIPKEY,String(Date.now()));}}
 function toggle(v){J.open=v==null?!J.open:v;panel.hidden=!J.open;root.classList.toggle('open',J.open);fab.setAttribute('aria-expanded',J.open);
-  if(J.open){loadIdx().catch(()=>{});maybeTip();renderMsgs();setTimeout(()=>{const ta=root.querySelector('textarea');ta&&!ta.disabled&&ta.focus();},50);}
+  if(J.open){loadIdx().catch(()=>{});maybeTip();renderMsgs();if(J.state==='cached')startDownload(false);else if(J.state==='ready')warm();setTimeout(()=>{const ta=root.querySelector('textarea');ta&&!ta.disabled&&ta.focus();},50);}
   else if(J.state==='ready'&&!J.busy&&J.worker){/* keep loaded while the page is open: answers stay fast */}}
 function ui(){if(!root)return;const t=tx();
   root.dataset.state=J.gpu==='none'?'nogpu':J.state;
@@ -287,7 +304,9 @@ function bubbles(c,who){const lines=tidy(c).split(/\n+/).filter(Boolean);
   return out.map(g=>'<div class="joeb '+who+'">'+g.map(fmt).join('<br>')+'</div>').join('');}
 function chips(ids){if(!ids||!ids.length)return '';const L=lang();const by=IDX?Object.fromEntries(IDX.r.map(r=>[r.id,r])):{};
   return '<div class="joerecs"><small>'+esc(tx().recs)+'</small>'+ids.map(id=>{const r=by[id];const nm=r?(L==='sk'?r.t[1]:r.t[0]):id.split('/').pop().replace(/-/g,' ');return '<a href="#/r/'+esc(id)+'" class="joechip">'+esc(nm)+'</a>';}).join('')+'</div>';}
-function renderMsgs(){if(!root||!J.open)return;const t=tx();const box=root.querySelector('.joemsgs');let h='';
+const DEBUG=/[?&]joedebug=1\b/.test(location.search);
+function dbg(){const cv=(navigator.userAgent.match(/Chrome\/([\d.]+)/)||[])[1];return '<pre class="joedbg">'+esc(JSON.stringify({engine:J.engine,state:J.state,model:J.model&&J.model.id,why:J.gpuWhy||'',adapter:J.ad||null,workerAdapter:J.wad||null,gpuError:J.gpuErr||'',retried:!!J.gpuRetry,fellBack:!!J.fellBack,coi:window.crossOriginIsolated,threads:J.threads||'',chrome:cv||navigator.userAgent.slice(0,60)},null,1))+'</pre>';}
+function renderMsgs(){if(!root||!J.open)return;const t=tx();const box=root.querySelector('.joemsgs');let h=DEBUG?dbg():'';
   if(!introOk()){h='<div class="joeintro"><span class="joeav big">'+AV+'</span><h3>'+esc(t.introH)+' <i class="joeai">AI</i></h3>'+t.introP.map(p=>'<p>'+esc(p)+'</p>').join('')+(J.model?'<p class="joesmall">'+esc(J.model.name+' · '+t.size.replace('{n}',String(J.model.gb).replace('.',lang()==='sk'?',':'.')))+'</p>':'')+'<button type="button" class="joego" data-joego>'+esc(t.introGo)+'</button></div>';box.innerHTML=h;ui();return;}
   if(J.view==='mem'){const f=MEM.list();box.innerHTML='<div class="joelist joememv"><h4>'+esc(t.mem)+'</h4><p class="joesmall">'+esc(t.memP)+'</p>'+(f.length?f.map(x=>'<div class="joefact"><span>'+esc(x.text)+'</span><button type="button" class="joeib" data-joememdel="'+esc(x.id)+'" title="'+esc(t.memDel)+'" aria-label="'+esc(t.memDel)+'">'+IC.x+'</button></div>').join(''):'<p class="joesmall">'+esc(t.memNone)+'</p>')+'<form class="joememf"><input maxlength="200" placeholder="'+esc(t.memAdd)+'"><button type="submit" class="joeib">'+IC.plus+'</button></form></div>';
     box.querySelector('.joememf').onsubmit=e=>{e.preventDefault();const i=e.target.querySelector('input');if(MEM.add(i.value))renderMsgs();else i.value='';};ui();return;}
@@ -305,7 +324,7 @@ function renderMsgs(){if(!root||!J.open)return;const t=tx();const box=root.query
 function renderLive(){if(!J.open)return;const live=root.querySelector('.joeturn.live');if(!live){renderMsgs();return;}live.innerHTML=bubbles(J.busy.text,'joe');const body=root.querySelector('.joebody');body.scrollTop=body.scrollHeight;}
 
 // expose for tests / the rest of the site
-window.JoeChat={state:()=>({engine:J.engine,threads:J.threads,gpu:J.gpu,state:J.state,model:J.model&&J.model.id,progress:J.p}),open:()=>toggle(true),close:()=>toggle(false),search:(q,n)=>loadIdx().then(()=>search(q,n).map(h=>({id:h[1].id,score:+h[0].toFixed(2)}))),
+window.JoeChat={state:()=>({warm:!!J.warm,why:J.gpuWhy,engine:J.engine,threads:J.threads,gpu:J.gpu,state:J.state,model:J.model&&J.model.id,progress:J.p}),open:()=>toggle(true),close:()=>toggle(false),search:(q,n)=>loadIdx().then(()=>search(q,n).map(h=>({id:h[1].id,score:+h[0].toFixed(2)}))),
   prompt:(q)=>loadIdx().then(()=>sysPrompt(msgLang(q),search(q,3).map(h=>h[1]))),lang:msgLang,send};
 function start(){build();const idle=window.requestIdleCallback||(f=>setTimeout(f,1500));
   // quiet background start: after the page has loaded and the browser is idle, never during first paint

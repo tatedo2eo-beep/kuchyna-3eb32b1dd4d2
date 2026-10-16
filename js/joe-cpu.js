@@ -17,19 +17,24 @@ export function make(){
       progressCallback:({loaded:l,total:t})=>post({type:'progress',model,progress:t?Math.min(0.99,l/t):0,text:was?'load':'download'})});
     loaded=model;post({type:'ready',model,threads:ll.isMultithread()?'multi':'single'});
   }
-  w.postMessage=async m=>{m=m||{};
+  // one job at a time (warm-up, chat), so a message sent during warm-up reuses the freshly cached prompt; abort jumps the queue
+  let chain=Promise.resolve();
+  w.postMessage=m=>{m=m||{};if(m.cmd==='abort'){ctl&&ctl.abort();return;}chain=chain.then(()=>run(m));};
+  const run=async m=>{
     try{
       if(m.cmd==='cached')post({type:'cached',id:m.id,model:m.model,cached:await cached(m.model)});
       else if(m.cmd==='load')await load(m.model);
       else if(m.cmd==='unload'){if(ll){try{await ll.exit();}catch(e){}ll=null;}loaded=null;post({type:'unloaded'});}
+      else if(m.cmd==='warm'){await load(m.model);
+        // process the system prompt now (1 token out) so its KV cache is ready when Tami sends her message
+        await ll.createChatCompletion({messages:m.messages.concat([{role:'user',content:'.'}]),max_tokens:1,temperature:0,cache_prompt:true});post({type:'warmed'});}
       else if(m.cmd==='chat'){
         await load(m.model);ctl=new AbortController();let full='';
-        const it=await ll.createChatCompletion({messages:m.messages,stream:true,temperature:m.temperature??0.7,top_p:0.9,max_tokens:m.max_tokens||300,abortSignal:ctl.signal});
+        const it=await ll.createChatCompletion({messages:m.messages,stream:true,temperature:m.temperature??0.7,top_p:0.9,max_tokens:m.max_tokens||300,cache_prompt:true,abortSignal:ctl.signal});
         try{for await(const c of it){const d=c.choices&&c.choices[0]&&c.choices[0].delta&&c.choices[0].delta.content||'';if(d){full+=d;post({type:'delta',id:m.id,text:full});}}}
         catch(e){if(!(ctl.signal.aborted))throw e;}
         post({type:'done',id:m.id,text:full,stopped:ctl.signal.aborted});ctl=null;
       }
-      else if(m.cmd==='abort'){ctl&&ctl.abort();}
     }catch(e){post({type:'error',id:m.id,cmd:m.cmd,error:String(e&&e.message||e)});}
   };
   w.terminate=()=>{if(ll)ll.exit().catch(()=>{});};
