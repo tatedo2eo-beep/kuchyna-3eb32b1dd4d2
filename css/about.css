@@ -47,3 +47,15 @@
 .about-g .ab-f,.about-g .ab-src{grid-column:1/-1}
 @media(max-width:1100px){.about-c .abgrid{grid-template-columns:1fr 1fr}.about-g .abgrid{grid-template-columns:1fr 1fr}.about-g .ab{grid-column:auto!important}}
 @media(max-width:900px){.about-e .ab{grid-template-columns:1fr}.about-e .ab>*:not(h2){grid-column:1}.about-c .abgrid,.about-g .abgrid{grid-template-columns:1fr}}
+/* labels guide */
+.ab-lbl h3{margin:1.2em 0 .4em;font-size:1.05em}
+.ablbl{margin:0;display:grid;gap:.45em}
+.ablbl>div{display:grid;grid-template-columns:minmax(10em,16em) 1fr;gap:.8em;align-items:baseline}
+.ablbl dt{margin:0}.ablbl dd{margin:0;line-height:1.45}
+.ablab{display:inline-block;padding:.1em .5em;border:1px solid currentColor;border-radius:.3em;font-size:.88em;opacity:.9}
+@media(max-width:700px){.ablbl>div{grid-template-columns:1fr;gap:.15em}}
+[data-design=e] .ablab{border-radius:0;letter-spacing:.04em;text-transform:none;border-width:0 0 1px}
+[data-design=b] .ablbl>div{border-bottom:1px dotted currentColor;padding-bottom:.35em}
+[data-design=c] .ablab{border-radius:1em;background:rgba(127,127,127,.12);border-color:transparent}
+[data-design=d] .ablbl{grid-template-columns:repeat(auto-fit,minmax(26em,1fr));gap:.6em 1.4em}[data-design=d] .ablbl>div{grid-template-columns:1fr;gap:.2em}
+[data-design=g] .ablbl>div{border-left:3px solid currentColor;padding-left:.6em;grid-template-columns:minmax(9em,14em) 1fr}
