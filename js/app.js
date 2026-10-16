@@ -199,7 +199,7 @@ function vFridge(params){const t=T(),F=S.fr;const have=new Set(S.have);const nam
   const chips=Object.keys(F.groups).map(g=>'<div class="frg"><h3>'+esc(S.lang==='sk'?F.groups[g][0]:F.groups[g][1])+'</h3><div class="chips">'+F.ings.filter(i=>i.g===g).map(i=>'<button class="chip'+(have.has(i.k)?' on':'')+'" data-act="have" data-k="'+i.k+'">'+(have.has(i.k)?'✓ ':'')+esc(S.lang==='sk'?i.sk:i.en)+'</button>').join('')+'</div></div>').join('');
   let res=[];
   if(have.size){for(const r of S.idx){const ks=F.r[r.id];if(!ks)continue;const h=ks.filter(k=>have.has(k));if(!h.length)continue;res.push({r,h,miss:ks.filter(k=>!have.has(k)),n:ks.length});}
-    res.sort((a,b)=>b.h.length-a.h.length||a.miss.length-b.miss.length||L(a.r.t).localeCompare(L(b.r.t),S.lang));}
+    res.sort((a,b)=>(a.miss.length?1:0)-(b.miss.length?1:0)||a.miss.length-b.miss.length||b.h.length-a.h.length||L(a.r.t).localeCompare(L(b.r.t),S.lang));}
   const n=+params.get('n')||48;const show=res.slice(0,n);
   return '<section class="sec"><div class="wrap"><div class="sh2"><h1>'+esc(t.fridge)+'</h1><span>'+(have.size?res.length+' '+esc(t.results):'')+'</span></div><p class="lead">'+esc(t.fridgeP)+'</p>'+
    '<div class="frbox"><div class="frhead"><b>'+esc(t.fridgeHave)+' ('+have.size+')</b>'+(have.size?'<button class="chip ghost" data-act="haveclr">'+esc(t.reset)+'</button>':'')+'</div>'+chips+'<p class="nutnote">'+esc(t.fridgeStaples)+'</p></div>'+
