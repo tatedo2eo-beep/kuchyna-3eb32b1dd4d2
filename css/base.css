@@ -298,3 +298,20 @@ body.cooking .mainnav,body.cooking .foot{display:none}
 /* country of origin (grokbot 2026-10-16) */
 .origin{margin-top:8px;font-size:14px;line-height:1.5;max-width:900px}.origin a{color:var(--accentText)}.origin .tag{vertical-align:1px}.origin .coq{display:block;color:var(--muted);font-size:13px;font-style:italic;margin-top:2px}
 .cobtn.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+
+/* meal sets (grokbot 2026-10-16) */
+.mfil{margin:6px 0 4px}
+.msets{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.mset{display:flex;flex-direction:column;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);overflow:hidden;color:var(--text)}
+.mset:hover{border-color:var(--accent)}
+.msimg{aspect-ratio:16/9;background:var(--surface2);overflow:hidden}.msimg img{width:100%;height:100%;object-fit:cover;display:block}
+.msb{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px}
+.msb .no{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.msb b{font-family:var(--fh);font-size:21px;font-weight:500;line-height:1.2}
+.msl{font-size:13.5px;color:var(--muted);line-height:1.45}
+.msb .tag{align-self:flex-start}
+.mitem .mrole{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accentText);margin-bottom:6px}
+.mitem .frmeta .tag{align-self:flex-start}
+@media (max-width:900px){.msets{grid-template-columns:1fr 1fr}}
+@media (max-width:600px){.msets{grid-template-columns:1fr}}
+.mitem .frmeta{margin-bottom:12px}

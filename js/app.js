@@ -70,11 +70,12 @@ const NI={home:'<svg viewBox="0 0 24 24" class="ic" fill="none" stroke="currentC
  countries:'<svg viewBox="0 0 24 24" class="ic" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>',
  chefs:'<svg viewBox="0 0 24 24" class="ic" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 14a4 4 0 1 1 1.5-7.7A4 4 0 0 1 16 6a4 4 0 1 1 1 8v5H7z"/><path d="M7 17h10"/></svg>',
  fridge:'<svg viewBox="0 0 24 24" class="ic" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M5 10h14M9 6v2M9 13v3"/></svg>',
+ meals:'<svg viewBox="0 0 24 24" class="ic" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="13" r="6.5"/><circle cx="12" cy="13" r="3.2"/><path d="M3 4v5a1.5 1.5 0 0 0 3 0V4M4.5 9v11M20 4c-1.6 1-2.2 3-2.2 6h2.2v10"/></svg>',
  favorites:'<svg viewBox="0 0 24 24" class="ic" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20s-7-4.4-8.6-8.6C2.3 8.4 4.2 5 7.4 5c2 0 3.3 1.1 4.6 2.8C13.3 6.1 14.6 5 16.6 5c3.2 0 5.1 3.4 4 6.4C19 15.6 12 20 12 20z"/></svg>'};
 function renderChrome(route){
   const t=T(),d=S.design;document.documentElement.lang=S.lang;document.title=t.brand1+' '+t.brand2;
-  const nav=[['#/',t.home,'home'],['#/chapters',t.chapters,'chapters'],['#/search',t.search,'search'],['#/healthy',t.healthy,'healthy'],['#/countries',t.countries,'countries'],['#/chefs',t.chefsShort,'chefs'],['#/fridge',t.fridgeShort,'fridge'],['#/favorites',t.favorites,'favorites']];
-  const soon=[['meals',t.meals],['shopping',t.shopping],['seasonal',t.seasonal],['joe',t.joe]];
+  const nav=[['#/',t.home,'home'],['#/chapters',t.chapters,'chapters'],['#/search',t.search,'search'],['#/healthy',t.healthy,'healthy'],['#/countries',t.countries,'countries'],['#/meals',t.meals,'meals'],['#/chefs',t.chefsShort,'chefs'],['#/fridge',t.fridgeShort,'fridge'],['#/favorites',t.favorites,'favorites']];
+  const soon=[['shopping',t.shopping],['seasonal',t.seasonal],['joe',t.joe]];
   const links=(icons)=>nav.map(n=>'<a href="'+n[0]+'" class="'+(route===n[2]?'on':'')+'"'+(icons?' title="'+esc(n[1])+'"':'')+'>'+(icons?'<span class="ni">'+NI[n[2]]+'</span>':'')+'<span class="nl">'+esc(n[1])+'</span></a>').join('');
   const soonL='<span class="soonwrap"><span class="soonlab">'+esc(t.more)+':</span>'+soon.map(s=>'<a href="#/soon/'+s[0]+'" class="soon">'+esc(s[1])+'</a>').join('')+'</span>';
   const tools='<div class="tools"><div class="lang" role="group" aria-label="Language"><button data-act="lang" data-l="sk" class="'+(S.lang==='sk'?'on':'')+'">SK</button><button data-act="lang" data-l="en" class="'+(S.lang==='en'?'on':'')+'">EN</button></div>'+
@@ -86,7 +87,7 @@ function renderChrome(route){
   if(d==='b'){
     top='<div class="topbar"><div class="wrap topin"><span class="runner">'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></span>'+qs+tools+'</div></div>';
     const groups=[[t.savory,c=>c.num<24],[t.sweet,c=>c.num>=24&&c.num<34],[t.drinks,c=>c.num===34]];
-    const roman=['I','II','III','IV','V','VI','VII','VIII'];
+    const roman=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
     toc=S.meta?'<a class="tocbrand" href="#/">'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></a><div class="toch">'+esc(t.contents)+'</div><nav class="tocnav">'+nav.map((n,i)=>'<a href="'+n[0]+'" class="'+(route===n[2]?'on':'')+'"><span class="rn">'+roman[i]+'.</span><span>'+esc(n[1])+'</span></a>').join('')+'</nav><div class="toch">'+esc(t.chapters)+'</div>'+groups.map(g=>'<div class="tocg">'+esc(g[0])+'</div>'+S.meta.chapters.filter(g[1]).map(c=>'<a href="#/c/'+c.stem+'" class="tc'+(location.hash.split('?')[0]==='#/c/'+c.stem?' on':'')+'"><span>'+esc(S.lang==='sk'?c.sk:c.en)+'</span><em></em><b>'+c.n+'</b></a>').join('')).join('')+'<div class="toch">'+esc(t.more)+'</div>'+soon.map(s=>'<a href="#/soon/'+s[0]+'" class="tc soon">'+esc(s[1])+'</a>').join(''):'';
   }else if(d==='c'){
     top='<div class="cbar"><div class="wrap cbarin">'+brand+'<nav class="cnotes">'+links(false)+'</nav></div><div class="wrap cbar2">'+qs+tools+soonL+'</div></div>';
@@ -231,6 +232,25 @@ function vCountries(code){const t=T();const cnt={},src={};S.idx.forEach(r=>r.co.
   if(code&&cnt[code]){const list=S.idx.filter(r=>r.co.includes(code)).sort((a,b)=>(a.cob===b.cob?0:a.cob==='s'?-1:1)||L(a.t).localeCompare(L(b.t),S.lang));
     h+='<div class="sh2" id="co-list"><h2>'+esc(coName(code))+'</h2><span>'+esc(t.recipes(list.length))+'</span></div><div class="rgrid">'+list.map(r=>'<div class="favitem">'+card(r)+'<div class="frmeta"><span>'+(r.cob==='s'?'<span class="tag src">'+esc(t.coSource)+'</span>':'<span class="tag own">'+esc(t.coOwn)+'</span>')+(r.co.length>1?' '+esc(r.co.map(coName).join(' / ')):'')+'</span></div></div>').join('')+'</div>';}
   return h+'</div></section>';}
+// meal sets: source pairings (quoted, linked) first, then my picks
+const MEALS=['breakfast','lunch','dinner'];
+function mealItems(st){return [st.items.find(i=>i.role==='main')].concat(st.items.filter(i=>i.role!=='main'&&i.basis==='source'),st.items.filter(i=>i.role!=='main'&&i.basis!=='source')).filter(Boolean);}
+function vMeals(k,params){const t=T();const sets=S.meta.meals||[];const byId=id=>S.idx.find(x=>x.id===id);
+  const st=k&&sets.find(x=>x.k===k);
+  if(st){const items=mealItems(st);
+    const srcN=items.filter(i=>i.basis==='source').length;
+    return '<section class="sec"><div class="wrap"><div class="crumbs"><a href="#/meals">'+esc(t.mealsH)+'</a> · <a href="#/meals?m='+st.meal+'">'+esc(t.mealT[st.meal])+'</a></div><div class="sh2"><h1>'+esc(S.lang==='sk'?st.sk:st.en)+'</h1><span>'+esc(t.recipes(items.length))+'</span></div>'+
+     '<p class="nutnote">'+(srcN?'<span class="tag src">'+esc(t.mealSrc)+'</span> '+esc(t.mealSrcP)+' &nbsp; ':'')+'<span class="tag own">'+esc(t.mealPick)+'</span> '+esc(t.mealPickP)+'</p>'+
+     '<div class="rgrid mgrid">'+items.map(i=>{const r=byId(i.id);if(!r)return '';
+       const of=byId(i.of||i.id);
+       const why=i.role==='main'?'':i.basis==='source'?'<span class="tag src">'+esc(t.mealSrc)+'</span><span class="coq">'+esc(t.mealSrcOf)+' '+(of?'<a href="#/r/'+of.id+'">'+esc(L(of.t))+'</a>':'')+': '+(S.lang==='sk'?'„'+esc(i.quote)+'“ (EN)':'“'+esc(i.quote)+'”')+' — '+linkify(i.url)+'</span>':'<span class="tag own">'+esc(t.mealPick)+'</span>';
+       return '<div class="favitem mitem"><span class="mrole">'+esc(t.mealRole[i.role]||i.role)+'</span>'+card(r)+(why?'<div class="frmeta">'+why+'</div>':'')+'</div>';}).join('')+'</div></div></section>';}
+  const m=MEALS.includes(params.get('m'))?params.get('m'):'';
+  const tile=x=>{const items=mealItems(x);const main=byId(items[0].id);const srcN=items.filter(i=>i.basis==='source').length;
+    return '<a class="mset" href="#/meals/'+x.k+'"><span class="msimg">'+(main&&main.img?'<img loading="lazy" src="'+main.img+'" alt="">':'')+'</span><span class="msb"><span class="no">'+esc(t.mealT[x.meal])+'</span><b>'+esc(S.lang==='sk'?x.sk:x.en)+'</b><span class="msl">'+items.map(i=>{const r=byId(i.id);return r?esc(L(r.t)):'';}).filter(Boolean).join(' · ')+'</span>'+(srcN?'<span class="tag src">'+esc(t.mealSrcN(srcN))+'</span>':'<span class="tag own">'+esc(t.mealPick)+'</span>')+'</span></a>';};
+  return '<section class="sec"><div class="wrap"><div class="sh2"><h1>'+esc(t.mealsH)+'</h1><span>'+sets.length+'</span></div><p class="lead">'+esc(t.mealsP)+'</p>'+
+   '<div class="frow mfil"><span class="cs"><a class="chip'+(m?'':' on')+'" href="#/meals">'+esc(t.allMeals)+'</a>'+MEALS.map(x=>'<a class="chip'+(m===x?' on':'')+'" href="#/meals?m='+x+'">'+esc(t.mealT[x])+'</a>').join('')+'</span></div>'+
+   MEALS.filter(x=>!m||x===m).map(x=>{const l=sets.filter(y=>y.meal===x);return l.length?'<div class="grp"><h3>'+esc(t.mealT[x])+'</h3></div><div class="msets">'+l.map(tile).join('')+'</div>':'';}).join('')+'</div></section>';}
 function vChefs(){const t=T();return '<section class="sec"><div class="wrap"><div class="sh2"><h1>'+esc(t.chefs)+'</h1></div><p class="lead">'+esc(t.chefsP)+'</p><div class="chefs">'+S.meta.chefs.map(c=>{const r=S.idx.find(x=>x.id===c.open);return '<div class="chef">'+(r&&r.img?'<a href="#/r/'+r.id+'"><img loading="lazy" src="'+r.img+'" alt=""></a>':'')+'<div class="chefb"><span class="kicker">'+esc(c.chef)+'</span><h3>'+esc(S.lang==='sk'?c.sk:c.en)+'</h3><p>'+esc(S.lang==='sk'?c.d_sk:c.d_en)+'</p>'+(c.url?'<p class="src">'+esc(t.source)+': '+linkify(c.url)+'</p>':'')+(r?'<a class="btn" href="#/r/'+r.id+'">'+esc(t.viewRecipe)+'</a>':'')+'</div></div>';}).join('')+'</div></div></section>';}
 function vFav(){const t=T();
   const rows=(store)=>Object.entries(store).sort((a,b)=>(b[1].t||0)-(a[1].t||0)).map(([k,v])=>{const id=k.split('|')[0];const r=S.idx.find(x=>x.id===id);return r?{r,k,v}:null;}).filter(Boolean);
@@ -450,6 +470,7 @@ async function route(){
     else if(name==='search')render=()=>vSearch(params);
     else if(name==='healthy')render=vHealthy;
     else if(name==='countries')render=()=>vCountries(parts[1]||'');
+    else if(name==='meals')render=()=>vMeals(parts[1]||'',params);
     else if(name==='chefs')render=vChefs;
     else if(name==='soon')render=()=>vSoon(parts[1]);
     else if(name==='favorites')render=vFav;
