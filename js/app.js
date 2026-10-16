@@ -25,17 +25,20 @@ const ICON={pal:'<svg viewBox="0 0 24 24" class="ic" fill="none" stroke="current
  cat:'<svg viewBox="0 0 24 24" class="ic" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20v-9l2-6 3 4h6l3-4 2 6v9z"/><circle cx="9" cy="14" r=".8"/><circle cx="15" cy="14" r=".8"/></svg>'};
 
 // ---------------- theme ----------------
+let themeKeys=[];
 function applyTheme(design,pal){
   const D=DESIGNS.find(d=>d.k===design)||DESIGNS[0];
   const P=D.pals.find(p=>p[0]===pal)||D.pals[0];
+  const changed=S.design!==D.k||S.pal!==P[0];
   S.design=D.k;S.pal=P[0];
   const r=document.documentElement;r.dataset.design=D.k;r.dataset.pal=P[0];
+  themeKeys.forEach(k=>{if(!(k in P[2]))r.style.removeProperty('--'+k);});   // no stale variables left from the previous palette
   for(const k in P[2])r.style.setProperty('--'+k,P[2][k]);
-  ['side','sideText','sideMuted','sideLine','pop','popText','tile1','tile2','tile2Text','shadow','hl'].forEach(k=>{if(!(k in P[2]))r.style.removeProperty('--'+k);});
+  themeKeys=Object.keys(P[2]);
   r.style.setProperty('--fh',D.fonts[0]);r.style.setProperty('--fb',D.fonts[1]);
   try{localStorage.setItem('tami.design',D.k);localStorage.setItem('tami.pal',P[0]);}catch(e){}
   if(!$('#palpanel').hidden)renderPal();
-  if(S.idx&&!curRecipe&&(location.hash.replace(/^#\/?/,'')===''))rerender(true);
+  if(changed&&S.cur)rerender(true);   // repaint the open page at once, whatever page it is
 }
 const PV={
  e:'<span class="pv-mast"><b class="pv-fh">Kuchárka <i>pre Tami</i></b></span><span class="pv-nav"><i></i><i></i><i></i><i></i><i></i></span><span class="pv-full"><span class="pv-fh">Aa</span></span><span class="pv-row"><i></i><i></i><i></i><i></i></span>',
@@ -416,31 +419,37 @@ function nutTable(n){const t=T();if(!n||!n.rows||n.rows.length<2)return '<p clas
   const hd=n.rows[0];return '<table class="nut"><thead><tr>'+hd.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr></thead><tbody>'+n.rows.slice(1).map(r=>'<tr>'+r.map(c=>'<td>'+esc(c)+'</td>').join('')+'</tr>').join('')+'</tbody></table>'+(n.status&&!/^OK/.test(n.status)?'<p class="nutnote">'+esc(t.nutPartial)+'</p>':'');}
 
 // ---------------- router ----------------
-let curRecipe=null;
+// Every navigation gets a number; a slower, older navigation (e.g. still waiting for a chapter file) never paints over a newer one.
+// The open page is kept as a synchronous render function, so a theme / language / serving change repaints it instantly
+// from memory (on every page, not only home) instead of re-running the async router.
+let curRecipe=null,navSeq=0;S.cur=null;
 async function route(){
+  const my=++navSeq;
   const h=location.hash.replace(/^#/,'')||'/';const [path,qs]=h.split('?');const params=new URLSearchParams(qs||'');const parts=path.split('/').filter(Boolean);
-  const v=$('#view');
   try{
-    await loadIndex();
-    let name=parts[0]||'home',html;curRecipe=null;const wasCook=curCook;if(parts[0]!=='cook'){curCook=null;wakeOff();}
-    if(name==='home')html=vHome();
-    else if(name==='chapters')html=vChapters(params);
-    else if(name==='c')html=vChapter(parts[1],params);
-    else if(name==='search')html=vSearch(params);
-    else if(name==='healthy')html=vHealthy();
-    else if(name==='countries')html=vCountries();
-    else if(name==='chefs')html=vChefs();
-    else if(name==='soon')html=vSoon(parts[1]);
-    else if(name==='favorites')html=vFav();
-    else if(name==='fridge'){await loadFridge();html=vFridge(params);}
-    else if(name==='cook'){const id=parts.slice(1).join('/');const d=await loadCh(parts[1]);const r=d.find(x=>x.id===id);if(r){if(!curCook||curCook.id!==r.id)S.cookStep=0;curCook=r;html=vCook(r);}else html=vNotFound();name='chapters';}
-    else if(name==='r'){const id=parts.slice(1).join('/');const d=await loadCh(parts[1]);const r=d.find(x=>x.id===id);curRecipe=r;html=r?vRecipe(r):vNotFound();name='chapters';}
-    else html=vNotFound();
-    renderChrome(name==='c'?'chapters':name);v.innerHTML=html;document.body.classList.toggle('cooking',!!curCook);if(curCook)wakeOn();
-  }catch(e){console.error(e);v.innerHTML='<section class="sec"><div class="wrap"><p class="empty">'+esc(String(e.message||e))+'</p></div></section>';}
+    await loadIndex();if(my!==navSeq)return false;
+    let name=parts[0]||'home',chrome=name,render,rec=null,cook=null;
+    if(name==='home')render=vHome;
+    else if(name==='chapters')render=()=>vChapters(params);
+    else if(name==='c'){render=()=>vChapter(parts[1],params);chrome='chapters';}
+    else if(name==='search')render=()=>vSearch(params);
+    else if(name==='healthy')render=vHealthy;
+    else if(name==='countries')render=vCountries;
+    else if(name==='chefs')render=vChefs;
+    else if(name==='soon')render=()=>vSoon(parts[1]);
+    else if(name==='favorites')render=vFav;
+    else if(name==='fridge'){await loadFridge();if(my!==navSeq)return false;render=()=>vFridge(params);}
+    else if(name==='cook'||name==='r'){const id=parts.slice(1).join('/');const d=await loadCh(parts[1]);if(my!==navSeq)return false;const r=d.find(x=>x.id===id);chrome='chapters';
+      if(!r)render=vNotFound;else if(name==='cook'){cook=r;render=()=>vCook(r);}else{rec=r;render=()=>vRecipe(r);}}
+    else render=vNotFound;
+    if(cook){if(!curCook||curCook.id!==cook.id)S.cookStep=0;}else{curCook=null;wakeOff();}
+    curCook=cook;curRecipe=rec;S.cur={chrome,render};paint();return true;
+  }catch(e){if(my!==navSeq)return false;console.error(e);S.cur=null;$('#view').innerHTML='<section class="sec"><div class="wrap"><p class="empty">'+esc(String(e.message||e))+'</p></div></section>';return true;}
 }
-function rerender(keepScroll){const y=window.scrollY;if(curCook){renderChrome('chapters');$('#view').innerHTML=vCook(curCook);if(wake)$('.wakest').textContent=T().wakeOn;else wakeOn();return;}if(curRecipe){renderChrome('chapters');$('#view').innerHTML=vRecipe(curRecipe);}else route();if(keepScroll)window.scrollTo(0,y);}
-window.addEventListener('hashchange',()=>{route().then(()=>window.scrollTo(0,0));});
+function paint(){if(!S.cur)return;renderChrome(S.cur.chrome);$('#view').innerHTML=S.cur.render();document.body.classList.toggle('cooking',!!curCook);
+  if(curCook){if(wake){const w=$('.wakest');if(w)w.textContent=T().wakeOn;}else wakeOn();}}
+function rerender(keepScroll){const y=window.scrollY;if(S.cur)paint();else route();if(keepScroll)window.scrollTo(0,y);}
+window.addEventListener('hashchange',()=>{route().then(ok=>{if(ok)window.scrollTo(0,0);});});
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
   if(a==='lang'){S.lang=b.dataset.l;try{localStorage.setItem('tami.lang',S.lang);}catch(x){}rerender(true);if(!$('#palpanel').hidden)renderPal();}
