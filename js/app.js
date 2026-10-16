@@ -71,11 +71,12 @@ const NI={home:'<svg viewBox="0 0 24 24" class="ic" fill="none" stroke="currentC
  chefs:'<svg viewBox="0 0 24 24" class="ic" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 14a4 4 0 1 1 1.5-7.7A4 4 0 0 1 16 6a4 4 0 1 1 1 8v5H7z"/><path d="M7 17h10"/></svg>',
  fridge:'<svg viewBox="0 0 24 24" class="ic" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M5 10h14M9 6v2M9 13v3"/></svg>',
  meals:'<svg viewBox="0 0 24 24" class="ic" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="13" r="6.5"/><circle cx="12" cy="13" r="3.2"/><path d="M3 4v5a1.5 1.5 0 0 0 3 0V4M4.5 9v11M20 4c-1.6 1-2.2 3-2.2 6h2.2v10"/></svg>',
+ seasonal:'<svg viewBox="0 0 24 24" class="ic" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21c-4.4 0-7-3-7-7 0-5 4-9 9-10-1 2 0 3 1.5 4.5C17 10 19 12 19 15c0 3.5-3 6-7 6z"/><path d="M12 21c0-5 1-8 3-10"/></svg>',
  favorites:'<svg viewBox="0 0 24 24" class="ic" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20s-7-4.4-8.6-8.6C2.3 8.4 4.2 5 7.4 5c2 0 3.3 1.1 4.6 2.8C13.3 6.1 14.6 5 16.6 5c3.2 0 5.1 3.4 4 6.4C19 15.6 12 20 12 20z"/></svg>'};
 function renderChrome(route){
   const t=T(),d=S.design;document.documentElement.lang=S.lang;document.title=t.brand1+' '+t.brand2;
-  const nav=[['#/',t.home,'home'],['#/chapters',t.chapters,'chapters'],['#/search',t.search,'search'],['#/healthy',t.healthy,'healthy'],['#/countries',t.countries,'countries'],['#/meals',t.meals,'meals'],['#/chefs',t.chefsShort,'chefs'],['#/fridge',t.fridgeShort,'fridge'],['#/favorites',t.favorites,'favorites']];
-  const soon=[['shopping',t.shopping],['seasonal',t.seasonal],['joe',t.joe]];
+  const nav=[['#/',t.home,'home'],['#/chapters',t.chapters,'chapters'],['#/search',t.search,'search'],['#/healthy',t.healthy,'healthy'],['#/countries',t.countries,'countries'],['#/meals',t.meals,'meals'],['#/seasonal',t.seasonal,'seasonal'],['#/chefs',t.chefsShort,'chefs'],['#/fridge',t.fridgeShort,'fridge'],['#/favorites',t.favorites,'favorites']];
+  const soon=[['shopping',t.shopping],['joe',t.joe]];
   const links=(icons)=>nav.map(n=>'<a href="'+n[0]+'" class="'+(route===n[2]?'on':'')+'"'+(icons?' title="'+esc(n[1])+'"':'')+'>'+(icons?'<span class="ni">'+NI[n[2]]+'</span>':'')+'<span class="nl">'+esc(n[1])+'</span></a>').join('');
   const soonL='<span class="soonwrap"><span class="soonlab">'+esc(t.more)+':</span>'+soon.map(s=>'<a href="#/soon/'+s[0]+'" class="soon">'+esc(s[1])+'</a>').join('')+'</span>';
   const tools='<div class="tools"><div class="lang" role="group" aria-label="Language"><button data-act="lang" data-l="sk" class="'+(S.lang==='sk'?'on':'')+'">SK</button><button data-act="lang" data-l="en" class="'+(S.lang==='en'?'on':'')+'">EN</button></div>'+
@@ -261,6 +262,37 @@ function vMeals(k,params){const t=T();const sets=S.meta.meals||[];const byId=id=
   return '<section class="sec"><div class="wrap"><div class="sh2"><h1>'+esc(t.mealsH)+'</h1><span>'+sets.length+'</span></div><p class="lead">'+esc(t.mealsP)+'</p>'+
    '<div class="frow mfil"><span class="cs"><a class="chip'+(m?'':' on')+'" href="#/meals">'+esc(t.allMeals)+'</a>'+MEALS.map(x=>'<a class="chip'+(m===x?' on':'')+'" href="#/meals?m='+x+'">'+esc(t.mealT[x])+'</a>').join('')+'</span></div>'+
    MEALS.filter(x=>!m||x===m).map(x=>{const l=sets.filter(y=>y.meal===x);return l.length?'<div class="grp"><h3>'+esc(t.mealT[x])+'</h3></div><div class="msets">'+l.map(tile).join('')+'</div>':'';}).join('')+'</div></section>';}
+// ---------------- seasonal (Slovakia) ----------------
+// Produce months: official "Sezónny kalendár" (opotravinach.sk); holidays: zákon 241/1993 Z. z.; recipe matches: my picks.
+let szP=null;
+function loadSeason(){return szP||(szP=fetch('data/seasonal.json').then(r=>{if(!r.ok)throw new Error('seasonal '+r.status);return r.json();}).then(d=>(S.sz=d)));}
+function easter(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),mo=Math.floor((h+l-7*m+114)/31),da=((h+l-7*m+114)%31)+1;return new Date(y,mo-1,da);}
+function holDate(h,y){if(h.d.startsWith('easter')){const e=easter(y);e.setDate(e.getDate()+parseInt(h.d.slice(6),10));return e;}const [m,d]=h.d.split('-').map(Number);return new Date(y,m-1,d);}
+function szPicks(m){const Z=S.sz;const sc={};
+  Z.produce.filter(p=>p.m.includes(m)&&p.m.length<=9).forEach(p=>{const w=1+(12-p.m.length)/12;p.title.forEach(id=>sc[id]=(sc[id]||0)+3*w);p.ing.forEach(id=>sc[id]=(sc[id]||0)+w);});
+  return Object.keys(sc).map(id=>({r:S.idx.find(x=>x.id===id),s:sc[id]})).filter(o=>o.r).sort((a,b)=>b.s-a.s||a.r.id.localeCompare(b.r.id)).slice(0,12).map(o=>o.r);}
+function vSeasonal(params){const t=T(),Z=S.sz;const now=new Date();const cm=now.getMonth()+1;const y=now.getFullYear();
+  let m=parseInt(params.get('m'),10);if(!(m>=1&&m<=12))m=cm;
+  const pk=params.get('p');const prod=pk&&Z.produce.find(p=>p.k===pk);
+  const pn=p=>S.lang==='sk'?p.sk:p.en;
+  const rom=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+  const mon='<div class="frow szmon"><span class="cs">'+t.months.map((n,i)=>'<a class="chip'+(i+1===m?' on':'')+'" href="#/seasonal?m='+(i+1)+'">'+esc(n)+(i+1===cm?' <span class="sznow">· '+esc(t.szNow)+'</span>':'')+'</a>').join('')+'</span></div>';
+  const months=p=>p.m.length===12?t.szAllYear:p.m.map(x=>rom[x-1]).join(' ');
+  const pchips=g=>{const l=Z.produce.filter(p=>p.g===g&&p.m.includes(m)).sort((a,b)=>a.m.length-b.m.length||pn(a).localeCompare(pn(b),S.lang));
+    return '<div class="szg"><h3>'+esc(g==='veg'?t.szVeg:t.szFruit)+' <span>'+l.length+'</span></h3><div class="chips">'+l.map(p=>{const n=p.title.length+p.ing.length;return '<a class="chip szc'+(prod&&prod.k===p.k?' on':'')+'" href="#/seasonal?m='+m+'&p='+encodeURIComponent(p.k)+'" title="'+esc(months(p))+'">'+esc(pn(p))+' <span class="szn">'+(n||'–')+'</span></a>';}).join('')+'</div></div>';};
+  let body;
+  if(prod){const l=[...prod.title,...prod.ing].map(id=>S.idx.find(x=>x.id===id)).filter(Boolean);
+    body='<div class="sh2"><h2>'+esc(t.szWith)+': '+esc(pn(prod))+'</h2><span>'+esc(months(prod))+'</span></div><p class="nutnote"><span class="tag own">'+esc(t.mealPick)+'</span> '+esc(t.mealPickP)+' · <a href="#/seasonal?m='+m+'">← '+esc(t.szAll)+'</a></p>'+(l.length?'<div class="rgrid">'+l.map(card).join('')+'</div>':'<p class="empty">'+esc(t.szNone)+'</p>');}
+  else{const l=szPicks(m);body='<div class="sh2"><h2>'+esc(t.szPicks)+'</h2><span>'+esc(t.months[m-1])+'</span></div><p class="nutnote"><span class="tag own">'+esc(t.mealPick)+'</span> '+esc(t.szPicksP)+'</p><div class="rgrid">'+l.map(card).join('')+'</div>';}
+  const hy=m<cm?y+1:y;
+  const hols=Z.holidays.map(h=>({h,d:holDate(h,hy)})).filter(o=>o.d.getMonth()+1===m).sort((a,b)=>a.d-b.d);
+  const hol='<div class="sh2"><h2>'+esc(t.szHol)+'</h2><span>'+hy+'</span></div>'+(hols.length?'<div class="szhols">'+hols.map(({h,d})=>{const st=h.law.startsWith('§ 1');const off=h.off&&!(h.noOff||[]).includes(hy);
+      const offT=off?t.szOff:(h.off?t.szNotOffY(hy):t.szNotOff);
+      return '<div class="szhol"><div class="szdate"><b>'+d.getDate()+'.</b><span>'+esc(t.monthsGen[d.getMonth()])+'</span></div><div class="szhb"><span class="kicker">'+esc(st?t.szState:t.szRest)+' · '+esc(offT)+'</span><h3>'+esc(S.lang==='sk'?cap(h.sk):h.en)+'</h3>'+(S.lang==='en'?'<p class="szsk">'+esc(cap(h.sk))+'</p>':'')+'<p class="src">'+esc(h.law)+' · '+linkify(Z.src.law.url)+'</p>'+
+       '<div class="szhp"><span class="tag own">'+esc(t.mealPick)+'</span> '+esc(t.szHolP)+'</div><div class="rgrid szrg">'+h.p.map(id=>S.idx.find(x=>x.id===id)).filter(Boolean).map(card).join('')+'</div></div></div>';}).join('')+'</div>':'<p class="empty">'+esc(t.szNoHol)+'</p>');
+  const src='<div class="szsrc"><h3>'+esc(t.szSrc)+'</h3><ul>'+['veg','fruit','site','law'].map(k=>'<li>'+esc(S.lang==='sk'?Z.src[k].sk:Z.src[k].en)+' — '+linkify(Z.src[k].url)+'</li>').join('')+'</ul><p>'+esc(t.szSrcNote)+'</p></div>';
+  return '<section class="sec"><div class="wrap"><div class="sh2"><h1>'+esc(t.seasonalH)+' · '+esc(t.months[m-1])+'</h1><span>'+(S.lang==='sk'?'Slovensko':'Slovakia')+'</span></div><p class="lead">'+esc(t.seasonalP)+'</p>'+mon+
+   '<div class="sh2"><h2>'+esc(t.szIn)+'</h2><span>'+esc(t.months[m-1])+'</span></div><div class="szprod">'+pchips('veg')+pchips('fruit')+'</div>'+body+hol+src+'</div></section>';}
 function vChefs(){const t=T();return '<section class="sec"><div class="wrap"><div class="sh2"><h1>'+esc(t.chefs)+'</h1></div><p class="lead">'+esc(t.chefsP)+'</p><div class="chefs">'+S.meta.chefs.map(c=>{const r=S.idx.find(x=>x.id===c.open);return '<div class="chef">'+(r&&r.img?'<a href="#/r/'+r.id+'"><img loading="lazy" src="'+r.img+'" alt=""></a>':'')+'<div class="chefb"><span class="kicker">'+esc(c.chef)+'</span><h3>'+esc(S.lang==='sk'?c.sk:c.en)+'</h3><p>'+esc(S.lang==='sk'?c.d_sk:c.d_en)+'</p>'+(c.url?'<p class="src">'+esc(t.source)+': '+linkify(c.url)+'</p>':'')+(r?'<a class="btn" href="#/r/'+r.id+'">'+esc(t.viewRecipe)+'</a>':'')+'</div></div>';}).join('')+'</div></div></section>';}
 function vFav(){const t=T();
   const rows=(store)=>Object.entries(store).sort((a,b)=>(b[1].t||0)-(a[1].t||0)).map(([k,v])=>{const id=k.split('|')[0];const r=S.idx.find(x=>x.id===id);return r?{r,k,v}:null;}).filter(Boolean);
@@ -481,6 +513,7 @@ async function route(){
     else if(name==='healthy')render=vHealthy;
     else if(name==='countries')render=()=>vCountries(parts[1]||'');
     else if(name==='meals')render=()=>vMeals(parts[1]||'',params);
+    else if(name==='seasonal'){await loadSeason();if(my!==navSeq)return false;render=()=>vSeasonal(params);}
     else if(name==='chefs')render=vChefs;
     else if(name==='soon')render=()=>vSoon(parts[1]);
     else if(name==='favorites')render=vFav;
