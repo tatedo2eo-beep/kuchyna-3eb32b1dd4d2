@@ -218,10 +218,15 @@ function fq(v,unit){
   const q=Math.round(v*4)/4;if(q===0)return sk?String(Math.round(v*100)/100).replace('.',','):String(Math.round(v*100)/100);
   const w=Math.floor(q),f=q-w;const fs={0.25:'¼',0.5:'½',0.75:'¾'}[f]||'';return (w?String(w):'')+(w&&fs&&sk?' ':'')+fs||'0';
 }
+// per-piece amounts ("4 slices (28 g each)", "2 plechovky (po 795 g)", "225 g each") stay fixed; only the count scales
+function perPiece(s){const R=[];let m;const re=/\([^()]*\)/g;
+  while(m=re.exec(s))if(/\beach\b|(^|[\s(;])(asi |približne |cca )?po\s+\d|\bkažd/i.test(m[0]))R.push([m.index,m.index+m[0].length]);return R;}
 function scaleText(s,k,lead){
-  if(k===1)return s;let first=true;
+  if(k===1)return s;let first=true;const PP=perPiece(s);
   return s.replace(QRX,(all,pre,a,rng,b,sp,unit,off)=>{
     const isLead=first&&off===0&&lead;first=false;
+    const at=off+pre.length;
+    if(!isLead&&(PP.some(([x,y])=>at>x&&at<y)||/(^|\s)po\s$/i.test(s.slice(Math.max(0,at-4),at))||/^\s?(g|ml|mg|kg)\s+each\b/i.test(s.slice(at+all.length-pre.length))))return all;
     const un=(unit||'').replace(/[),.;:]+$/,'');
     if(/^(cm|mm|°|%|min|h|hod|x|×|sec|s\b|sekúnd|minút|day|dní|hours?)/i.test(un))return all;
     const unitOk=/^(g|ml|mg|tsp|tbsp|pl|čl|kl|g\)|ml\))$/i.test(un)||/^(g|ml|tsp|tbsp|PL|ČL)\b/.test(un);
