@@ -88,10 +88,10 @@ function renderChrome(route){
     const groups=[[t.savory,c=>c.num<24],[t.sweet,c=>c.num>=24&&c.num<34],[t.drinks,c=>c.num===34]];
     const cur=location.hash.split('?')[0];
     const chs=S.meta?'<div class="bchp">'+groups.map(g=>'<div class="bchg"><h4>'+esc(g[0])+'</h4>'+S.meta.chapters.filter(g[1]).map(c=>'<a href="#/c/'+c.stem+'" class="'+(cur==='#/c/'+c.stem?'on':'')+'"><span class="cn">'+String(c.num).padStart(2,'0')+'</span><span class="ct">'+esc(S.lang==='sk'?c.sk:c.en)+'</span><b>'+c.n+'</b></a>').join('')+'</div>').join('')+'<a class="ball" href="#/chapters">'+esc(t.allChapters)+' →</a></div>':'';
-    const navB=nav.map(n=>n[2]==='chapters'?'<details class="bdd bch"><summary class="'+(route==='chapters'?'on':'')+'">'+esc(n[1])+'<span class="car">▾</span></summary>'+chs+'</details>':'<a href="'+n[0]+'" class="'+(route===n[2]?'on':'')+'">'+esc(n[1])+'</a>').join('');
+    const navB=nav.map(n=>n[2]==='chapters'?'<a href="#/chapters" class="bchl '+(route==='chapters'?'on':'')+'">'+esc(n[1])+'</a>':'<a href="'+n[0]+'" class="'+(route===n[2]?'on':'')+'">'+esc(n[1])+'</a>').join('');
     const menuB='<details class="bdd bmenu"><summary>'+esc(t.contents)+'<span class="car">▾</span></summary><div class="bmp"><nav class="bmnav">'+nav.map(n=>'<a href="'+n[0]+'" class="'+(route===n[2]?'on':'')+'">'+esc(n[1])+'</a>').join('')+'</nav>'+chs+'</div></details>';
     top='<div class="btop"><div class="wrap btopin"><a class="bbrand" href="#/">'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></a><nav class="bnav">'+navB+'</nav>'+menuB+tools+'</div></div>';
-    toc='';
+    toc=S.meta?'<div class="toch">'+esc(t.contents)+'</div>'+groups.map(g=>'<div class="tocg">'+esc(g[0])+'</div>'+S.meta.chapters.filter(g[1]).map(c=>'<a href="#/c/'+c.stem+'" class="tc'+(cur==='#/c/'+c.stem?' on':'')+'"><span>'+esc(S.lang==='sk'?c.sk:c.en)+'</span><em></em><b>'+c.n+'</b></a>').join('')).join('')+'<a class="tc tcall" href="#/chapters"><span>'+esc(t.allChapters)+' →</span></a>':'';
   }else if(d==='c'){
     top='<div class="cbar"><div class="wrap cbarin">'+brand+'<nav class="cnotes">'+links(false)+'</nav></div><div class="wrap cbar2">'+qs+tools+soonL+'</div></div>';
   }else if(d==='d'){
@@ -102,9 +102,12 @@ function renderChrome(route){
   }else{ // e · magazine
     top='<div class="mast"><div class="wrap mastin"><span class="dateline">'+esc(t.issue)+' · '+esc(t.recipes(nRec))+'</span>'+brand+tools+'</div></div><nav class="mainnav"><div class="wrap navin">'+links(false)+'<span class="navq">'+qs+'</span></div></nav>';
   }
-  $('#top').innerHTML=top;$('#toc').innerHTML=toc;
+  $('#top').innerHTML=top;$('#toc').innerHTML=toc;bFit();
   $('#foot').innerHTML='<div class="wrap footin"><span class="fb">'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></span>'+soonL+'<span>'+(S.idx?esc(t.recipes(S.idx.length))+' · '+S.meta.chapters.length+' '+esc(t.chapters.toLowerCase()):'')+'</span></div>';
 }
+// design B: the contents sidebar is sticky only when it fits the viewport; otherwise it scrolls with the page
+function bFit(){const el=$('#toc');if(!el)return;const l=el.lastElementChild;const need=l?l.getBoundingClientRect().bottom-el.getBoundingClientRect().top+40:0;el.classList.toggle('fits',S.design==='b'&&need<=innerHeight);}
+window.addEventListener('resize',bFit);
 // design B: close the top-bar dropdowns on outside click / Escape
 document.addEventListener('click',e=>{document.querySelectorAll('details.bdd[open]').forEach(d=>{if(!d.contains(e.target))d.open=false;});});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('details.bdd[open]').forEach(d=>d.open=false);});
