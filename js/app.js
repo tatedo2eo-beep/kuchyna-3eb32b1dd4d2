@@ -241,12 +241,12 @@ function vRecipe(r){
   const nut=L(r.nut);
   h+='<section class="wrap alstrip"><span class="alh">'+esc(t.allergens)+'</span><div class="algrid">'+Object.entries(t.al).map(([a,v])=>'<span class="al'+(r.al.includes(a)?' on':'')+'">'+esc(v)+'</span>').join('')+'</div>'+(nut?'':'<span class="alh">—</span>')+'</section>';
   // body
-  h+='<section class="wrap rbody"><div class="col-ing"><h2>'+esc(t.ingredients)+'</h2><p class="unit">'+esc(ver==='tami'?t.tamiV:t.origV)+(k!==1?' · '+esc(t.scaled):'')+'</p>'+tree(ingN,{scale:k,cls:'ing'})+
+  h+='<section class="wrap rbody"><div class="col-ing"><h2>'+esc(t.ingredients)+'</h2>'+origNote+'<p class="unit">'+esc(showT?t.tamiV:t.origV)+(k!==1?' · '+esc(t.scaled):'')+'</p>'+tree(ingN,{scale:k,cls:'ing'})+
    (chg&&chg.length?'<div class="chgbox"><h4>'+esc(t.changes)+'</h4>'+tree(chg,{tag:true})+'</div>':'')+'</div>'+
    '<div class="col-meth"><h2>'+esc(t.method)+'</h2>'+tmv+methNote+tree(methN)+
    (extra.length&&showT?'<div class="extra"><h3 class="h4s">'+esc(t.moreTami)+'</h3>'+extra.map(f=>'<div class="xf"><h4>'+linkify(labelClean(f.k))+'</h4>'+(f.k!==labelClean(f.k)?'<p class="tsrc">'+linkify(f.k.slice(labelClean(f.k).length).replace(/^\s*\(|\)$/g,''))+'</p>':'')+(f.v?'<p>'+linkify(f.v)+'</p>':'')+tree(f.c,{tag:true})+'</div>').join('')+'</div>':'')+
    '</div><aside class="side">'+catCard(r)+
-   ((cafF||sug)?'<div class="infobox"><h4>'+esc(t.caffeine)+' · '+esc(t.sugarShort)+'</h4>'+(cafF?'<div class="caf"><b>'+esc(t.caffeine)+'</b>'+(cafF.v?'<p>'+linkify(cafF.v)+'</p>':'')+tree(cafF.c)+'</div>':'')+sugarBox(sug)+'</div>':'')+
+   ((cafF||sug)?'<div class="infobox"><h4>'+(cafF?esc(t.caffeine)+(sug?' · ':''):'')+(sug?esc(t.sugarShort):'')+'</h4>'+(cafF?'<div class="caf"><b>'+esc(t.caffeine)+'</b>'+(cafF.v?'<p>'+linkify(cafF.v)+'</p>':'')+tree(cafF.c)+'</div>':'')+sugarBox(sug)+'</div>':'')+
    (L(r.equip)?'<h4>'+esc(t.equipment)+'</h4>'+fieldBlock(L(r.equip),'s'):'')+(L(r.store)?'<h4>'+esc(t.storage)+'</h4>'+fieldBlock(L(r.store),'s'):'')+
    otherM.map(f=>'<h4>'+esc(f.k)+'</h4>'+fieldBlock(f,'s')).join('')+'</aside></section>';
   // flavors
