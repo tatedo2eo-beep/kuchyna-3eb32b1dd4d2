@@ -83,7 +83,7 @@
 .esearch{padding:60px 0 34px;text-align:center}
 .esearch h1{font-size:92px;font-style:italic;font-weight:400;margin-top:6px}
 .esearch .sbox{max-width:700px;margin:22px auto 0;border:0;border-bottom:2px solid var(--text);background:none}
-[data-design=e] .fbar .filters{margin:0}
+[data-design=e] .fbar .filters{margin:0 auto}[data-design=e] .fbar .frow{justify-content:center}
 
 /* =====================================================================
    B · COOKBOOK — contents sidebar on the left, pages as an open book,
