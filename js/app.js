@@ -118,62 +118,63 @@ function card(r){
   return '<a class="rc" href="#/r/'+r.id+'"><span class="rimg">'+(ck?'<span class="ribbon">'+esc(t.cookedRibbon)+'</span>':'')+(fv?'<span class="favdot" title="'+esc(t.favorites)+'">'+HEART+'</span>':'')+(r.img?'<img loading="lazy" src="'+r.img+'" alt="'+esc(L(r.t))+'">':'')+'</span><span class="rcb"><span class="no">'+esc(chName(r.ch))+' · '+esc(lvlName(r.lvl))+'</span><h3>'+esc(L(r.t))+'</h3><span class="meta">'+(r.total?ICON.clock+' '+fmtMin(r.total):'')+(r.kcal?' · '+r.kcal+' kcal':'')+'</span><span class="al">'+esc(al)+'</span><span class="bdgs">'+badges+'</span></span></a>';
 }
 function fmtMin(m){if(m<90)return m+' min';const d=Math.floor(m/1440),h=Math.floor((m%1440)/60),mm=m%60;return (d?d+(S.lang==='sk'?' d ':' d '):'')+(h?h+' h':'')+(mm?' '+mm+' min':'');}
+// per-design featured-image picks (meta.picks, from design_picks.py): no photo shared between designs or slots
+const PK=()=>(S.meta.picks||{})[S.design]||{home:{},covers:{},meals:{}};
+const coverOf=c=>{const p=PK().covers[c.stem];return p?p.img:'';};
 const grid=list=>'<div class="rgrid">'+list.map(card).join('')+'</div>';
 
 // ---------------- views ----------------
 function vHome(){
   const t=T(),M=S.meta,d=S.design;
-  const pick=['01-fries-potatoes/hasselback-advanced','24-cookies-bars-brownies/brownie-fudgy-or-cakey-brownies','22-breakfast/pancakes-american-basic','19-appetizers-dips/hummus-basic','02-burgers/smash-burger-basic','14-salads/greek-basic','07-pasta/gnocchi-basic','13-soups/minestrone-basic'];
-  let feat=pick.map(id=>S.idx.find(r=>r.id===id)).filter(Boolean);
-  if(feat.length<8)feat=feat.concat(S.idx.filter(r=>r.img&&!feat.includes(r)).slice(0,8-feat.length));
-  const hero=feat[0];const abs=u=>new URL(u,location.href).href;
   const byId=id=>S.idx.find(r=>r.id===id);
+  const P0=PK().home,pr=x=>{const r=x&&byId(x.id);return r?Object.assign({},r,{img:x.img}):null;};
+  const hero=pr(P0.hero),featL=(P0.feat||[]).map(pr).filter(Boolean);const abs=u=>new URL(u,location.href).href;
   const nRec=S.idx.length,nCh=M.chapters.length;
   const grpDef=[['savory',t.savory,c=>c.num<24,'01-fries-potatoes/hasselback-advanced'],['sweet',t.sweet,c=>c.num>=24&&c.num<34,'24-cookies-bars-brownies/brownie-fudgy-or-cakey-brownies'],['drinks',t.drinks,c=>c.num===34,'34-drinks/lemonade-basic']];
-  const grpInfo=g=>{const cs=M.chapters.filter(g[2]);const n=cs.reduce((a,c)=>a+c.n,0);const r=byId(g[3]);return {k:g[0],name:g[1],cs:cs.length,n,img:r?r.img:(cs[0]&&cs[0].cover),f:g[2]};};
+  const grpInfo=g=>{const cs=M.chapters.filter(g[2]);const n=cs.reduce((a,c)=>a+c.n,0);const p=P0.grp&&P0.grp[g[0]];return {k:g[0],name:g[1],cs:cs.length,n,img:p?p.img:'',f:g[2]};};
   const G=grpDef.map(grpInfo);
   const chW=n=>S.lang==='sk'?(n==1?'kapitola':n<5?'kapitoly':'kapitol'):(n==1?'chapter':'chapters');
   // no cats on the home screen (Joe, 16 Oct): dish pictures only
-  const dishTile=(cls,r)=>r?'<a class="'+cls+'" href="#/r/'+r.id+'"><img src="'+r.img+'" alt=""><span class="ctb"><span class="pl">'+esc(t.featured)+'</span><b>'+esc(L(r.t))+'</b><em>'+esc(chName(r.ch))+'</em></span></a>':'';
+  const dishTile=(cls,r)=>r?'<a data-slot="hero" class="'+cls+'" href="#/r/'+r.id+'"><img src="'+r.img+'" alt=""><span class="ctb"><span class="pl">'+esc(t.featured)+'</span><b>'+esc(L(r.t))+'</b><em>'+esc(chName(r.ch))+'</em></span></a>':'';
   const sform=(cls)=>'<form class="sbox '+(cls||'')+'" data-act="qs">'+ICON.search+'<input name="q" type="search" placeholder="'+esc(t.searchPh)+'"><button class="go">'+esc(t.go)+'</button></form>';
   const quick='<div class="chips qchips"><a class="chip" href="#/search?time=30">'+esc(t.upTo(30))+'</a><a class="chip" href="#/search?af=1">'+esc(t.af)+'</a><a class="chip" href="#/search?no=gluten">'+esc(t.without)+': '+esc(t.al.gluten)+'</a><a class="chip" href="#/search?no=milk">'+esc(t.without)+': '+esc(t.al.milk)+'</a><a class="chip" href="#/search?no=eggs">'+esc(t.without)+': '+esc(t.al.eggs)+'</a><a class="chip" href="#/search?lvl=Basic">'+esc(t.levels.Basic)+'</a><a class="chip" href="#/search?lvl=Advanced">'+esc(t.levels.Advanced)+'</a></div>';
   const sub=esc(t.recipes(nRec))+' · '+nCh+' '+esc(chW(nCh));
-  const featSec=(cls)=>'<section class="sec"><div class="wrap"><div class="sh2"><h2>'+esc(t.featured)+'</h2></div>'+grid(feat.slice(1,7),cls)+'</div></section>';
+  const featSec=(cls)=>'<section class="sec" data-slot="feat"><div class="wrap"><div class="sh2"><h2>'+esc(t.featured)+'</h2></div>'+grid(featL,cls)+'</div></section>';
   if(d==='b'){
     const toc=G.map(g=>'<div class="ctg"><h3>'+esc(g.name)+'</h3>'+M.chapters.filter(g.f).map(c=>'<a class="ctl" href="#/c/'+c.stem+'"><span class="cn">'+String(c.num).padStart(2,'0')+'</span><span class="ct">'+esc(S.lang==='sk'?c.sk:c.en)+'</span><em></em><b>'+c.n+'</b></a>').join('')+'</div>').join('');
     return '<section class="book wrap"><div class="spread home"><div class="page left title"><span class="kicker">'+esc(t.heroK)+' · SK / EN</span><h1>'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></h1><div class="orn">❦</div><p>'+sub+'. '+esc(t.heroP)+'</p>'+sform()+quick+'<span class="folio">i</span></div>'+
      '<div class="page right"><div class="runhead"><span>'+esc(t.contents)+'</span><span>'+sub+'</span></div><h2 class="pageh">'+esc(t.contents)+'</h2>'+toc+'<span class="folio">ii</span></div></div></section>'+featSec();
   }
   if(d==='c'){
-    const tiles=['01-fries-potatoes/french-fries-double-fried-basic','02-burgers/smash-burger-basic','22-breakfast/pancakes-american-basic','04-meat/pan-seared-steak-basic'].map(byId).filter(Boolean);
+    const tiles=(P0.cpin||[]).map(pr).filter(Boolean);
     return '<section class="chero wrap"><div class="cnote big"><h1>'+esc(t.heroH).replace(/(\S+)\?$/,'<span>$1</span>?')+'</h1><p>'+sub+'</p>'+sform('big')+quick+'</div>'+dishTile('catcard dishcard',hero)+'</section>'+
-      '<section class="wrap crow"><a class="ccount" href="#/chapters"><b>'+esc(t.recipes(nRec))+'</b><span>'+esc(t.heroP)+'</span><em>'+esc(t.chapters)+' →</em></a>'+tiles.map(r=>'<a class="cpin" href="#/r/'+r.id+'"><img src="'+r.img+'" alt=""><span>'+esc(chName(r.ch))+'</span><b>'+esc(L(r.t))+'</b></a>').join('')+'</section>'+chapterGroups()+featSec();
+      '<section class="wrap crow"><a class="ccount" href="#/chapters"><b>'+esc(t.recipes(nRec))+'</b><span>'+esc(t.heroP)+'</span><em>'+esc(t.chapters)+' →</em></a>'+tiles.map((r,i)=>'<a class="cpin" data-slot="cpin'+i+'" href="#/r/'+r.id+'"><img src="'+r.img+'" alt=""><span>'+esc(chName(r.ch))+'</span><b>'+esc(L(r.t))+'</b></a>').join('')+'</section>'+chapterGroups()+featSec();
   }
   if(d==='d'){
-    return '<section class="dhero wrap">'+(()=>{const r=byId('22-breakfast/pancakes-american-basic')||hero;return '<a class="dcat dpic" href="#/r/'+r.id+'" aria-label="'+esc(L(r.t))+'" style="--cat-img:url(&quot;'+abs(r.img)+'&quot;)"></a>';})()+'<div class="dbubble"><span class="kicker">'+esc(t.heroK)+'</span><h1>'+esc(t.heroH)+'</h1><p>'+sub+'</p>'+sform()+'</div></section>'+
-      '<section class="wrap dgrps">'+G.map(g=>'<a href="#/chapters?g='+g.k+'"><span class="arch"><img src="'+g.img+'" alt=""></span><b>'+esc(g.name)+'</b><span>'+g.cs+' '+esc(chW(g.cs))+' · '+esc(t.recipes(g.n))+'</span></a>').join('')+'</section>'+
+    return '<section class="dhero wrap">'+(()=>{const r=hero;return r?'<a class="dcat dpic" data-slot="hero" href="#/r/'+r.id+'" aria-label="'+esc(L(r.t))+'" style="--cat-img:url(&quot;'+abs(r.img)+'&quot;)"></a>':'';})()+'<div class="dbubble"><span class="kicker">'+esc(t.heroK)+'</span><h1>'+esc(t.heroH)+'</h1><p>'+sub+'</p>'+sform()+'</div></section>'+
+      '<section class="wrap dgrps">'+G.map(g=>'<a href="#/chapters?g='+g.k+'" data-slot="grp:'+g.k+'"><span class="arch"><img src="'+g.img+'" alt=""></span><b>'+esc(g.name)+'</b><span>'+g.cs+' '+esc(chW(g.cs))+' · '+esc(t.recipes(g.n))+'</span></a>').join('')+'</section>'+
       '<section class="wrap dquick">'+quick+'</section>'+featSec()+chapterGroups();
   }
   if(d==='g'){
-    return '<section class="gbento wrap"><div class="gbig" style="--hero-img:url(&quot;'+abs(byId('22-breakfast/pancakes-american-basic')?byId('22-breakfast/pancakes-american-basic').img:hero.img)+'&quot;)"><div class="glass"><span class="pill">'+esc(S.lang==='sk'?'Ahoj, Tami':'Hi, Tami')+'</span><h1>'+esc(t.heroH)+'</h1><p>'+sub+'</p>'+sform()+'</div></div>'+
+    return '<section class="gbento wrap"><div class="gbig" data-slot="hero" style="--hero-img:url(&quot;'+(hero?abs(hero.img):'')+'&quot;)"><div class="glass"><span class="pill">'+esc(S.lang==='sk'?'Ahoj, Tami':'Hi, Tami')+'</span><h1>'+esc(t.heroH)+'</h1><p>'+sub+'</p>'+sform()+'</div></div>'+
       '<div class="gstat"><span class="kicker">'+esc(t.brand1)+'</span><b>'+nRec+'</b><span>'+esc(t.heroP)+'</span></div>'+
-      G.map(g=>'<a class="gtile" href="#/chapters?g='+g.k+'"><img src="'+g.img+'" alt=""><span class="glab"><b>'+esc(g.name)+'</b><span>'+g.cs+' '+esc(chW(g.cs))+' · '+esc(t.recipes(g.n))+'</span><i>›</i></span></a>').join('')+
+      G.map(g=>'<a class="gtile" data-slot="grp:'+g.k+'" href="#/chapters?g='+g.k+'"><img src="'+g.img+'" alt=""><span class="glab"><b>'+esc(g.name)+'</b><span>'+g.cs+' '+esc(chW(g.cs))+' · '+esc(t.recipes(g.n))+'</span><i>›</i></span></a>').join('')+
       '<a class="gsm gseas" href="#/seasonal"><span class="kicker">'+esc(t.seasonal)+'</span><b>'+esc(t.months[new Date().getMonth()])+'</b><span>'+esc(t.szIn)+' · '+(S.lang==='sk'?'Slovensko':'Slovakia')+'</span></a><a class="gsm" href="#/healthy"><b>'+esc(t.healthy)+'</b><span>'+esc(t.sugarShort)+' · '+esc(t.caf)+'</span></a><a class="gsm" href="#/countries"><b>'+esc(t.countries)+'</b><span>'+esc(t.countriesP)+'</span></a></section>'+featSec()+chapterGroups();
   }
   // E · magazine
-  const issue=feat.slice(1,6);
-  return '<section class="ehero" style="--hero-img:url(&quot;'+abs(hero.img)+'&quot;)"><div class="eshade"></div><div class="wrap ehin"><span class="kicker">'+esc(t.heroK)+'</span><h1>'+esc(t.heroH)+'</h1><p>'+esc(t.heroP)+'</p>'+sform('big')+
+  const issue=(P0.issue||[]).map(pr).filter(Boolean);
+  return '<section class="ehero" data-slot="hero" style="--hero-img:url(&quot;'+(hero?abs(hero.img):'')+'&quot;)"><div class="eshade"></div><div class="wrap ehin"><span class="kicker">'+esc(t.heroK)+'</span><h1>'+esc(t.heroH)+'</h1><p>'+esc(t.heroP)+'</p>'+sform('big')+
     '<a class="ecover" href="#/r/'+hero.id+'"><span class="kicker">'+esc(t.featured)+'</span><b>'+esc(L(hero.t))+'</b><span>'+esc(chName(hero.ch))+' →</span></a></div></section>'+
-    '<section class="wrap eissue"><h2 class="ekick">'+esc(t.issue)+'</h2><ol>'+issue.map((r,i)=>'<li><a href="#/r/'+r.id+'"><span class="enum">'+String(i+1).padStart(2,'0')+'</span>'+(r.img?'<img loading="lazy" src="'+r.img+'" alt="">':'')+'<span class="eis"><small>'+esc(chName(r.ch))+'</small><b>'+esc(L(r.t))+'</b></span></a></li>').join('')+'</ol></section>'+
+    '<section class="wrap eissue"><h2 class="ekick">'+esc(t.issue)+'</h2><ol>'+issue.map((r,i)=>'<li><a data-slot="issue'+i+'" href="#/r/'+r.id+'"><span class="enum">'+String(i+1).padStart(2,'0')+'</span>'+(r.img?'<img loading="lazy" src="'+r.img+'" alt="">':'')+'<span class="eis"><small>'+esc(chName(r.ch))+'</small><b>'+esc(L(r.t))+'</b></span></a></li>').join('')+'</ol></section>'+
     '<section class="wrap eidx"><h2 class="ekick">'+esc(t.chapters)+' · '+sub+'</h2><div class="ecols">'+G.map(g=>'<div><h3>'+esc(g.name)+'</h3>'+M.chapters.filter(g.f).map(c=>'<a href="#/c/'+c.stem+'"><span>'+String(c.num).padStart(2,'0')+'</span>'+esc(S.lang==='sk'?c.sk:c.en)+'<em>'+c.n+'</em></a>').join('')+'</div>').join('')+'</div></section>'+
     '<section class="sec quick"><div class="wrap"><div class="chips">'+Object.entries(t.types).map(([k,v])=>'<a class="chip" href="#/search?type='+k+'">'+esc(v)+'</a>').join('')+'<a class="chip h" href="#/healthy">'+esc(t.healthy)+'</a><a class="chip" href="#/search?af=1">'+esc(t.af)+'</a></div></div></section>'+featSec();
 }
 function chapterGroups(only){
   const t=T(),M=S.meta;const groups=[['savory',t.savory,c=>c.num<24],['sweet',t.sweet,c=>c.num>=24&&c.num<34],['drinks',t.drinks,c=>c.num===34]].filter(g=>!only||g[0]===only);
   if(S.design==='b')return '<section class="book wrap"><div class="spread single"><div class="page"><div class="runhead"><span>'+esc(t.contents)+'</span><span>'+esc(t.recipes(S.idx.length))+'</span></div><h1 class="pageh">'+esc(t.chapters)+'</h1>'+
-    groups.map(g=>'<div class="ctg"><h3>'+esc(g[1])+'</h3>'+M.chapters.filter(g[2]).map(c=>'<a class="ctl" href="#/c/'+c.stem+'"><span class="cn">'+String(c.num).padStart(2,'0')+'</span>'+(c.cover?'<img loading="lazy" src="'+c.cover+'" alt="">':'')+'<span class="ct">'+esc(S.lang==='sk'?c.sk:c.en)+'</span><em></em><b>'+c.n+'</b></a>').join('')+'</div>').join('')+'</div></div></section>';
+    groups.map(g=>'<div class="ctg"><h3>'+esc(g[1])+'</h3>'+M.chapters.filter(g[2]).map(c=>'<a class="ctl" data-slot="cover:'+c.stem+'" href="#/c/'+c.stem+'"><span class="cn">'+String(c.num).padStart(2,'0')+'</span>'+(coverOf(c)?'<img loading="lazy" src="'+coverOf(c)+'" alt="">':'')+'<span class="ct">'+esc(S.lang==='sk'?c.sk:c.en)+'</span><em></em><b>'+c.n+'</b></a>').join('')+'</div>').join('')+'</div></div></section>';
   return '<section class="sec chg"><div class="wrap"><div class="sh2"><h2>'+esc(t.chapters)+'</h2><span>'+esc(t.recipes(S.idx.length))+'</span></div>'+
-   groups.map(g=>'<div class="grp" id="g-'+g[0]+'"><h3>'+esc(g[1])+'</h3></div><div class="tgrid">'+M.chapters.filter(g[2]).map(c=>'<a class="tile" href="#/c/'+c.stem+'"><span class="ti">'+(c.cover?'<img loading="lazy" src="'+c.cover+'" alt="">':'')+'</span><span class="num">'+String(c.num).padStart(2,'0')+'</span><h4>'+esc(S.lang==='sk'?c.sk:c.en)+'</h4><span class="cnt">'+esc(t.recipes(c.n))+'</span></a>').join('')+'</div>').join('')+'</div></section>';
+   groups.map(g=>'<div class="grp" id="g-'+g[0]+'"><h3>'+esc(g[1])+'</h3></div><div class="tgrid">'+M.chapters.filter(g[2]).map(c=>'<a class="tile" data-slot="cover:'+c.stem+'" href="#/c/'+c.stem+'"><span class="ti">'+(coverOf(c)?'<img loading="lazy" src="'+coverOf(c)+'" alt="">':'')+'</span><span class="num">'+String(c.num).padStart(2,'0')+'</span><h4>'+esc(S.lang==='sk'?c.sk:c.en)+'</h4><span class="cnt">'+esc(t.recipes(c.n))+'</span></a>').join('')+'</div>').join('')+'</div></section>';
 }
 function vChapters(params){return chapterGroups(params&&params.get('g')||'');}
 function vChapter(stem,params){
@@ -189,13 +190,13 @@ function vChapter(stem,params){
   const chips='<span class="fl">'+esc(t.level)+'</span><a class="chip'+(!lv?' on':'')+'" href="'+u('lvl','')+'">'+esc(t.allLevels)+'</a>'+lvls.map(l=>'<a class="chip'+(lv===l?' on':'')+'" href="'+u('lvl',l)+'">'+esc(lvlName(l))+'</a>').join('')+
    '<span class="fl sp">'+esc(t.sort)+'</span>'+[['',t.sortDefault],['az',t.sortAz],['time',t.sortTime]].map(s=>'<a class="chip'+(so===s[0]?' on':'')+'" href="'+u('sort',s[0])+'">'+esc(s[1])+'</a>').join('')+'<span class="cnt">'+esc(t.recipes(list.length))+'</span>';
   const fbar='<div class="fbar"><div class="wrap fbin">'+chips+'</div></div>';
-  const cov=c.cover?'<img src="'+c.cover+'" alt="">':'';
+  const cv=coverOf(c);const cov=cv?'<img data-slot="cover:'+c.stem+'" src="'+cv+'" alt="">':'';
   if(d==='b')return '<section class="book wrap"><div class="spread"><div class="page left opener">'+crumbs+'<div class="bignum">'+num+'</div><h1>'+name+'</h1><div class="orn">❦</div><p class="dek">'+esc(t.recipes(c.n))+'</p>'+(cov?'<figure class="plate">'+cov+'</figure>':'')+'<span class="folio">'+num+'</span></div>'+
     '<div class="page right"><div class="runhead"><span>'+name+'</span><span>'+esc(t.contents)+'</span></div><div class="fbin pagef">'+chips+'</div>'+grid(list)+'</div></div></section>';
   if(d==='c')return '<section class="wrap chead"><div class="cnote">'+crumbs+'<h1>'+name+'</h1><p class="dek">'+esc(t.recipes(c.n))+'</p></div>'+(cov?'<figure class="polaroid tilt">'+cov+'<figcaption>'+num+'</figcaption></figure>':'')+'</section>'+fbar+'<section class="wrap">'+grid(list)+'</section>';
   if(d==='d')return '<section class="wrap dchap">'+(cov?'<span class="arch big">'+cov+'</span>':'')+'<div class="dribbon">'+crumbs+'<h1>'+name+'</h1><p class="dek">'+esc(t.recipes(c.n))+'</p></div></section>'+fbar+'<section class="wrap">'+grid(list)+'</section>';
   if(d==='g')return '<section class="wrap gchap"><div class="gt gimg">'+cov+'</div><div class="gt gtitle">'+crumbs+'<h1>'+name+'</h1></div><div class="gt gnum"><small>'+esc(t.chapter)+'</small><b>'+num+'</b></div><div class="gt gcount"><small>'+esc(t.results)+'</small><b>'+list.length+'</b></div><div class="gt gfil">'+chips+'</div></section><section class="wrap">'+grid(list)+'</section>';
-  return '<section class="echap" style="--hero-img:url(&quot;'+(c.cover?new URL(c.cover,location.href).href:'')+'&quot;)"><div class="eshade"></div><div class="wrap ehin">'+crumbs+'<div class="bignum">'+num+'</div><h1>'+name+'</h1><p class="dek">'+esc(t.recipes(c.n))+'</p></div></section>'+fbar+'<section class="wrap">'+grid(list)+'</section>';
+  return '<section class="echap" data-slot="cover:'+c.stem+'" style="--hero-img:url(&quot;'+(cv?new URL(cv,location.href).href:'')+'&quot;)"><div class="eshade"></div><div class="wrap ehin">'+crumbs+'<div class="bignum">'+num+'</div><h1>'+name+'</h1><p class="dek">'+esc(t.recipes(c.n))+'</p></div></section>'+fbar+'<section class="wrap">'+grid(list)+'</section>';
 }
 function vSearch(params){
   const t=T(),d=S.design,q=params.get('q')||'',ch=params.get('ch')||'',ty=params.get('type')||'',co=params.get('co')||'',lv=params.get('lvl')||'',tm=+params.get('time')||0,h=params.get('h')==='1',af=params.get('af')==='1',ns=params.get('ns')==='1';
@@ -254,7 +255,7 @@ function vMeals(k,params){const t=T();const sets=S.meta.meals||[];const byId=id=
        return '<div class="favitem mitem"><span class="mrole">'+esc(t.mealRole[i.role]||i.role)+'</span>'+card(r)+(why?'<div class="frmeta">'+why+'</div>':'')+'</div>';}).join('')+'</div></div></section>';}
   const m=MEALS.includes(params.get('m'))?params.get('m'):'';
   const tile=x=>{const items=mealItems(x);const main=byId(items[0].id);const srcN=items.filter(i=>i.basis==='source').length;
-    return '<a class="mset" href="#/meals/'+x.k+'"><span class="msimg">'+(main&&main.img?'<img loading="lazy" src="'+main.img+'" alt="">':'')+'</span><span class="msb"><span class="no">'+esc(t.mealT[x.meal])+'</span><b>'+esc(S.lang==='sk'?x.sk:x.en)+'</b><span class="msl">'+items.map(i=>{const r=byId(i.id);return r?esc(L(r.t)):'';}).filter(Boolean).join(' · ')+'</span>'+(srcN?'<span class="tag src">'+esc(t.mealSrcN(srcN))+'</span>':'<span class="tag own">'+esc(t.mealPick)+'</span>')+'</span></a>';};
+    return '<a class="mset" data-slot="meal:'+x.k+'" href="#/meals/'+x.k+'"><span class="msimg">'+(()=>{const p=PK().meals[x.k];if(!p)return '';const pr=byId(p.id);return '<img loading="lazy" src="'+p.img+'" alt="">'+(p.own===false&&pr?'<span class="mspic">'+esc(T().pictured)+': '+esc(L(pr.t))+'</span>':'');})()+'</span><span class="msb"><span class="no">'+esc(t.mealT[x.meal])+'</span><b>'+esc(S.lang==='sk'?x.sk:x.en)+'</b><span class="msl">'+items.map(i=>{const r=byId(i.id);return r?esc(L(r.t)):'';}).filter(Boolean).join(' · ')+'</span>'+(srcN?'<span class="tag src">'+esc(t.mealSrcN(srcN))+'</span>':'<span class="tag own">'+esc(t.mealPick)+'</span>')+'</span></a>';};
   return '<section class="sec"><div class="wrap"><div class="sh2"><h1>'+esc(t.mealsH)+'</h1><span>'+sets.length+'</span></div><p class="lead">'+esc(t.mealsP)+'</p>'+
    '<div class="frow mfil"><span class="cs"><a class="chip'+(m?'':' on')+'" href="#/meals">'+esc(t.allMeals)+'</a>'+MEALS.map(x=>'<a class="chip'+(m===x?' on':'')+'" href="#/meals?m='+x+'">'+esc(t.mealT[x])+'</a>').join('')+'</span></div>'+
    MEALS.filter(x=>!m||x===m).map(x=>{const l=sets.filter(y=>y.meal===x);return l.length?'<div class="grp"><h3>'+esc(t.mealT[x])+'</h3></div><div class="msets">'+l.map(tile).join('')+'</div>':'';}).join('')+'</div></section>';}
