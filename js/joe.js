@@ -1,6 +1,6 @@
 /* Joe · AI — a chat with an AI version of Joe for Tami (clearly labelled AI, not the real Joe typing).
  * Runs fully in the browser: WebLLM + WebGPU in a Web Worker (js/joe-worker.js). No accounts, no paid APIs.
- * History: KuchynaSync.chat (key 'tami.joe.chat'), so it syncs between laptops once unlocked.
+ * History and memory: localStorage only (key 'tami.joe.chat'), on this laptop; never sent anywhere.
  * Knowledge: retrieval over data/joe.json (typo-tolerant SK/EN search), top matches go into the prompt. */
 (function(){
 'use strict';
@@ -9,31 +9,35 @@ const MODELS={
   '3b':{id:'Qwen2.5-3B-Instruct-q4f16_1-MLC',gb:1.74,name:'Qwen2.5-3B-Instruct (q4f16_1)'},
   '1.5b':{id:'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',gb:0.87,name:'Qwen2.5-1.5B-Instruct (q4f16_1)'},
   '1.5b32':{id:'Qwen2.5-1.5B-Instruct-q4f32_1-MLC',gb:0.87,name:'Qwen2.5-1.5B-Instruct (q4f32_1)'}};
+// CPU fallback (no usable WebGPU): llama.cpp in WebAssembly via js/joe-cpu.js; slower, but works on any recent laptop browser
+const CPU_MODEL={id:'qwen1.5b-q4km',gb:1.1,name:'Qwen2.5-1.5B-Instruct (GGUF Q4_K_M, CPU)',cpu:true};
 const lang=()=>(document.documentElement.lang||'sk').slice(0,2)==='en'?'en':'sk';
 const TX={
  sk:{name:'Joe',ai:'AI',sub:'AI verzia Joea · nepíše skutočný Joe',open:'Porozprávaj sa s Joem',close:'Zavrieť',clear:'Vymazať chat',clearSure:'Naozaj vymazať?',
-  ph:'Napíš Joeovi…',send:'Poslať',stop:'Stop',sync:'Zdieľať chat medzi notebookmi',synced:'Chat sa zdieľa medzi notebookmi',
+  ph:'Napíš Joeovi…',send:'Poslať',stop:'Stop',
   introH:'Ahoj Tami',introP:['Toto je AI verzia Joea. Nepíše ti skutočný Joe, ale AI, ktorá sa snaží písať ako on a povzbudiť ťa pri varení.','Pomôže ti s receptami z tejto kuchárky, s otázkami pri varení aj s čímkoľvek iným. Pozná tvoje pravidlá: bez laktózy, bez bravčového, bez alkoholu a menej cukru.','Keďže je to AI, niekedy sa môže pomýliť a nevie prehliadať internet. Beží priamo v tvojom notebooku, bez účtov a poplatkov. Zapamätá si, čo mu povieš (napríklad „zapamätaj si, že…“), a v časti Pamäť si to môžeš pozrieť alebo vymazať.'],introGo:'Poďme variť',
   dl:'Joe sa sťahuje',dlDone:'Joe je pripravený',wake:'Joe sa prebúdza…',wakeP:'Joe sa prebúdza',
-  noGpu:['Ach nie, baby 💔','Tento prehliadač nevie spustiť AI Joea. Otvor kuchárku v Chrome alebo Edge na notebooku s WebGPU a budem tam pre teba','Mwah'],
+  noGpu:['Ach nie, baby 💔','Na tomto notebooku sa mi nepodarilo naštartovať. Skús kuchárku otvoriť v najnovšom Chrome alebo Edge a hneď som pri tebe.','Mwah 😘'],
+  cpuNote:'Na tomto notebooku bežím bez grafickej karty, takže odpovedám pomalšie. Chvíľku strpenia, baby 😊',
   metered:'Joe sa zatiaľ nestiahol, lebo vyzerá, že si na pomalom alebo mobilnom pripojení.',dlNow:'Stiahnuť teraz',size:'asi {n} GB, iba raz',
   err:'Joe sa nevedel spustiť. Skús stránku obnoviť.',retry:'Skúsiť znova',recs:'Recepty z kuchárky',empty:'Napíš mi, čo chceš variť, alebo sa len ozvi 😊',
-  mem:'Pamäť',memP:'Toto si AI Joe pamätá a pridáva do každého chatu. Zdieľa sa medzi notebookmi spolu s chatmi.',memNone:'Zatiaľ si nič nepamätá. Napíš napríklad: „Zapamätaj si, že nemám rada koriander.“',memDel:'Zabudnúť',memAdd:'Pridať vec na zapamätanie…',prep:'Joe sa pripravuje…',chats:'Predošlé chaty',newChat:'Nový chat',noChats:'Zatiaľ žiadne chaty',msgs:'správ',back:'Späť na chat',dlHint:'Joe sa ešte sťahuje ({p} %). Hneď ako bude hotový, môžeš písať.',you:'Ty',thinking:'Joe píše…'},
+  mem:'Pamäť',memP:'Toto si AI Joe pamätá a pridáva do každého chatu.',memNone:'Zatiaľ si nič nepamätá. Napíš napríklad: „Zapamätaj si, že nemám rada koriander.“',memDel:'Zabudnúť',memAdd:'Pridať vec na zapamätanie…',prep:'Joe sa pripravuje…',chats:'Predošlé chaty',newChat:'Nový chat',noChats:'Zatiaľ žiadne chaty',msgs:'správ',back:'Späť na chat',dlHint:'Joe sa ešte sťahuje ({p} %). Hneď ako bude hotový, môžeš písať.',you:'Ty',thinking:'Joe píše…'},
  en:{name:'Joe',ai:'AI',sub:'AI version of Joe · not the real Joe typing',open:'Talk to Joe',close:'Close',clear:'Clear chat',clearSure:'Really clear?',
-  ph:'Message Joe…',send:'Send',stop:'Stop',sync:'Share the chat between laptops',synced:'Chat is shared between laptops',
+  ph:'Message Joe…',send:'Send',stop:'Stop',
   introH:'Hi Tami',introP:['This is an AI version of Joe. It is not the real Joe typing, it is an AI that tries to write like him and cheer you on while you cook.','It helps with the recipes in this cookbook, with cooking questions and with anything else. It knows your rules: lactose-free, no pork, no alcohol and less sugar.','Because it is an AI, it can get things wrong sometimes and it cannot browse the internet. It runs right on your laptop, with no accounts and no fees. It remembers things you tell it (for example "remember that…"), and you can view or delete them under Memory.'],introGo:'Let\u2019s cook',
   dl:'Joe is downloading',dlDone:'Joe is ready',wake:'Joe is waking up…',wakeP:'Joe is waking up',
-  noGpu:['Oh no baby 💔','This browser can\u2019t run AI Joe. Open the cookbook in Chrome or Edge on a laptop with WebGPU and I will be right there for you','Mwah'],
+  noGpu:['Oh no baby 💔','I couldn\u2019t start on this laptop. Try opening the cookbook in the latest Chrome or Edge and I\u2019ll be right there for you.','Mwah 😘'],
+  cpuNote:'On this laptop I run without the graphics card, so my answers come a bit slower. Bear with me, baby 😊',
   metered:'Joe hasn\u2019t downloaded yet because you seem to be on a slow or mobile connection.',dlNow:'Download now',size:'about {n} GB, only once',
   err:'Joe couldn\u2019t start. Try reloading the page.',retry:'Try again',recs:'Recipes from the cookbook',empty:'Tell me what you want to cook, or just say hi 😊',
-  mem:'Memory',memP:'AI Joe remembers these and adds them to every chat. They are shared between laptops along with the chats.',memNone:'Nothing remembered yet. Try: "Remember that I don\u2019t like coriander."',memDel:'Forget',memAdd:'Add something to remember…',prep:'Joe is getting ready…',chats:'Past chats',newChat:'New chat',noChats:'No chats yet',msgs:'messages',back:'Back to the chat',dlHint:'Joe is still downloading ({p}%). You can write as soon as he is ready.',you:'You',thinking:'Joe is typing…'}};
+  mem:'Memory',memP:'AI Joe remembers these and adds them to every chat.',memNone:'Nothing remembered yet. Try: "Remember that I don\u2019t like coriander."',memDel:'Forget',memAdd:'Add something to remember…',prep:'Joe is getting ready…',chats:'Past chats',newChat:'New chat',noChats:'No chats yet',msgs:'messages',back:'Back to the chat',dlHint:'Joe is still downloading ({p}%). You can write as soon as he is ready.',you:'You',thinking:'Joe is typing…'}};
 const tx=()=>TX[lang()];
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ls={get(k){try{return localStorage.getItem(k);}catch(e){return null;}},set(k,v){try{localStorage.setItem(k,v);}catch(e){}}};
 
-// ---------- history (KuchynaSync.chat, with a same-format local fallback) ----------
+// ---------- history: localStorage on this laptop only ----------
 const CHATKEY='tami.joe.chat';
-const store=(window.KuchynaSync&&KuchynaSync.chat)||{
+const store={
   _r(){try{const c=JSON.parse(localStorage.getItem(CHATKEY));return c&&c.msgs?c:{v:1,cursor:null,msgs:{}};}catch(e){return {v:1,cursor:null,msgs:{}};}},
   add(o){const c=this._r(),m={id:(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random()),thread_id:String(o.thread_id||'default'),role:o.role,content:String(o.content||''),who:o.who||null,t:o.t||Date.now(),p:1};c.msgs[m.id]=m;ls.set(CHATKEY,JSON.stringify(c));return m;},
   list(th){const c=this._r();return Object.values(c.msgs).filter(m=>!m.del&&(th==null||m.thread_id===th)).sort((a,b)=>a.t-b.t);},
@@ -41,7 +45,7 @@ const store=(window.KuchynaSync&&KuchynaSync.chat)||{
   deleteThread(th){const c=this._r();Object.values(c.msgs).forEach(m=>{if(m.thread_id===th){m.del=1;m.p=1;}});ls.set(CHATKEY,JSON.stringify(c));}};
 const isMem=id=>String(id).startsWith('mem:');
 const chats=()=>store.threads().filter(x=>!isMem(x.thread_id));
-// ---------- long-term memory: one fact = one tiny 'mem:<id>' thread in the same synced chat store ----------
+// ---------- long-term memory: one fact = one tiny 'mem:<id>' thread in the same local chat store ----------
 const MEM={
   list(){return store.threads().filter(x=>isMem(x.thread_id)).map(x=>({id:x.thread_id,text:x.first.content,t:x.first.t})).sort((a,b)=>a.t-b.t);},
   add(text){text=String(text||'').replace(/\s+/g,' ').trim().replace(/[.!]+$/,'');if(text.length<3||text.length>200)return false;
@@ -143,24 +147,40 @@ const J={gpu:'unknown',model:null,state:'idle',p:0,worker:null,waiters:{},open:f
 function pickedModel(){return MODELS[ls.get(LS.model)]||null;}
 function metered(){const c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;if(!c)return false;
   return !!(c.saveData||/(^|-)2g|3g/.test(c.effectiveType||'')||c.type==='cellular'||(c.downlink&&c.downlink<1.5));}
+async function gpuAdapter(){if(!('gpu' in navigator))return null;
+  // some laptops return no adapter for 'high-performance' but do for the default or 'low-power' request
+  for(const o of [{powerPreference:'high-performance'},undefined,{powerPreference:'low-power'}]){try{const a=await navigator.gpu.requestAdapter(o);if(a)return a;}catch(e){}}
+  return null;}
+function wasmOk(){try{return typeof WebAssembly==='object'&&WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,0,0,1,5,1,96,0,1,123,3,2,1,0,10,10,1,8,0,65,0,253,15,253,98,11]));}catch(e){return false;}}
+function useCpu(){J.engine='cpu';J.model=CPU_MODEL;J.gpu=wasmOk()?'ok':'none';}
 async function detect(){
-  if(!('gpu' in navigator)||!window.Worker){J.gpu='none';return;}
-  let ad=null;try{ad=await navigator.gpu.requestAdapter({powerPreference:'high-performance'});}catch(e){}
-  if(!ad){J.gpu='none';return;}
-  J.gpu='ok';let k=ls.get(LS.model);
+  if(!window.Worker){J.gpu='none';return;}
+  const force=/[?&]joe=cpu\b/.test(location.search)||ls.get('tami.joe.engine')==='cpu';
+  const ad=force?null:await gpuAdapter();
+  if(!ad){useCpu();return;}
+  J.gpu='ok';J.engine='gpu';let k=ls.get(LS.model);
   if(!MODELS[k]){const f16=ad.features&&ad.features.has('shader-f16');const mem=navigator.deviceMemory;
     let free=Infinity;try{const e=await navigator.storage.estimate();free=(e.quota-e.usage)/1e9;}catch(e){}
     k=!f16?'1.5b32':((mem&&mem<8)||free<2.6||(ad.limits&&ad.limits.maxBufferSize<1<<30))?'1.5b':'3b';ls.set(LS.model,k);}
   J.model=MODELS[k];}
-function worker(){if(J.worker)return J.worker;const w=new Worker('js/joe-worker.js',{type:'module'});J.worker=w;
+let cpuP=null;
+function cpuWorker(){const q=[];const w={onmessage:null,onerror:null,postMessage(m){q.push(m);}};
+  cpuP=cpuP||import('./joe-cpu.js');
+  cpuP.then(mod=>{const real=mod.make();real.onmessage=e=>w.onmessage&&w.onmessage(e);w.postMessage=m=>real.postMessage(m);w.terminate=()=>real.terminate();q.splice(0).forEach(m=>real.postMessage(m));})
+    .catch(e=>{console.warn('[joe] cpu engine',e);J.state='error';J.gpu='none';J.err=String(e&&e.message||e);ui();});
+  return w;}
+function gpuFailed(err){if(J.engine!=='gpu'||J.fellBack)return false;J.fellBack=true;console.warn('[joe] WebGPU start failed, switching to CPU:',err);
+  try{J.worker&&J.worker.terminate&&J.worker.terminate();}catch(e){}J.worker=null;useCpu();if(J.gpu!=='ok')return false;
+  const pend=J.busy;J.busy=null;J.state='downloading';ui();isCached().then(()=>{startDownload(!J.open);if(pend)setTimeout(()=>{const th=pend.th;const last=store.list(th).filter(m=>m.role==='user').slice(-1)[0];if(last)resend(last.content,th);},0);});return true;}
+function worker(){if(J.worker)return J.worker;const w=J.engine==='cpu'?cpuWorker():new Worker('js/joe-worker.js',{type:'module'});J.worker=w;
   w.onmessage=e=>{const m=e.data;
     if(m.type==='progress'){J.p=m.progress||0;if(J.state!=='ready')J.state=J.p>=1?'loading':(J.state==='waking'?'waking':'downloading');ui();}
-    else if(m.type==='ready'){J.state='ready';J.p=1;ui();if(!J.open&&!J.busy&&J.bg){J.bg=false;w.postMessage({cmd:'unload'});}flushWait();}
+    else if(m.type==='ready'){if(m.threads)J.threads=m.threads;J.state='ready';J.p=1;ui();if(!J.open&&!J.busy&&J.bg){J.bg=false;w.postMessage({cmd:'unload'});}flushWait();}
     else if(m.type==='unloaded'){J.state='cached';ui();}
     else if(m.type==='cached'){const f=J.waiters['c'+m.id];delete J.waiters['c'+m.id];f&&f(m.cached);}
     else if(m.type==='delta'||m.type==='done'){onGen(m);}
-    else if(m.type==='error'){console.warn('[joe]',m.error);if(m.cmd==='chat'&&J.busy){onGen({type:'done',id:m.id,text:'',error:m.error});}else{J.state='error';J.err=m.error;ui();}}};
-  w.onerror=e=>{console.warn('[joe] worker',e.message);J.state='error';J.err=e.message||'worker';ui();};return w;}
+    else if(m.type==='error'){console.warn('[joe]',m.error);if((m.cmd==='load'||(m.cmd==='chat'&&J.state!=='ready'))&&gpuFailed(m.error))return;if(m.cmd==='chat'&&J.busy){onGen({type:'done',id:m.id,text:'',error:m.error});}else{J.state='error';J.err=m.error;ui();}}};
+  w.onerror=e=>{console.warn('[joe] worker',e.message);if(gpuFailed(e.message))return;J.state='error';J.err=e.message||'worker';ui();};return w;}
 function isCached(){return new Promise(res=>{const id=Math.random();J.waiters['c'+id]=res;worker().postMessage({cmd:'cached',id,model:J.model.id});setTimeout(()=>{if(J.waiters['c'+id]){delete J.waiters['c'+id];res(false);}},20000);});}
 function startDownload(bg){if(!J.model)return;J.bg=!!bg;J.state='downloading';ui();try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){}worker().postMessage({cmd:'load',model:J.model.id});}
 let waitQ=[];function flushWait(){const q=waitQ;waitQ=[];q.forEach(f=>f());}
@@ -173,18 +193,20 @@ async function boot(){await detect();ui();if(J.gpu!=='ok')return;
 function send(text){text=text.trim();if(!text||J.busy)return;
   const th=curThread();store.add({thread_id:th,role:'user',content:text,who:'tami'});memFromText(text);renderMsgs();
   if(J.gpu!=='ok'||J.state==='skipped'||J.state==='error'){renderMsgs();return;}
+  resend(text,th);}
+function resend(text,th){const cpu=J.engine==='cpu';
   const go=async()=>{
     await loadIdx().catch(()=>null);
     const L=msgLang(text);const hist=store.list(th);
     const prevUser=hist.filter(m=>m.role==='user').slice(-2,-1).map(m=>m.content).join(' ');
-    let hits=search(text,3);if(!hits.length&&prevUser)hits=search(prevUser+' '+text,2);
+    let hits=search(text,cpu?2:3);if(!hits.length&&prevUser)hits=search(prevUser+' '+text,2);
     const recs=hits.map(h=>h[1]);
-    const msgs=[{role:'system',content:sysPrompt(L,recs)}];let budget=5200,tail=[];
-    for(let i=hist.length-1;i>=0;i--){const m=hist[i];const c=stripRecs(m.content);if(budget-c.length<0&&tail.length)break;budget-=c.length;tail.unshift({role:m.role==='assistant'?'assistant':'user',content:c});if(tail.length>=10)break;}
+    const msgs=[{role:'system',content:sysPrompt(L,recs)}];let budget=cpu?2600:5200,tail=[];
+    for(let i=hist.length-1;i>=0;i--){const m=hist[i];const c=stripRecs(m.content);if(budget-c.length<0&&tail.length)break;budget-=c.length;tail.unshift({role:m.role==='assistant'?'assistant':'user',content:c});if(tail.length>=(cpu?6:10))break;}
     msgs.push(...tail);
     const id='g'+Date.now();J.busy={id,th,recs:recs.map(r=>r.id),text:''};
     if(J.state!=='ready'){J.state='waking';}ui();renderMsgs();
-    worker().postMessage({cmd:'chat',id,model:J.model.id,messages:msgs,max_tokens:/recept|recipe|step|krok|postup|how|ako/i.test(text)?600:300});};
+    worker().postMessage({cmd:'chat',id,model:J.model.id,messages:msgs,max_tokens:/recept|recipe|step|krok|postup|how|ako/i.test(text)?(cpu?450:600):(cpu?220:300)});};
   if(J.state==='downloading'||J.state==='loading'){waitQ.push(go);renderMsgs();}else go();}
 const RECM=/\n?\[\[recipes:([^\]]*)\]\]\s*$/;
 function stripRecs(c){return String(c||'').replace(RECM,'');}
@@ -204,7 +226,7 @@ const IC={x:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',tr
 function build(){root=document.createElement('div');root.id='joe';root.innerHTML=
   '<button class="joefab" type="button" aria-haspopup="dialog"><span class="joering"></span><span class="joeav">'+AV+'</span><span class="joefabl"><b>Joe</b><i class="joeai">AI</i><small class="joeprep"></small></span></button>'+
   '<section class="joepanel" role="dialog" aria-modal="false" hidden><header class="joehead"><span class="joeav">'+AV+'</span><div class="joett"><b>Joe</b> <i class="joeai">AI</i><small class="joesub"></small></div>'+
-  '<button class="joeib joehist" type="button">'+IC.hist+'</button><button class="joeib joememb" type="button">'+IC.mem+'</button><button class="joeib joenew" type="button">'+IC.plus+'</button><button class="joeib joesync" type="button"></button><button class="joeib joeclr" type="button">'+IC.trash+'</button><button class="joeib joex" type="button">'+IC.x+'</button></header>'+
+  '<button class="joeib joehist" type="button">'+IC.hist+'</button><button class="joeib joememb" type="button">'+IC.mem+'</button><button class="joeib joenew" type="button">'+IC.plus+'</button><button class="joeib joeclr" type="button">'+IC.trash+'</button><button class="joeib joex" type="button">'+IC.x+'</button></header>'+
   '<div class="joebody"><div class="joemsgs" aria-live="polite"></div></div><div class="joenote" hidden></div>'+
   '<form class="joein"><textarea rows="1"></textarea><button type="submit" class="joesend"></button></form></section>';
   document.body.appendChild(root);fab=root.querySelector('.joefab');panel=root.querySelector('.joepanel');
@@ -214,7 +236,6 @@ function build(){root=document.createElement('div');root.id='joe';root.innerHTML
   root.querySelector('.joehist').onclick=()=>{J.view=J.view==='list'?'chat':'list';renderMsgs();};
   root.querySelector('.joememb').onclick=()=>{J.view=J.view==='mem'?'chat':'mem';renderMsgs();};
   root.querySelector('.joenew').onclick=()=>{if(J.busy)return;thread='t'+Date.now();J.view='chat';renderMsgs();};
-  root.querySelector('.joesync').onclick=()=>{const K=window.KuchynaSync;if(K&&!K.isUnlocked())K.showUnlock().then(()=>ui());};
   const f=root.querySelector('.joein'),ta=f.querySelector('textarea');
   f.onsubmit=e=>{e.preventDefault();if(J.busy){J.worker&&J.worker.postMessage({cmd:'abort'});return;}const v=ta.value;if(!v.trim())return;ta.value='';ta.style.height='';send(v);};
   ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();f.requestSubmit();}});
@@ -228,13 +249,11 @@ function build(){root=document.createElement('div');root.id='joe';root.innerHTML
     const th=e.target.closest('[data-joeth]');if(th){thread=th.dataset.joeth;J.view='chat';renderMsgs();}
     const r=e.target.closest('[data-joeretry]');if(r){location.reload();}});
   new MutationObserver(()=>{ui();renderMsgs();}).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
-  window.addEventListener('kuchyna:change',e=>{if(e.detail&&e.detail.kinds&&e.detail.kinds.includes('chat'))renderMsgs();});
-  window.addEventListener('kuchyna:status',()=>ui());
   ui();}
 function toggle(v){J.open=v==null?!J.open:v;panel.hidden=!J.open;root.classList.toggle('open',J.open);fab.setAttribute('aria-expanded',J.open);
   if(J.open){loadIdx().catch(()=>{});renderMsgs();setTimeout(()=>{const ta=root.querySelector('textarea');ta&&!ta.disabled&&ta.focus();},50);}
   else if(J.state==='ready'&&!J.busy&&J.worker){/* keep loaded while the page is open: answers stay fast */}}
-function ui(){if(!root)return;const t=tx();const K=window.KuchynaSync;
+function ui(){if(!root)return;const t=tx();
   root.dataset.state=J.gpu==='none'?'nogpu':J.state;
   const pct=Math.round((J.p||0)*100);root.style.setProperty('--joep',(J.state==='downloading'||J.state==='waking'?pct:J.state==='loading'?100:0)+'%');
   const lab=J.state==='downloading'?t.prep+' '+pct+' %':J.state==='waking'||J.state==='loading'?t.wake:t.open;
@@ -242,7 +261,6 @@ function ui(){if(!root)return;const t=tx();const K=window.KuchynaSync;
   fab.title=lab;fab.setAttribute('aria-label',lab+' (AI)');
   root.querySelector('.joesub').textContent=t.sub;const hb=root.querySelector('.joehist');hb.title=J.view==='list'?t.back:t.chats;hb.setAttribute('aria-label',hb.title);hb.classList.toggle('on',J.view==='list');const mb=root.querySelector('.joememb');mb.title=J.view==='mem'?t.back:t.mem;mb.setAttribute('aria-label',mb.title);mb.classList.toggle('on',J.view==='mem');const nb=root.querySelector('.joenew');nb.title=t.newChat;nb.setAttribute('aria-label',t.newChat);root.querySelector('.joex').title=t.close;root.querySelector('.joex').setAttribute('aria-label',t.close);
   const clr=root.querySelector('.joeclr');if(!clr.classList.contains('sure')){clr.title=t.clear;clr.setAttribute('aria-label',t.clear);}
-  const sy=root.querySelector('.joesync');if(K){const on=K.isUnlocked();sy.hidden=false;sy.innerHTML=on?IC.cloud:IC.lock;sy.classList.toggle('on',on);sy.title=on?t.synced:t.sync;sy.setAttribute('aria-label',sy.title);}else sy.hidden=true;
   const ta=root.querySelector('textarea');ta.placeholder=t.ph;const sb=root.querySelector('.joesend');sb.innerHTML=J.busy?'<span class="joestop"></span>':IC.send;sb.title=J.busy?t.stop:t.send;sb.setAttribute('aria-label',sb.title);
   const dis=J.gpu==='none'||J.state==='skipped'||J.state==='error'||!introOk();ta.disabled=dis;sb.disabled=dis&&!J.busy;
   const note=root.querySelector('.joenote');let n='';
@@ -267,13 +285,14 @@ function renderMsgs(){if(!root||!J.open)return;const t=tx();const box=root.query
   ms.forEach(m=>{const mm=String(m.content).match(RECM);const who=m.role==='assistant'?'joe':'me';h+='<div class="joeturn '+who+'">'+bubbles(stripRecs(m.content),who)+(mm?chips(mm[1].split(',').filter(Boolean)):'')+'</div>';});
   if(J.busy)h+='<div class="joeturn joe live">'+(J.busy.text?bubbles(J.busy.text,'joe'):'<div class="joeb joe typing"><span></span><span></span><span></span></div>')+'</div>';
   if(J.gpu==='none')h+='<div class="joesys nogpu">'+t.noGpu.map(x=>'<div class="joeb joe">'+esc(x)+'</div>').join('')+'</div>';
+  else if(J.engine==='cpu')h+='<div class="joesys cpu"><div class="joeb joe">'+esc(t.cpuNote)+'</div></div>';
   else if(J.state==='skipped')h+='<div class="joesys"><p>'+esc(t.metered)+'</p><button type="button" class="joego" data-joedl>'+esc(t.dlNow)+' ('+esc(t.size.replace('{n}',String(J.model.gb).replace('.',lang()==='sk'?',':'.')))+')</button></div>';
   else if(J.state==='error')h+='<div class="joesys"><p>'+esc(t.err)+'</p><button type="button" class="joego" data-joeretry>'+esc(t.retry)+'</button></div>';
   box.innerHTML=h;const body=root.querySelector('.joebody');body.scrollTop=body.scrollHeight;ui();}
 function renderLive(){if(!J.open)return;const live=root.querySelector('.joeturn.live');if(!live){renderMsgs();return;}live.innerHTML=bubbles(J.busy.text,'joe');const body=root.querySelector('.joebody');body.scrollTop=body.scrollHeight;}
 
 // expose for tests / the rest of the site
-window.JoeChat={state:()=>({gpu:J.gpu,state:J.state,model:J.model&&J.model.id,progress:J.p}),open:()=>toggle(true),close:()=>toggle(false),search:(q,n)=>loadIdx().then(()=>search(q,n).map(h=>({id:h[1].id,score:+h[0].toFixed(2)}))),
+window.JoeChat={state:()=>({engine:J.engine,threads:J.threads,gpu:J.gpu,state:J.state,model:J.model&&J.model.id,progress:J.p}),open:()=>toggle(true),close:()=>toggle(false),search:(q,n)=>loadIdx().then(()=>search(q,n).map(h=>({id:h[1].id,score:+h[0].toFixed(2)}))),
   prompt:(q)=>loadIdx().then(()=>sysPrompt(msgLang(q),search(q,3).map(h=>h[1]))),lang:msgLang,send};
 function start(){build();const idle=window.requestIdleCallback||(f=>setTimeout(f,1500));
   // quiet background start: after the page has loaded and the browser is idle, never during first paint

@@ -8,14 +8,6 @@ const T=()=>I18N[S.lang];
 function lsGet(k){try{return JSON.parse(localStorage.getItem(k)||'{}')||{};}catch(e){return {};}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 S.fav=lsGet('tami.fav');S.cooked=lsGet('tami.cooked');
-// shared sync (js/sync.js): reload marks when the other laptop changed something
-window.addEventListener('kuchyna:change',e=>{const k=e.detail.kinds;
-  if(k.includes('fav'))S.fav=lsGet('tami.fav');if(k.includes('cooked'))S.cooked=lsGet('tami.cooked');
-  if(k.includes('fav')||k.includes('cooked'))rerender(true);});
-window.addEventListener('kuchyna:status',()=>{const b=document.querySelector('.syncban');if(b)b.outerHTML=syncBan();});
-const SYT={sk:{off:'Obľúbené a uvarené jedlá sú zatiaľ len na tomto notebooku.',on:'Obľúbené, uvarené jedlá a chat s Joem sa zdieľajú medzi notebookmi.',btn:'Zdieľať medzi notebookmi'},en:{off:'Favourites and cooked dishes are only on this laptop for now.',on:'Favourites, cooked dishes and the Joe chat are shared between laptops.',btn:'Share between laptops'}};
-function syncBan(){const K=window.KuchynaSync;if(!K)return '';const y=SYT[S.lang]||SYT.sk;const on=K.isUnlocked();
-  return '<div class="syncban'+(on?' on':'')+'"><span>'+(on?'☁️ ':'🔒 ')+esc(on?y.on:y.off)+'</span>'+(on?'':'<button data-act="unlock">'+esc(y.btn)+'</button>')+'</div>';}
 const hasMark=(store,id)=>Object.keys(store).some(k=>k===id||k.startsWith(id+'|'));
 const HEART='<svg viewBox="0 0 24 24" class="ic hrt"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/></svg>';
 function markBtns(id,fl){const t=T();const k=fl?id+'|'+fl.en:id;const f=!!S.fav[k],c=S.cooked[k];
@@ -302,7 +294,7 @@ function vChefs(){const t=T();return '<section class="sec"><div class="wrap"><di
 function vFav(){const t=T();
   const rows=(store)=>Object.entries(store).sort((a,b)=>(b[1].t||0)-(a[1].t||0)).map(([k,v])=>{const id=k.split('|')[0];const r=S.idx.find(x=>x.id===id);return r?{r,k,v}:null;}).filter(Boolean);
   const box=(list,cooked)=>list.length?'<div class="rgrid">'+list.map(o=>'<div class="favitem">'+card(o.r)+'<div class="favmeta">'+(o.v.fl?'<span class="tag">'+esc(t.flavor)+': '+esc(cap(S.lang==='sk'?o.v.fl.sk:o.v.fl.en))+'</span> ':'<span class="tag">'+esc(t.mainRecipe)+'</span> ')+(cooked?'<span class="tsrc">'+esc(t.cookedOn)+' '+fmtDate(o.v.t)+'</span>':'')+'</div></div>').join('')+'</div>':'<p class="empty">'+esc(cooked?t.noCooked:t.noFav)+'</p>';
-  return '<section class="sec"><div class="wrap"><div class="sh2"><h1>'+esc(t.favorites)+'</h1><span>'+Object.keys(S.fav).length+'</span></div><p class="lead">'+esc(t.favP)+'</p>'+syncBan()+box(rows(S.fav),false)+
+  return '<section class="sec"><div class="wrap"><div class="sh2"><h1>'+esc(t.favorites)+'</h1><span>'+Object.keys(S.fav).length+'</span></div><p class="lead">'+esc(t.favP)+'</p>'+box(rows(S.fav),false)+
    '<div class="sh2"><h2>'+esc(t.cookedH)+'</h2><span>'+Object.keys(S.cooked).length+'</span></div>'+box(rows(S.cooked),true)+'</div></section>';}
 // ---------------- cook mode ----------------
 let wake=null;
@@ -540,13 +532,12 @@ document.addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
   if(a==='lang'){S.lang=b.dataset.l;try{localStorage.setItem('tami.lang',S.lang);}catch(x){}rerender(true);if(!$('#palpanel').hidden)renderPal();}
   else if(a==='pal'){togglePal($('#palpanel').hidden);}
-  else if(a==='unlock'){window.KuchynaSync&&KuchynaSync.showUnlock().then(ok=>ok&&rerender(true));}
   else if(a==='palclose'){togglePal(false);}
   else if(a==='theme'){applyTheme(b.dataset.d,b.dataset.p);}
   else if(a==='serv'&&curRecipe){const base=curRecipe.serv;let n=S.serv[curRecipe.id]||base;const step=base>=8?Math.max(1,Math.round(base/4)):1;n=Math.max(1,n+(+b.dataset.d)*step);S.serv[curRecipe.id]=n;rerender(true);}
   else if(a==='fav'||a==='cooked'){const store=a==='fav'?S.fav:S.cooked;const k=b.dataset.k;
     if(store[k])delete store[k];else store[k]={t:Date.now(),fl:b.dataset.fen?{en:b.dataset.fen,sk:b.dataset.fsk}:null};
-    lsSet(a==='fav'?'tami.fav':'tami.cooked',store);window.KuchynaSync&&KuchynaSync.changed(a,k);const was=!!store[k];rerender(true);
+    lsSet(a==='fav'?'tami.fav':'tami.cooked',store);const was=!!store[k];rerender(true);
     if(was){const sel='[data-act="'+a+'"][data-k="'+(window.CSS&&CSS.escape?CSS.escape(k):k)+'"]';const el=document.querySelector(sel);if(el){el.classList.add('pop');}}}
   else if(a==='cstep'&&curCook){S.cookStep=(S.cookStep||0)+(+b.dataset.d);rerender(false);}
   else if(a==='cgo'&&curCook){S.cookStep=+b.dataset.i;rerender(false);}

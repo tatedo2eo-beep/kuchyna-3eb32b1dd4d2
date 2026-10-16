@@ -18,7 +18,7 @@ const TX={
    ['Menu',d.meals+' zostavených menu: hlavné jedlo, príloha, omáčka, predjedlo a nápoj.'],['Sezónne','výber podľa sezónnej zeleniny, ovocia a sviatkov.'],['Šéfkuchári','podpisové jedlá, ktoré tak označuje sám zdroj.'],
    ['Z chladničky','označ, čo máš doma, a uvidíš, čo z toho uvaríš.'],['Obľúbené a Uvarila som','srdiečko a pečiatka pri recepte; zoznam nájdeš v Obľúbených.'],
    ['Režim varenia','veľké kroky jeden po druhom, obrazovka počas varenia nezhasne.'],['Nákupný zoznam','pri recepte klikni na „Do nákupného zoznamu“; pri každej surovine je odkaz na vyhľadávanie alebo ponuku vybraného obchodu, ceny si overíš tam.'],
-   ['Zdieľanie medzi notebookmi','obľúbené, uvarené recepty a chat s Joeom sa po zadaní hesla zdieľajú medzi notebookmi. Prehliadanie heslo nepotrebuje.']],
+   ['Uložené v tomto notebooku','obľúbené, uvarené recepty, chaty s Joeom a jeho pamäť sa ukladajú len v prehliadači na tomto notebooku a nikam sa neposielajú.']],
   thH:'Vzhľad',thP:'Tlačidlom „Vzhľad“ vedľa SK | EN vyberieš jeden z 5 dizajnov, každý v 3 farbách (15 možností). Voľba sa zapamätá.',
   joeH:'Joe · AI',joeP:'Joe · AI je AI verzia Joea, vždy označená štítkom AI. Nepíše skutočný Joe. Beží priamo v notebooku, pozná Tamine pravidlá a recepty z kuchárky, zapamätá si, čo mu povieš, a nevie prehliadať internet. Otvoríš ho tlačidlom Joe v rohu.'},
  en:{kick:'About',h:'Cookbook for Tami',lead:d=>d.recipes+' recipes in '+d.chapters+' chapters, in Slovak and English. Every recipe has the original recipe from its source and Tami\u2019s version, adjusted to her rules.',
@@ -34,7 +34,7 @@ const TX={
    ['Meal sets',d.meals+' meal sets: a main, a side, a sauce, an appetizer and a drink.'],['Seasonal','picks by seasonal produce and holidays.'],['Chefs','signature dishes, as named by the source itself.'],
    ['What can I make','tick what you have at home and see what you can cook with it.'],['Favourites and I cooked this','the heart and the stamp on a recipe; find them under Favourites.'],
    ['Cook mode','big steps one at a time, and the screen stays on while you cook.'],['Shopping list','click \u201cAdd to shopping list\u201d on a recipe; each ingredient links to the chosen store\u2019s search or offers page, where you check the price.'],
-   ['Sharing between laptops','favourites, cooked recipes and the Joe chat are shared between laptops after you enter the password. Browsing never needs it.']],
+   ['Saved on this laptop','favourites, cooked recipes, the Joe chats and his memory are kept only in the browser on this laptop and are never sent anywhere.']],
   thH:'Looks',thP:'The \u201cLook\u201d button next to SK | EN picks one of 5 designs, each in 3 colours (15 options). Your choice is remembered.',
   joeH:'Joe · AI',joeP:'Joe · AI is an AI version of Joe, always labelled AI. It is not the real Joe typing. It runs right on the laptop, knows Tami\u2019s rules and the cookbook\u2019s recipes, remembers what you tell it, and can\u2019t browse the internet. Open it with the Joe button in the corner.'}};
 
@@ -83,8 +83,7 @@ const LBL={
    [()=>'Tesco · Lidl · BILLA · Kaufland · COOP Jednota','Farebné názvy obchodov v nákupnom zozname (žiadne logá). Pri každom je, čo odkaz otvorí: vyhľadávanie, akciovú ponuku, leták, alebo pri neznámom obchode mapu OpenStreetMap.'],
    [()=>'autom / vzdušnou čiarou','Vzdialenosť obchodu: pri domácej oblasti autom (približne), pri tvojej polohe vzdušnou čiarou.'],
    [()=>'⚑','Vybraný obchod nemá online vyhľadávanie výrobkov; navrhne sa najbližší obchod, ktorý ho má.'],
-   [()=>'Joe · AI','AI verzia Joea. Štítok AI pripomína, že nepíše skutočný Joe.'],
-   [()=>'Zdieľať medzi notebookmi','Obľúbené, uvarené a chat s Joem sa po zadaní hesla zdieľajú medzi notebookmi; bez hesla zostávajú len na tomto notebooku.']]]],
+   [()=>'Joe · AI','AI verzia Joea. Štítok AI pripomína, že nepíše skutočný Joe.']]]],
   mealsH:'Menu a kapitola Raňajky',mealsP:'Kapitola Raňajky je zoznam receptov na raňajky. Menu je celé zostavené jedlo (raňajky, obed alebo večera) z viacerých kapitol: hlavné jedlo, príloha, omáčka, predjedlo a nápoj.',
   szH:'Ako sa mení Sezónne',szP:'Mesiac sa berie z dátumu na tvojom notebooku, takže stránka sa mení sama. Dátum Veľkej noci a sviatkov, ktoré od nej závisia, sa každý rok vypočíta. Zoznam sviatkov zodpovedá súčasnému slovenskému zákonu.'},
  en:{h:'What the labels mean',p:'Every label and tag on the site, in plain words.',
@@ -130,8 +129,7 @@ const LBL={
    [()=>'Tesco · Lidl · BILLA · Kaufland · COOP Jednota','Coloured store names in the shopping list (no logos). Each shows what its link opens: a search, the offers, a leaflet, or for an unknown shop an OpenStreetMap map.'],
    [()=>'by car / straight line','Store distance: by car (approximate) for the home area, straight line from your location.'],
    [()=>'⚑','The chosen store has no online product search; the nearest store that has one is suggested.'],
-   [()=>'Joe · AI','An AI version of Joe. The AI label is a reminder that it isn\u2019t the real Joe typing.'],
-   [()=>'Share between laptops','Favourites, cooked dishes and the Joe chat are shared between laptops after you enter the password; without it they stay on this laptop.']]]],
+   [()=>'Joe · AI','An AI version of Joe. The AI label is a reminder that it isn\u2019t the real Joe typing.']]]],
   mealsH:'Meal sets vs the Breakfast chapter',mealsP:'The Breakfast chapter is a list of breakfast recipes. A meal set is a whole meal (breakfast, lunch or dinner) put together from several chapters: a main, a side, a sauce, an appetizer and a drink.',
   szH:'How Seasonal updates',szP:'The month comes from the date on your laptop, so the page changes by itself. Easter, and the holidays that depend on it, are worked out for each year. The holiday list follows the current Slovak law.'}};
 function labels(L){const x=LBL[L],t=window.I18N[L];

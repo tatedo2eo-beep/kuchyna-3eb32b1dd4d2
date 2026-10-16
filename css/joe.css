@@ -23,7 +23,6 @@
 .joesub{display:block;color:var(--muted);font-size:12px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .joeib{width:34px;height:34px;display:grid;place-items:center;border:1px solid transparent;border-radius:999px;background:transparent;color:var(--muted);cursor:pointer}
 .joeib:hover{color:var(--text);border-color:var(--line)}.joeib[hidden]{display:none}
-.joesync.on{color:var(--accentText)}
 .joeclr.sure{color:var(--onaccent);background:var(--accent)}
 .joebody{flex:1;overflow:auto;padding:16px 14px;scroll-behavior:smooth}
 .joemsgs{display:flex;flex-direction:column;gap:10px}
@@ -85,24 +84,6 @@
 [data-design=g] .joebody{background:var(--surface2);margin:0 10px;border-radius:16px}
 [data-design=g] .joeb.joe{background:var(--surface)}
 
-/* shared-sync unlock dialog (from sync.js): styled per theme */
-#ksync-unlock{background:rgba(var(--shade,0,0,0),.55)!important;backdrop-filter:blur(3px)}
-#ksync-unlock form{background:var(--surface)!important;color:var(--text)!important;border:1px solid var(--line);border-radius:var(--jr2,14px)!important;font-family:var(--fb);padding:1.6rem!important;max-width:24rem!important}
-#ksync-unlock h2{font-family:var(--fh)!important;font-size:1.45rem!important;font-weight:500}
-#ksync-unlock input{background:var(--surface2)!important;border-color:var(--line)!important;border-radius:var(--jr3,8px)!important}
-#ksync-unlock input:focus{outline:2px solid var(--accent);outline-offset:1px}
-#ksync-unlock [data-later]{border-color:var(--line)!important;border-radius:var(--jr3,8px)!important}
-#ksync-unlock [type=submit]{background:var(--accent)!important;color:var(--onaccent)!important;border-radius:var(--jr3,8px)!important;font-weight:600}
-[data-design=e] #ksync-unlock form{--jr2:0;--jr3:0;border-top:3px solid var(--accent)}
-[data-design=b] #ksync-unlock form{--jr2:4px;--jr3:3px;border:3px double var(--accent)}
-[data-design=c] #ksync-unlock form{--jr2:3px;--jr3:3px;transform:rotate(-.6deg);box-shadow:5px 9px 0 rgba(var(--shade,0,0,0),.2)!important}
-[data-design=d] #ksync-unlock form{--jr2:28px;--jr3:999px;border:2px dashed var(--accent)}
-[data-design=g] #ksync-unlock form{--jr2:22px;--jr3:12px}
-/* sync banner on the favourites page */
-.syncban{display:flex;align-items:center;gap:12px;margin:0 0 22px;padding:12px 16px;border:1px dashed var(--line);border-radius:var(--r);color:var(--muted);font-size:14px}
-.syncban button{margin-left:auto;font:inherit;font-weight:600;padding:8px 14px;border:1px solid var(--accent);border-radius:var(--rs);background:transparent;color:var(--accentText);cursor:pointer}
-.syncban button:hover{background:var(--accent);color:var(--onaccent)}
-.syncban.on{border-style:solid}
 .joeprep{font-size:12px;color:var(--muted);white-space:nowrap}.joeprep:empty{display:none}
 .joehist.on{color:var(--accentText);border-color:var(--line)}
 .joelist{display:flex;flex-direction:column;gap:8px}
