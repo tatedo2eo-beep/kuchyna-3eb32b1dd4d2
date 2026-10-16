@@ -86,13 +86,10 @@ function renderChrome(route){
   const nRec=S.idx?S.idx.length:0;
   let top='',toc='';
   if(d==='b'){
+    top='<div class="topbar"><div class="wrap topin"><span class="runner">'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></span>'+qs+tools+'</div></div>';
     const groups=[[t.savory,c=>c.num<24],[t.sweet,c=>c.num>=24&&c.num<34],[t.drinks,c=>c.num===34]];
-    const cur=location.hash.split('?')[0];
-    const chs=S.meta?'<div class="bchp">'+groups.map(g=>'<div class="bchg"><h4>'+esc(g[0])+'</h4>'+S.meta.chapters.filter(g[1]).map(c=>'<a href="#/c/'+c.stem+'" class="'+(cur==='#/c/'+c.stem?'on':'')+'"><span class="cn">'+String(c.num).padStart(2,'0')+'</span><span class="ct">'+esc(S.lang==='sk'?c.sk:c.en)+'</span><b>'+c.n+'</b></a>').join('')+'</div>').join('')+'<a class="ball" href="#/chapters">'+esc(t.allChapters)+' →</a></div>':'';
-    const navB=nav.map(n=>n[2]==='chapters'?'<a href="#/chapters" class="bchl '+(route==='chapters'?'on':'')+'">'+esc(n[1])+'</a>':'<a href="'+n[0]+'" class="'+(route===n[2]?'on':'')+'">'+esc(n[1])+'</a>').join('');
-    const menuB='<details class="bdd bmenu"><summary>'+esc(t.contents)+'<span class="car">▾</span></summary><div class="bmp"><nav class="bmnav">'+nav.map(n=>'<a href="'+n[0]+'" class="'+(route===n[2]?'on':'')+'">'+esc(n[1])+'</a>').join('')+'</nav>'+chs+'</div></details>';
-    top='<div class="btop"><div class="wrap btopin"><a class="bbrand" href="#/">'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></a><nav class="bnav">'+navB+'</nav>'+menuB+tools+'</div></div>';
-    toc=S.meta?'<div class="toch">'+esc(t.contents)+'</div>'+groups.map(g=>'<div class="tocg">'+esc(g[0])+'</div>'+S.meta.chapters.filter(g[1]).map(c=>'<a href="#/c/'+c.stem+'" class="tc'+(cur==='#/c/'+c.stem?' on':'')+'"><span>'+esc(S.lang==='sk'?c.sk:c.en)+'</span><em></em><b>'+c.n+'</b></a>').join('')).join('')+'<a class="tc tcall" href="#/chapters"><span>'+esc(t.allChapters)+' →</span></a>':'';
+    const roman=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+    toc=S.meta?'<a class="tocbrand" href="#/">'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></a><div class="toch">'+esc(t.contents)+'</div><nav class="tocnav">'+nav.map((n,i)=>'<a href="'+n[0]+'" class="'+(route===n[2]?'on':'')+'"><span class="rn">'+roman[i]+'.</span><span>'+esc(n[1])+'</span></a>').join('')+'</nav><details class="tocch"'+(S.tocOpen!==false&&(S.tocOpen||innerWidth>=1100)?' open':'')+'><summary class="toch"><span>'+esc(t.chapters)+'</span><b>'+S.meta.chapters.length+'</b></summary>'+groups.map(g=>'<div class="tocg">'+esc(g[0])+'</div>'+S.meta.chapters.filter(g[1]).map(c=>'<a href="#/c/'+c.stem+'" class="tc'+(location.hash.split('?')[0]==='#/c/'+c.stem?' on':'')+'"><span>'+esc(S.lang==='sk'?c.sk:c.en)+'</span><em></em><b>'+c.n+'</b></a>').join('')).join('')+'</details><div class="toch">'+esc(t.more)+'</div>'+soon.map(s=>'<a href="#/soon/'+s[0]+'" class="tc soon">'+esc(s[1])+'</a>').join(''):'';
   }else if(d==='c'){
     top='<div class="cbar"><div class="wrap cbarin">'+brand+'<nav class="cnotes">'+links(false)+'</nav></div><div class="wrap cbar2">'+qs+tools+soonL+'</div></div>';
   }else if(d==='d'){
@@ -103,16 +100,15 @@ function renderChrome(route){
   }else{ // e · magazine
     top='<div class="mast"><div class="wrap mastin"><span class="dateline">'+esc(t.issue)+' · '+esc(t.recipes(nRec))+'</span>'+brand+tools+'</div></div><nav class="mainnav"><div class="wrap navin">'+links(false)+'<span class="navq">'+qs+'</span></div></nav>';
   }
-  $('#top').innerHTML=top;$('#toc').innerHTML=toc;bFit();
+  $('#top').innerHTML=top;$('#toc').innerHTML=toc;
+  fitToc();
   $('#foot').innerHTML='<div class="wrap footin"><span class="fb">'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></span>'+soonL+'<span>'+(S.idx?esc(t.recipes(S.idx.length))+' · '+S.meta.chapters.length+' '+esc(t.chapters.toLowerCase()):'')+'</span></div>';
 }
-// design B: the contents sidebar is sticky only when it fits the viewport; otherwise it scrolls with the page
-function bFit(){const el=$('#toc');if(!el)return;const l=el.lastElementChild;const need=l?l.getBoundingClientRect().bottom-el.getBoundingClientRect().top+40:0;el.classList.toggle('fits',S.design==='b'&&need<=innerHeight);}
-window.addEventListener('resize',bFit);
-// design B: close the top-bar dropdowns on outside click / Escape
-document.addEventListener('click',e=>{document.querySelectorAll('details.bdd[open]').forEach(d=>{if(!d.contains(e.target))d.open=false;});});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('details.bdd[open]').forEach(d=>d.open=false);});
-document.addEventListener('toggle',e=>{const d=e.target;if(d.classList&&d.classList.contains('bdd')&&d.open)document.querySelectorAll('details.bdd[open]').forEach(x=>{if(x!==d)x.open=false;});},true);
+// design B: the contents sidebar scrolls with the page and then stays put once its end is in view (no inner scroll area)
+function fitToc(){const el=$('#toc');if(!el)return;if(S.design!=='b'){el.style.removeProperty('--tt');return;}
+  requestAnimationFrame(()=>el.style.setProperty('--tt',(innerWidth<1100?0:Math.min(0,innerHeight-el.offsetHeight))+'px'));}
+window.addEventListener('resize',fitToc);
+document.addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contains('tocch')){S.tocOpen=e.target.open;fitToc();}},true);
 // ---------------- cards ----------------
 function card(r){
   const t=T();
@@ -144,9 +140,9 @@ function vHome(){
   const sub=esc(t.recipes(nRec))+' · '+nCh+' '+esc(chW(nCh));
   const featSec=(cls)=>'<section class="sec"><div class="wrap"><div class="sh2"><h2>'+esc(t.featured)+'</h2></div>'+grid(feat.slice(1,7),cls)+'</div></section>';
   if(d==='b'){
-    const toc=G.map(g=>'<div class="hctg"><h3>'+esc(g.name)+'</h3><p>'+M.chapters.filter(g.f).map(c=>'<a href="#/c/'+c.stem+'">'+esc(S.lang==='sk'?c.sk:c.en)+'</a>').join('<span class="hsep"> · </span>')+'</p></div>').join('');
-    return '<section class="book wrap"><div class="spread single bhome"><div class="page title"><span class="kicker">'+esc(t.heroK)+' · SK / EN</span><h1>'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></h1><div class="orn">❦</div><p>'+sub+'. '+esc(t.heroP)+'</p>'+sform()+quick+
-     '<div class="hcont"><div class="runhead"><span>'+esc(t.contents)+'</span><span>'+sub+'</span></div>'+toc+'</div><span class="folio">i</span></div></div></section>';
+    const toc=G.map(g=>'<div class="ctg"><h3>'+esc(g.name)+'</h3>'+M.chapters.filter(g.f).map(c=>'<a class="ctl" href="#/c/'+c.stem+'"><span class="cn">'+String(c.num).padStart(2,'0')+'</span><span class="ct">'+esc(S.lang==='sk'?c.sk:c.en)+'</span><em></em><b>'+c.n+'</b></a>').join('')+'</div>').join('');
+    return '<section class="book wrap"><div class="spread home"><div class="page left title"><span class="kicker">'+esc(t.heroK)+' · SK / EN</span><h1>'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></h1><div class="orn">❦</div><p>'+sub+'. '+esc(t.heroP)+'</p>'+sform()+quick+'<span class="folio">i</span></div>'+
+     '<div class="page right"><div class="runhead"><span>'+esc(t.contents)+'</span><span>'+sub+'</span></div><h2 class="pageh">'+esc(t.contents)+'</h2>'+toc+'<span class="folio">ii</span></div></div></section>'+featSec();
   }
   if(d==='c'){
     const tiles=['01-fries-potatoes/french-fries-double-fried-basic','02-burgers/smash-burger-basic','22-breakfast/pancakes-american-basic','04-meat/pan-seared-steak-basic'].map(byId).filter(Boolean);
