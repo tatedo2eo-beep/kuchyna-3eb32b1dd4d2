@@ -232,3 +232,23 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.15}
 .footin{display:flex;justify-content:space-between;align-items:center}
 .fb{font-family:var(--fh);font-size:24px;color:var(--text)}.fb i{color:var(--accentText)}
 .orignote{border:1px solid var(--accent);background:var(--surface);padding:12px 14px;margin:8px 0 12px;border-radius:var(--r);font-size:14px}.orignote .btn{margin-top:8px}.btn.sm{padding:7px 14px;font-size:13px}
+
+/* favourites + cooked */
+.marks{display:inline-flex;gap:10px;flex-wrap:wrap;align-items:center}
+.heart,.stamp{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);padding:7px 14px 7px 10px;border-radius:999px;font-size:13.5px;font-weight:600;transition:transform .2s}
+.heart .hrt{width:20px;height:20px;fill:none;stroke:var(--accentText);stroke-width:1.8;transition:fill .2s}
+.heart.on{border-color:var(--accent)}.heart.on .hrt{fill:#D6336C;stroke:#D6336C}
+.heart.pop .hrt{animation:hpop .5s ease}
+@keyframes hpop{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
+.stamp .seal{width:24px;height:24px;border-radius:50%;border:2px dashed #B8902F;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:800}
+.stamp.on{border-color:#B8902F;color:#8A6A1C;background:linear-gradient(#FFF6DC,#F6E3A8)}
+.stamp.on .seal{border:2px solid #8A6A1C;background:radial-gradient(circle at 35% 30%,#F3D77A,#B8902F 70%);box-shadow:0 0 0 2px #F6E3A8,0 0 0 3px #B8902F}
+.stamp.pop .seal{animation:stampin .6s cubic-bezier(.2,1.6,.4,1)}
+@keyframes stampin{0%{transform:scale(2.6) rotate(-25deg);opacity:0}60%{transform:scale(.9) rotate(4deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+.rimg{position:relative}
+.ribbon{position:absolute;top:14px;left:-34px;z-index:2;transform:rotate(-45deg);background:linear-gradient(#E7C66A,#B8902F);color:#3A2A05;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:4px 40px;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.favdot{position:absolute;top:10px;right:10px;z-index:2;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center}
+.favdot .hrt{width:19px;height:19px;fill:#D6336C;stroke:#D6336C}
+.cookbtn{padding:9px 18px}
+.fb2 .marks{margin-bottom:12px}.fb2 .heart,.fb2 .stamp{font-size:12.5px;padding:5px 12px 5px 8px}
+.favmeta{margin-top:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
