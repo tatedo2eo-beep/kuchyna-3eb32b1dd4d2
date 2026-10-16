@@ -263,7 +263,9 @@ function fmtServ(n){return S.lang==='sk'?String(n).replace('.',','):String(n);}
 function timeStats(s){if(!s)return '';return s.split('|').map((p,j)=>{if(j===0&&p.indexOf(':')<0)p=T().prep+': '+p;const i=p.indexOf(':');return '<div><small>'+esc(p.slice(0,i).trim())+'</small><b>'+esc(p.slice(i+1).trim())+'</b></div>';}).join('');}
 function catCard(r){const t=T(),c=r.cat;if(!c)return '';return '<div class="cat"><img src="'+c.img+'" alt="'+esc(t.catAlt)+'"><div><span class="pl">'+ICON.cat+esc(t.catTip[c.type]||t.catTip.tip)+'</span><p>'+esc(L(c))+'</p>'+(c.url?'<span class="tsrc">'+esc(t.source)+': '+linkify(c.url)+'</span>':'')+'</div></div>';}
 function sugarBox(s){const t=T();if(!s)return '';const p=s.p50;const bar=(typeof p==='number')?'<div class="bar"><i style="width:'+Math.min(100,p)+'%"></i></div>':'';
-  return '<div class="sug"><b>'+esc(t.sugar)+'</b>'+(s.g!=null?'<p class="big">'+fmtNum(s.g)+' g · '+fmtNum(p)+' % '+esc(t.ofDaily)+' (50 g)</p>':'')+bar+'<p>'+linkify(L(s))+'</p><p class="tsrc">'+linkify(L(S.meta.sugar)||'')+' '+(S.meta.sugar.url?linkify(S.meta.sugar.url):'')+'</p></div>';}
+  const lab=S.lang==='sk'?(s.lab_sk||t.sugarShort):(s.lab_en||t.sugarShort);
+  if(s.g==null)return '<div class="sug"><b>'+esc(t.sugar)+'</b><p>'+linkify(L(s))+'</p></div>';
+  return '<div class="sug"><b>'+esc(t.sugar)+'</b><p class="big">'+esc(lab)+': '+fmtNum(s.g)+' g '+esc(t.perServing)+'</p>'+bar+'<p>'+fmtNum(p)+' % '+esc(t.ofMax)+' · '+fmtNum(s.p25)+' % '+esc(t.ofIdeal)+'</p><p class="tsrc">'+linkify(L(S.meta.sugar)||'')+' '+(S.meta.sugar.url?linkify(S.meta.sugar.url):'')+'</p></div>';}
 function fmtNum(v){if(v==null)return '';const r=Math.round(v*10)/10;return S.lang==='sk'?String(r).replace('.',','):String(r);}
 function nutTable(n){const t=T();if(!n||!n.rows||n.rows.length<2)return '<p class="nutnote">'+esc(t.noNut)+'</p>';
   const hd=n.rows[0];return '<table class="nut"><thead><tr>'+hd.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr></thead><tbody>'+n.rows.slice(1).map(r=>'<tr>'+r.map(c=>'<td>'+esc(c)+'</td>').join('')+'</tr>').join('')+'</tbody></table>'+(n.status&&!/^OK/.test(n.status)?'<p class="nutnote">'+esc(t.nutPartial)+'</p>':'');}
