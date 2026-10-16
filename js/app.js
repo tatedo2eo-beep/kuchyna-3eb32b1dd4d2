@@ -57,8 +57,8 @@ const lvlName=l=>T().levels[l]||l;
 // ---------------- header / toc / footer ----------------
 function renderChrome(route){
   const t=T();document.documentElement.lang=S.lang;document.title=t.brand1+' '+t.brand2;
-  const nav=[['#/',t.home,'home'],['#/chapters',t.chapters,'chapters'],['#/search',t.search,'search'],['#/healthy',t.healthy,'healthy'],['#/countries',t.countries,'countries'],['#/chefs',t.chefsShort,'chefs'],['#/favorites',t.favorites,'favorites']];
-  const soon=[['meals',t.meals],['shopping',t.shopping],['fridge',t.fridge],['seasonal',t.seasonal],['joe',t.joe]];
+  const nav=[['#/',t.home,'home'],['#/chapters',t.chapters,'chapters'],['#/search',t.search,'search'],['#/healthy',t.healthy,'healthy'],['#/countries',t.countries,'countries'],['#/chefs',t.chefsShort,'chefs'],['#/fridge',t.fridgeShort,'fridge'],['#/favorites',t.favorites,'favorites']];
+  const soon=[['meals',t.meals],['shopping',t.shopping],['seasonal',t.seasonal],['joe',t.joe]];
   $('#top').innerHTML='<div class="topbar"><div class="wrap topin"><a class="brand" href="#/"><span class="logo">T</span><span class="bt">'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></span></a>'+
    '<form class="qs" data-act="qs"><span class="qsi">'+ICON.search+'</span><input name="q" type="search" placeholder="'+esc(t.searchPh)+'" aria-label="'+esc(t.search)+'"></form>'+
    '<div class="tools"><div class="lang" role="group" aria-label="Language"><button data-act="lang" data-l="sk" class="'+(S.lang==='sk'?'on':'')+'">SK</button><button data-act="lang" data-l="en" class="'+(S.lang==='en'?'on':'')+'">EN</button></div>'+
@@ -192,6 +192,18 @@ function vCook(r){const t=T();const {steps,ing,showT}=cookSteps(r);const n=steps
    '<div class="cookstep"><div class="cprog"><i style="width:'+(n?((i+1)/n*100):0)+'%"></i></div><div class="cnum">'+esc(t.step)+' '+(i+1)+' / '+n+'</div><p class="ctext">'+linkify(st.t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</p>'+(st.c?tree(st.c):'')+
    '<div class="cnav"><button class="btn cprev" data-act="cstep" data-d="-1"'+(i===0?' disabled':'')+'>← '+esc(t.prev)+'</button><span class="cdots">'+steps.map((x,j)=>'<button class="cdot'+(j===i?' on':'')+(j<i?' done':'')+'" data-act="cgo" data-i="'+j+'" aria-label="'+(j+1)+'"></button>').join('')+'</span>'+
    (i<n-1?'<button class="btn cnext" data-act="cstep" data-d="1">'+esc(t.next)+' →</button>':'<a class="btn cnext" href="#/r/'+r.id+'">'+esc(t.done)+' ✓</a>')+'</div><p class="ckeys">'+esc(t.keysHint)+'</p></div></div></section>';}
+// ---------------- what can I make ----------------
+let frP=null;S.have=(()=>{try{return JSON.parse(localStorage.getItem('tami.fridge')||'[]');}catch(e){return [];}})();
+function loadFridge(){return frP||(frP=fetch('data/fridge.json').then(r=>{if(!r.ok)throw new Error('fridge '+r.status);return r.json();}).then(d=>(S.fr=d)));}
+function vFridge(params){const t=T(),F=S.fr;const have=new Set(S.have);const name=k=>{const i=F.ings.find(x=>x.k===k);return i?(S.lang==='sk'?i.sk:i.en):k;};
+  const chips=Object.keys(F.groups).map(g=>'<div class="frg"><h3>'+esc(S.lang==='sk'?F.groups[g][0]:F.groups[g][1])+'</h3><div class="chips">'+F.ings.filter(i=>i.g===g).map(i=>'<button class="chip'+(have.has(i.k)?' on':'')+'" data-act="have" data-k="'+i.k+'">'+(have.has(i.k)?'✓ ':'')+esc(S.lang==='sk'?i.sk:i.en)+'</button>').join('')+'</div></div>').join('');
+  let res=[];
+  if(have.size){for(const r of S.idx){const ks=F.r[r.id];if(!ks)continue;const h=ks.filter(k=>have.has(k));if(!h.length)continue;res.push({r,h,miss:ks.filter(k=>!have.has(k)),n:ks.length});}
+    res.sort((a,b)=>b.h.length-a.h.length||a.miss.length-b.miss.length||L(a.r.t).localeCompare(L(b.r.t),S.lang));}
+  const n=+params.get('n')||48;const show=res.slice(0,n);
+  return '<section class="sec"><div class="wrap"><div class="sh2"><h1>'+esc(t.fridge)+'</h1><span>'+(have.size?res.length+' '+esc(t.results):'')+'</span></div><p class="lead">'+esc(t.fridgeP)+'</p>'+
+   '<div class="frbox"><div class="frhead"><b>'+esc(t.fridgeHave)+' ('+have.size+')</b>'+(have.size?'<button class="chip ghost" data-act="haveclr">'+esc(t.reset)+'</button>':'')+'</div>'+chips+'<p class="nutnote">'+esc(t.fridgeStaples)+'</p></div>'+
+   (have.size?(res.length?'<div class="rgrid">'+show.map(o=>'<div class="favitem">'+card(o.r)+'<div class="frmeta"><b>'+esc(t.fridgeScore(o.h.length,o.n))+'</b>'+(o.miss.length?'<span>'+esc(t.fridgeMiss)+': '+esc(o.miss.slice(0,6).map(name).join(', '))+(o.miss.length>6?'…':'')+'</span>':'<span class="ok">'+esc(t.fridgeAll)+'</span>')+'</div></div>').join('')+'</div>'+(res.length>n?'<div class="more"><a class="btn" href="#/fridge?n='+(n+48)+'">+ '+(res.length-n)+'</a></div>':''):'<p class="empty">'+esc(t.noResults)+'</p>'):'<p class="empty">'+esc(t.fridgeEmpty)+'</p>')+'</div></section>';}
 function vSoon(k){const t=T();return '<section class="sec"><div class="wrap soonpage"><span class="kicker">'+esc(t.soon)+'</span><h1>'+esc(t[k]||'')+'</h1><p class="lead">'+esc(t.soonP)+'</p><a class="btn" href="#/">'+esc(t.home)+'</a></div></section>';}
 function vNotFound(){return '<section class="sec"><div class="wrap"><p class="empty">'+esc(T().notFound)+'</p></div></section>';}
 
@@ -324,6 +336,7 @@ async function route(){
     else if(name==='chefs')html=vChefs();
     else if(name==='soon')html=vSoon(parts[1]);
     else if(name==='favorites')html=vFav();
+    else if(name==='fridge'){await loadFridge();html=vFridge(params);}
     else if(name==='cook'){const id=parts.slice(1).join('/');const d=await loadCh(parts[1]);const r=d.find(x=>x.id===id);if(r){if(!curCook||curCook.id!==r.id)S.cookStep=0;curCook=r;html=vCook(r);}else html=vNotFound();name='chapters';}
     else if(name==='r'){const id=parts.slice(1).join('/');const d=await loadCh(parts[1]);const r=d.find(x=>x.id===id);curRecipe=r;html=r?vRecipe(r):vNotFound();name='chapters';}
     else html=vNotFound();
@@ -345,6 +358,8 @@ document.addEventListener('click',e=>{
     if(was){const sel='[data-act="'+a+'"][data-k="'+(window.CSS&&CSS.escape?CSS.escape(k):k)+'"]';const el=document.querySelector(sel);if(el){el.classList.add('pop');}}}
   else if(a==='cstep'&&curCook){S.cookStep=(S.cookStep||0)+(+b.dataset.d);rerender(false);}
   else if(a==='cgo'&&curCook){S.cookStep=+b.dataset.i;rerender(false);}
+  else if(a==='have'){const k=b.dataset.k;S.have=S.have.includes(k)?S.have.filter(x=>x!==k):S.have.concat(k);try{localStorage.setItem('tami.fridge',JSON.stringify(S.have));}catch(x){}rerender(true);}
+  else if(a==='haveclr'){S.have=[];try{localStorage.setItem('tami.fridge','[]');}catch(x){}rerender(true);}
   else if(a==='ver'){S.ver=b.dataset.v;rerender(true);}
   else if(a==='noal'||a==='tog'){const h=location.hash.replace(/^#/,'');const [p,qs]=h.split('?');const ps=new URLSearchParams(qs||'');ps.delete('n');
     if(a==='noal'){let no=(ps.get('no')||'').split(',').filter(Boolean);const k=b.dataset.a;no=no.includes(k)?no.filter(x=>x!==k):no.concat(k);no.length?ps.set('no',no.join(',')):ps.delete('no');}
