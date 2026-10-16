@@ -19,6 +19,9 @@ const TX={
   dl:'Joe sa sťahuje',dlDone:'Joe je pripravený',wake:'Joe sa prebúdza…',wakeP:'Joe sa prebúdza',
   noGpu:['Ach nie, baby 💔','Na tomto notebooku sa mi nepodarilo naštartovať. Skús kuchárku otvoriť v najnovšom Chrome alebo Edge a hneď som pri tebe.','Mwah 😘'],
   cpuNote:'Na tomto notebooku bežím bez grafickej karty, takže odpovedám pomalšie. Chvíľku strpenia, baby 😊',
+  faster:'Ako Joea zrýchliť',
+  // Chrome's own Slovak labels (Chromium generated_resources_sk.xtb): Nastavenia, Systém, „Používať akceleráciu grafiky, keď bude k dispozícii“, Reštartovať
+  tip:'Baby, mám pre teba malú radu, aby som ti odpovedal oveľa rýchlejšie 💛\nTvoj prehliadač mi teraz nedovolí použiť grafickú kartu, takže bežím len na procesore. Fungujem, iba pomalšie. Takto to zapneš v Chrome:\n1. Vpravo hore klikni na tri bodky ⋮ a vyber Nastavenia.\n2. Vľavo klikni na Systém.\n3. Zapni „Používať akceleráciu grafiky, keď bude k dispozícii“.\n4. Klikni na Reštartovať.\nSkratka: do adresného riadka napíš chrome://settings/system a stlač Enter.\nAk používaš Edge: tri bodky … › Nastavenia › Systém a výkon, tam zapni hardvérovú akceleráciu a klikni na Reštartovať (skratka edge://settings/system).\nKým to nezapneš, som tu pre teba stále, len trochu pomalší. Mwah 😘',
   metered:'Joe sa zatiaľ nestiahol, lebo vyzerá, že si na pomalom alebo mobilnom pripojení.',dlNow:'Stiahnuť teraz',size:'asi {n} GB, iba raz',
   err:'Joe sa nevedel spustiť. Skús stránku obnoviť.',retry:'Skúsiť znova',recs:'Recepty z kuchárky',empty:'Napíš mi, čo chceš variť, alebo sa len ozvi 😊',
   mem:'Pamäť',memP:'Toto si AI Joe pamätá a pridáva do každého chatu.',memNone:'Zatiaľ si nič nepamätá. Napíš napríklad: „Zapamätaj si, že nemám rada koriander.“',memDel:'Zabudnúť',memAdd:'Pridať vec na zapamätanie…',prep:'Joe sa pripravuje…',chats:'Predošlé chaty',newChat:'Nový chat',noChats:'Zatiaľ žiadne chaty',msgs:'správ',back:'Späť na chat',dlHint:'Joe sa ešte sťahuje ({p} %). Hneď ako bude hotový, môžeš písať.',you:'Ty',thinking:'Joe píše…'},
@@ -28,6 +31,8 @@ const TX={
   dl:'Joe is downloading',dlDone:'Joe is ready',wake:'Joe is waking up…',wakeP:'Joe is waking up',
   noGpu:['Oh no baby 💔','I couldn\u2019t start on this laptop. Try opening the cookbook in the latest Chrome or Edge and I\u2019ll be right there for you.','Mwah 😘'],
   cpuNote:'On this laptop I run without the graphics card, so my answers come a bit slower. Bear with me, baby 😊',
+  faster:'How to make Joe faster',
+  tip:'Baby, here\u2019s a little tip so I can answer you much faster 💛\nRight now your browser won\u2019t let me use the graphics card, so I\u2019m running on the processor only. I still work, just slower. Here\u2019s how to turn it on in Chrome:\n1. Click the three dots ⋮ in the top right and choose Settings.\n2. On the left, click System.\n3. Turn on \u201cUse graphics acceleration when available\u201d.\n4. Click Relaunch.\nShortcut: type chrome://settings/system in the address bar and press Enter.\nIf you use Edge: three dots … › Settings › System and performance, turn on \u201cUse hardware acceleration when available\u201d and click Restart (shortcut edge://settings/system).\nUntil then I\u2019m still here for you, just a little slower. Mwah 😘',
   metered:'Joe hasn\u2019t downloaded yet because you seem to be on a slow or mobile connection.',dlNow:'Download now',size:'about {n} GB, only once',
   err:'Joe couldn\u2019t start. Try reloading the page.',retry:'Try again',recs:'Recipes from the cookbook',empty:'Tell me what you want to cook, or just say hi 😊',
   mem:'Memory',memP:'AI Joe remembers these and adds them to every chat.',memNone:'Nothing remembered yet. Try: "Remember that I don\u2019t like coriander."',memDel:'Forget',memAdd:'Add something to remember…',prep:'Joe is getting ready…',chats:'Past chats',newChat:'New chat',noChats:'No chats yet',msgs:'messages',back:'Back to the chat',dlHint:'Joe is still downloading ({p}%). You can write as soon as he is ready.',you:'You',thinking:'Joe is typing…'}};
@@ -169,7 +174,7 @@ async function detect(){
   if(!window.Worker){J.gpu='none';return;}
   const force=/[?&]joe=cpu\b/.test(location.search)||ls.get('tami.joe.engine')==='cpu';
   const ad=force?null:await gpuAdapter();
-  if(!ad){useCpu();return;}
+  if(!ad){J.noAd=!force;useCpu();return;}
   J.gpu='ok';J.engine='gpu';let k=ls.get(LS.model);
   if(!MODELS[k]){const f16=ad.features&&ad.features.has('shader-f16');const mem=navigator.deviceMemory;
     let free=Infinity;try{const e=await navigator.storage.estimate();free=(e.quota-e.usage)/1e9;}catch(e){}
@@ -196,7 +201,7 @@ function worker(){if(J.worker)return J.worker;const w=J.engine==='cpu'?cpuWorker
 function isCached(){return new Promise(res=>{const id=Math.random();J.waiters['c'+id]=res;worker().postMessage({cmd:'cached',id,model:J.model.id});setTimeout(()=>{if(J.waiters['c'+id]){delete J.waiters['c'+id];res(false);}},20000);});}
 function startDownload(bg){if(!J.model)return;J.bg=!!bg;J.state='downloading';ui();try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){}worker().postMessage({cmd:'load',model:J.model.id});}
 let waitQ=[];function flushWait(){const q=waitQ;waitQ=[];q.forEach(f=>f());}
-async function boot(){await detect();ui();if(J.gpu!=='ok')return;
+async function boot(){await detect();if(J.open){maybeTip();renderMsgs();}ui();if(J.gpu!=='ok')return;
   const c=await isCached();if(c){J.state='cached';ui();return;}
   if(metered()&&ls.get(LS.manual)!=='1'){J.state='skipped';ui();return;}
   startDownload(true);}
@@ -253,7 +258,8 @@ function build(){root=document.createElement('div');root.id='joe';root.innerHTML
   ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();f.requestSubmit();}});
   ta.addEventListener('input',()=>{ta.style.height='';ta.style.height=Math.min(ta.scrollHeight,140)+'px';});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&J.open)toggle(false);});
-  document.addEventListener('click',e=>{const a=e.target.closest('[data-joeopen],a[href="#/soon/joe"]');if(a){e.preventDefault();e.stopPropagation();toggle(true);}},true);
+  document.addEventListener('click',e=>{const f=e.target.closest('[data-joefaster]');if(f){J.tip=true;J.view='chat';renderMsgs();const m=root.querySelector('.joetipmsg');m&&m.scrollIntoView({block:'nearest'});return;}
+    const a=e.target.closest('[data-joeopen],a[href="#/soon/joe"]');if(a){e.preventDefault();e.stopPropagation();toggle(true);}},true);
   const deep=()=>{if(location.hash==='#/soon/joe'){history.replaceState(null,'','#/');window.dispatchEvent(new HashChangeEvent('hashchange'));toggle(true);}};window.addEventListener('hashchange',deep);setTimeout(deep,0);
   root.querySelector('.joemsgs').addEventListener('click',e=>{const b=e.target.closest('[data-joego]');if(b){J.introDone=true;ls.set(LS.intro,'1');renderMsgs();root.querySelector('textarea').focus();}
     const d=e.target.closest('[data-joedl]');if(d){ls.set(LS.manual,'1');startDownload(false);}
@@ -262,8 +268,10 @@ function build(){root=document.createElement('div');root.id='joe';root.innerHTML
     const r=e.target.closest('[data-joeretry]');if(r){location.reload();}});
   new MutationObserver(()=>{ui();renderMsgs();}).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
   ui();}
+const TIPKEY='tami.joe.gputip';
+function maybeTip(){if(!J.noAd||J.engine!=='cpu'||J.tip)return;const last=+ls.get(TIPKEY)||0;if(Date.now()-last>7*864e5){J.tip=true;ls.set(TIPKEY,String(Date.now()));}}
 function toggle(v){J.open=v==null?!J.open:v;panel.hidden=!J.open;root.classList.toggle('open',J.open);fab.setAttribute('aria-expanded',J.open);
-  if(J.open){loadIdx().catch(()=>{});renderMsgs();setTimeout(()=>{const ta=root.querySelector('textarea');ta&&!ta.disabled&&ta.focus();},50);}
+  if(J.open){loadIdx().catch(()=>{});maybeTip();renderMsgs();setTimeout(()=>{const ta=root.querySelector('textarea');ta&&!ta.disabled&&ta.focus();},50);}
   else if(J.state==='ready'&&!J.busy&&J.worker){/* keep loaded while the page is open: answers stay fast */}}
 function ui(){if(!root)return;const t=tx();
   root.dataset.state=J.gpu==='none'?'nogpu':J.state;
@@ -297,7 +305,8 @@ function renderMsgs(){if(!root||!J.open)return;const t=tx();const box=root.query
   ms.forEach(m=>{const mm=String(m.content).match(RECM);const who=m.role==='assistant'?'joe':'me';h+='<div class="joeturn '+who+'">'+bubbles(stripRecs(m.content),who)+(mm?chips(mm[1].split(',').filter(Boolean)):'')+'</div>';});
   if(J.busy)h+='<div class="joeturn joe live">'+(J.busy.text?bubbles(J.busy.text,'joe'):'<div class="joeb joe typing"><span></span><span></span><span></span></div>')+'</div>';
   if(J.gpu==='none')h+='<div class="joesys nogpu">'+t.noGpu.map(x=>'<div class="joeb joe">'+esc(x)+'</div>').join('')+'</div>';
-  else if(J.engine==='cpu')h+='<div class="joesys cpu"><div class="joeb joe">'+esc(t.cpuNote)+'</div></div>';
+  else if(J.engine==='cpu'){h+='<div class="joesys cpu"><div class="joeb joe">'+esc(t.cpuNote)+'</div>'+(J.noAd?'<button type="button" class="joefaster" data-joefaster>'+esc(t.faster)+'</button>':'')+'</div>';
+    if(J.noAd&&J.tip)h+='<div class="joeturn joe joetipmsg">'+bubbles(t.tip,'joe')+'</div>';}
   else if(J.state==='skipped')h+='<div class="joesys"><p>'+esc(t.metered)+'</p><button type="button" class="joego" data-joedl>'+esc(t.dlNow)+' ('+esc(t.size.replace('{n}',String(J.model.gb).replace('.',lang()==='sk'?',':'.')))+')</button></div>';
   else if(J.state==='error')h+='<div class="joesys"><p>'+esc(t.err)+'</p><button type="button" class="joego" data-joeretry>'+esc(t.retry)+'</button></div>';
   box.innerHTML=h;const body=root.querySelector('.joebody');body.scrollTop=body.scrollHeight;ui();}

@@ -127,3 +127,6 @@
 [data-design=d] .joefact,[data-design=d] .joememf input{border-radius:20px}
 [data-design=c] .joefact{border-radius:2px;background:#fff8c4;color:#3a2f1c;border-color:#e8d98a}
 [data-design=g] .joememv{grid-template-columns:1fr}
+/* "How to make Joe faster" link (CPU path) */
+.joefaster{display:inline-block;margin:6px 0 0 4px;padding:0;border:0;background:none;font:inherit;font-size:.82rem;color:var(--accentText);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.joetipmsg .joeb{white-space:normal}
