@@ -347,3 +347,4 @@ img.ph{background:var(--surface2,var(--surface));background-image:linear-gradien
 img.ldin{animation:imgin .4s ease-out}
 @keyframes imgin{from{opacity:.25}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){img.ldin{animation:none}}
+h1+.lead,h2+.lead{margin-top:12px}
