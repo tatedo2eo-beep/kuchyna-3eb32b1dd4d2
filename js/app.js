@@ -171,6 +171,27 @@ function vFav(){const t=T();
   const box=(list,cooked)=>list.length?'<div class="rgrid">'+list.map(o=>'<div class="favitem">'+card(o.r)+'<div class="favmeta">'+(o.v.fl?'<span class="tag">'+esc(t.flavor)+': '+esc(cap(S.lang==='sk'?o.v.fl.sk:o.v.fl.en))+'</span> ':'<span class="tag">'+esc(t.mainRecipe)+'</span> ')+(cooked?'<span class="tsrc">'+esc(t.cookedOn)+' '+fmtDate(o.v.t)+'</span>':'')+'</div></div>').join('')+'</div>':'<p class="empty">'+esc(cooked?t.noCooked:t.noFav)+'</p>';
   return '<section class="sec"><div class="wrap"><div class="sh2"><h1>'+esc(t.favorites)+'</h1><span>'+Object.keys(S.fav).length+'</span></div><p class="lead">'+esc(t.favP)+'</p>'+box(rows(S.fav),false)+
    '<div class="sh2"><h2>'+esc(t.cookedH)+'</h2><span>'+Object.keys(S.cooked).length+'</span></div>'+box(rows(S.cooked),true)+'</div></section>';}
+// ---------------- cook mode ----------------
+let wake=null;
+async function wakeOn(){const t=T();const el=()=>document.querySelector('.wakest');
+  if(!('wakeLock' in navigator)){if(el())el().textContent=t.wakeNo;return;}
+  try{wake=await navigator.wakeLock.request('screen');if(el())el().textContent=t.wakeOn;wake.addEventListener('release',()=>{if(el()&&curCook)el().textContent=t.wakeOff;});}catch(e){if(el())el().textContent=t.wakeOff;}}
+function wakeOff(){if(wake){wake.release().catch(()=>{});wake=null;}}
+document.addEventListener('visibilitychange',()=>{if(curCook&&document.visibilityState==='visible')wakeOn();});
+let curCook=null;
+function cookSteps(r){const ver=S.ver;const en=S.lang==='en';
+  const skNoOrig=ver==='orig'&&!en&&!(r.orig.ing.sk&&r.orig.method.sk);const showT=ver==='tami'||skNoOrig;
+  let m=showT?L(r.tami.method).c:L(r.orig.method);if(!m||!m.length)m=L(r.orig.method)&&L(r.orig.method).length?L(r.orig.method):L(r.tami.method).c;
+  const ing=showT?(L(r.tami.ing)||r.tami.ing.en):L(r.orig.ing);
+  return {steps:(m||[]).map(n=>({t:n.t.replace(/^\d+\.\s/,''),c:n.c})),ing,showT};}
+function vCook(r){const t=T();const {steps,ing,showT}=cookSteps(r);const n=steps.length;let i=Math.min(Math.max(0,S.cookStep||0),Math.max(0,n-1));S.cookStep=i;
+  const base=r.serv||null;const want=S.serv[r.id]||base;const k=base?want/base:1;
+  const st=steps[i]||{t:''};
+  return '<section class="cook"><div class="cooktop wrap"><a class="btn sm ghostbtn" href="#/r/'+r.id+'">✕ '+esc(t.cookExit)+'</a><div class="cooktitle"><span class="kicker">'+esc(t.cook)+' · '+esc(showT?t.tamiV:t.origV)+(base?' · '+fmtServ(want)+' '+esc(t.servings.toLowerCase()):'')+'</span><h1>'+esc(L(r.t))+'</h1></div><span class="wakest">'+esc(t.wakeWait)+'</span></div>'+
+   '<div class="cookbody wrap"><aside class="cookings"><h3>'+esc(t.ingredients)+'</h3>'+tree(ing,{scale:k,cls:'ing'})+'</aside>'+
+   '<div class="cookstep"><div class="cprog"><i style="width:'+(n?((i+1)/n*100):0)+'%"></i></div><div class="cnum">'+esc(t.step)+' '+(i+1)+' / '+n+'</div><p class="ctext">'+linkify(st.t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</p>'+(st.c?tree(st.c):'')+
+   '<div class="cnav"><button class="btn cprev" data-act="cstep" data-d="-1"'+(i===0?' disabled':'')+'>← '+esc(t.prev)+'</button><span class="cdots">'+steps.map((x,j)=>'<button class="cdot'+(j===i?' on':'')+(j<i?' done':'')+'" data-act="cgo" data-i="'+j+'" aria-label="'+(j+1)+'"></button>').join('')+'</span>'+
+   (i<n-1?'<button class="btn cnext" data-act="cstep" data-d="1">'+esc(t.next)+' →</button>':'<a class="btn cnext" href="#/r/'+r.id+'">'+esc(t.done)+' ✓</a>')+'</div><p class="ckeys">'+esc(t.keysHint)+'</p></div></div></section>';}
 function vSoon(k){const t=T();return '<section class="sec"><div class="wrap soonpage"><span class="kicker">'+esc(t.soon)+'</span><h1>'+esc(t[k]||'')+'</h1><p class="lead">'+esc(t.soonP)+'</p><a class="btn" href="#/">'+esc(t.home)+'</a></div></section>';}
 function vNotFound(){return '<section class="sec"><div class="wrap"><p class="empty">'+esc(T().notFound)+'</p></div></section>';}
 
@@ -249,7 +270,7 @@ function vRecipe(r){
    '<div class="stats">'+timeStats(L(r.time))+'</div>'+
    '<div class="badges">'+(r.spicy?'<span class="bdg sp">🌶 '+esc(t.spicy)+'</span>':'')+(lac?'<span class="bdg lac">'+esc(t.lowLac)+'</span>':'')+(r.healthy&&r.healthy.ok?'<span class="bdg h">'+esc(t.healthyBadge)+'</span>':'')+(r.af?'<span class="bdg">'+esc(t.af)+'</span>':'')+(r.caf?'<span class="bdg">'+esc(t.caf)+'</span>':'')+(r.mild?'<span class="bdg">'+esc(t.mild)+'</span>':'')+'</div>'+
    '<div class="ctrls">'+(base?'<div class="scaler"><span class="sl">'+esc(t.servings)+'</span><button class="sb" data-act="serv" data-d="-1" aria-label="−">−</button><span class="sn">'+fmtServ(want)+'</span><button class="sb" data-act="serv" data-d="1" aria-label="+">+</button><span class="so">'+esc(t.origServ)+': '+esc(L(r.servT)||'')+'</span></div>':'<div class="scaler"><span class="sl">'+esc(t.servings)+'</span><span class="so">'+esc(L(r.servT)||'')+'</span></div>')+
-   '<div class="vtoggle"><button data-act="ver" data-v="tami" class="'+(ver==='tami'?'on':'')+'">'+esc(t.tamiV)+'</button><button data-act="ver" data-v="orig" class="'+(ver==='orig'?'on':'')+'">'+esc(t.origV)+'</button></div></div><div class="ctrls">'+markBtns(r.id)+'</div></div>'+
+   '<div class="vtoggle"><button data-act="ver" data-v="tami" class="'+(ver==='tami'?'on':'')+'">'+esc(t.tamiV)+'</button><button data-act="ver" data-v="orig" class="'+(ver==='orig'?'on':'')+'">'+esc(t.origV)+'</button></div></div><div class="ctrls">'+markBtns(r.id)+'<a class="btn cookbtn" href="#/cook/'+r.id+'">▶ '+esc(t.cook)+'</a></div></div>'+
    (r.img?'<img class="rimg-main" src="'+r.img+'" alt="'+esc(L(r.t))+'">':'')+'</section>';
   // warnings
   if(spicy||lac)h+='<section class="wrap warns">'+(spicy?'<div class="warn sp"><b>🌶 '+esc(spicy.k)+': '+esc(spicy.v)+'</b>'+(spn?'<p>'+linkify(spn.v)+'</p>':'')+'</div>':'')+(lac?'<div class="warn lac"><b>'+esc(lac.k)+': '+esc(lac.v)+'</b>'+(lacn?'<p>'+linkify(lacn.v)+'</p>':'')+'</div>':'')+'</section>';
@@ -293,7 +314,7 @@ async function route(){
   const v=$('#view');
   try{
     await loadIndex();
-    let name=parts[0]||'home',html;curRecipe=null;
+    let name=parts[0]||'home',html;curRecipe=null;const wasCook=curCook;if(parts[0]!=='cook'){curCook=null;wakeOff();}
     if(name==='home')html=vHome();
     else if(name==='chapters')html=vChapters(params);
     else if(name==='c')html=vChapter(parts[1],params);
@@ -303,12 +324,13 @@ async function route(){
     else if(name==='chefs')html=vChefs();
     else if(name==='soon')html=vSoon(parts[1]);
     else if(name==='favorites')html=vFav();
+    else if(name==='cook'){const id=parts.slice(1).join('/');const d=await loadCh(parts[1]);const r=d.find(x=>x.id===id);if(r){if(!curCook||curCook.id!==r.id)S.cookStep=0;curCook=r;html=vCook(r);}else html=vNotFound();name='chapters';}
     else if(name==='r'){const id=parts.slice(1).join('/');const d=await loadCh(parts[1]);const r=d.find(x=>x.id===id);curRecipe=r;html=r?vRecipe(r):vNotFound();name='chapters';}
     else html=vNotFound();
-    renderChrome(name==='c'?'chapters':name);v.innerHTML=html;
+    renderChrome(name==='c'?'chapters':name);v.innerHTML=html;document.body.classList.toggle('cooking',!!curCook);if(curCook)wakeOn();
   }catch(e){console.error(e);v.innerHTML='<section class="sec"><div class="wrap"><p class="empty">'+esc(String(e.message||e))+'</p></div></section>';}
 }
-function rerender(keepScroll){const y=window.scrollY;if(curRecipe){renderChrome('chapters');$('#view').innerHTML=vRecipe(curRecipe);}else route();if(keepScroll)window.scrollTo(0,y);}
+function rerender(keepScroll){const y=window.scrollY;if(curCook){renderChrome('chapters');$('#view').innerHTML=vCook(curCook);if(wake)$('.wakest').textContent=T().wakeOn;else wakeOn();return;}if(curRecipe){renderChrome('chapters');$('#view').innerHTML=vRecipe(curRecipe);}else route();if(keepScroll)window.scrollTo(0,y);}
 window.addEventListener('hashchange',()=>{route().then(()=>window.scrollTo(0,0));});
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
@@ -321,6 +343,8 @@ document.addEventListener('click',e=>{
     if(store[k])delete store[k];else store[k]={t:Date.now(),fl:b.dataset.fen?{en:b.dataset.fen,sk:b.dataset.fsk}:null};
     lsSet(a==='fav'?'tami.fav':'tami.cooked',store);const was=!!store[k];rerender(true);
     if(was){const sel='[data-act="'+a+'"][data-k="'+(window.CSS&&CSS.escape?CSS.escape(k):k)+'"]';const el=document.querySelector(sel);if(el){el.classList.add('pop');}}}
+  else if(a==='cstep'&&curCook){S.cookStep=(S.cookStep||0)+(+b.dataset.d);rerender(false);}
+  else if(a==='cgo'&&curCook){S.cookStep=+b.dataset.i;rerender(false);}
   else if(a==='ver'){S.ver=b.dataset.v;rerender(true);}
   else if(a==='noal'||a==='tog'){const h=location.hash.replace(/^#/,'');const [p,qs]=h.split('?');const ps=new URLSearchParams(qs||'');ps.delete('n');
     if(a==='noal'){let no=(ps.get('no')||'').split(',').filter(Boolean);const k=b.dataset.a;no=no.includes(k)?no.filter(x=>x!==k):no.concat(k);no.length?ps.set('no',no.join(',')):ps.delete('no');}
@@ -328,7 +352,8 @@ document.addEventListener('click',e=>{
     location.hash='#/search?'+ps.toString();}
 });
 document.addEventListener('click',e=>{const p=$('#palpanel');if(!p.hidden&&e.target===p)togglePal(false);});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')togglePal(false);});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')togglePal(false);
+  if(curCook&&!/INPUT|SELECT|TEXTAREA/.test((e.target.tagName||''))){const n=cookSteps(curCook).steps.length;if((e.key==='ArrowRight'||e.key===' ')&&S.cookStep<n-1){e.preventDefault();S.cookStep++;rerender(false);}else if(e.key==='ArrowLeft'&&S.cookStep>0){S.cookStep--;rerender(false);}}});
 document.addEventListener('submit',e=>{const f=e.target.closest('[data-act]');if(!f)return;e.preventDefault();const q=f.querySelector('input[name=q]').value.trim();
   const h=location.hash.replace(/^#/,'');const [p,qs]=h.split('?');const ps=new URLSearchParams(f.dataset.act==='sq'?(qs||''):'');q?ps.set('q',q):ps.delete('q');ps.delete('n');location.hash='#/search?'+ps.toString();});
 document.addEventListener('change',e=>{const s=e.target.closest('select[data-f]');if(!s)return;const h=location.hash.replace(/^#/,'');const [p,qs]=h.split('?');const ps=new URLSearchParams(qs||'');ps.delete('n');s.value?ps.set(s.dataset.f,s.value):ps.delete(s.dataset.f);location.hash='#/search?'+ps.toString();});

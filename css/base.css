@@ -252,3 +252,25 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.15}
 .cookbtn{padding:9px 18px}
 .fb2 .marks{margin-bottom:12px}.fb2 .heart,.fb2 .stamp{font-size:12.5px;padding:5px 12px 5px 8px}
 .favmeta{margin-top:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* cook mode */
+body.cooking .mainnav,body.cooking .foot{display:none}
+.cook{padding:20px 0 40px;min-height:calc(100vh - 80px)}
+.cooktop{display:flex;align-items:center;gap:24px;border-bottom:1px solid var(--line);padding-bottom:16px}
+.cooktitle{flex:1}.cooktitle h1{font-size:38px;margin-top:4px}
+.ghostbtn{background:var(--surface);color:var(--text);border:1px solid var(--line)}
+.wakest{font-size:13px;color:var(--muted);border:1px solid var(--line);padding:6px 12px;border-radius:999px}
+.cookbody{display:grid;grid-template-columns:340px 1fr;gap:44px;padding-top:26px}
+.cookings{border-right:1px solid var(--line);padding-right:28px;max-height:calc(100vh - 210px);overflow:auto}
+.cookings h3{font-size:22px;margin-bottom:6px}.cookings .ing>li{font-size:15px;padding:7px 0}
+.cprog{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden}.cprog i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.cnum{font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:var(--accentText);font-weight:700;margin:22px 0 10px}
+.ctext{font-family:var(--fb);font-size:32px;line-height:1.45;min-height:240px}
+.cookstep .lst li{font-size:20px}
+.cnav{display:flex;align-items:center;gap:16px;margin-top:30px}
+.cnav .btn{font-size:18px;padding:16px 30px}.cnav .btn[disabled]{opacity:.35;cursor:default}
+.cprev{background:var(--surface);color:var(--text);border:1px solid var(--line)}
+.cdots{flex:1;display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.cdot{width:12px;height:12px;border-radius:50%;background:var(--surface2);border:1px solid var(--line)}
+.cdot.done{background:var(--muted)}.cdot.on{background:var(--accent);transform:scale(1.3)}
+.ckeys{font-size:13px;color:var(--muted);margin-top:16px}
