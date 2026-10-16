@@ -406,7 +406,7 @@ function rParts(r){
   const cafF=r.caf&&L(r.caf);
   const extra=text.filter(f=>!/^(Caffeine note|Kofeín)/.test(f.k));
   const sug=r.sugar;
-  P.crumbs='<div class="crumbs"><a href="#/c/'+r.ch+'">'+esc(chName(r.ch))+'</a> · '+esc(lvlName(r.lvl))+'</div>';
+  P.crumbs='<div class="crumbs"><a href="#/chapters">'+esc(T().chapters)+'</a> / <a href="#/c/'+r.ch+'">'+esc(chName(r.ch))+'</a> · <a href="#/c/'+r.ch+'?lvl='+encodeURIComponent(r.lvl)+'">'+esc(lvlName(r.lvl))+'</a></div>';
   P.h1='<h1>'+esc(L(r.t))+(en?'':'<i>'+esc(r.t.en)+'</i>')+'</h1>';
   P.src='<div class="src">'+esc(t.source)+': '+esc(r.src||'')+(r.urls.length?' · '+r.urls.map(u=>linkify(u)).join(' · '):'')+'</div>';
   if(r.origin&&r.origin.codes&&r.origin.codes.length)P.src+='<div class="origin"><b>'+esc(t.origin)+':</b> '+coLine(r.origin,true)+'</div>';

@@ -150,7 +150,7 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.15}
 .soonpage{text-align:center;padding:60px 0}.soonpage h1{font-size:52px;margin:10px 0}
 /* chapter opener */
 .opener{display:grid;grid-template-columns:1fr 520px;gap:48px;padding:36px 0 40px;align-items:center}
-.crumbs{font-size:13.5px;color:var(--muted)}.crumbs a:hover{color:var(--accentText)}
+.crumbs{font-size:13.5px;color:var(--muted);position:relative;z-index:3}.crumbs a{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;font-weight:600;cursor:pointer}.crumbs a:hover{color:var(--accentText);text-decoration-thickness:2px}
 .bignum{font-family:var(--fh);font-size:120px;line-height:1;color:transparent;-webkit-text-stroke:1.5px var(--accent);margin-top:16px}
 .opener h1{font-size:64px}
 .opener .dek{color:var(--muted);font-size:18px;margin-top:10px}
