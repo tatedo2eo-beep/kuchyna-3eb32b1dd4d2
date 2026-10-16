@@ -88,7 +88,7 @@ function renderChrome(route){
     top='<div class="topbar"><div class="wrap topin"><span class="runner">'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></span>'+qs+tools+'</div></div>';
     const groups=[[t.savory,c=>c.num<24],[t.sweet,c=>c.num>=24&&c.num<34],[t.drinks,c=>c.num===34]];
     const roman=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
-    toc=S.meta?'<a class="tocbrand" href="#/">'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></a><div class="toch">'+esc(t.contents)+'</div><nav class="tocnav">'+nav.map((n,i)=>'<a href="'+n[0]+'" class="'+(route===n[2]?'on':'')+'"><span class="rn">'+roman[i]+'.</span><span>'+esc(n[1])+'</span></a>').join('')+'</nav><div class="toch">'+esc(t.chapters)+'</div>'+groups.map(g=>'<div class="tocg">'+esc(g[0])+'</div>'+S.meta.chapters.filter(g[1]).map(c=>'<a href="#/c/'+c.stem+'" class="tc'+(location.hash.split('?')[0]==='#/c/'+c.stem?' on':'')+'"><span>'+esc(S.lang==='sk'?c.sk:c.en)+'</span><em></em><b>'+c.n+'</b></a>').join('')).join('')+'<div class="toch">'+esc(t.more)+'</div>'+soon.map(s=>'<a href="#/soon/'+s[0]+'" class="tc soon">'+esc(s[1])+'</a>').join(''):'';
+    toc=S.meta?'<a class="tocbrand" href="#/">'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></a><div class="toch">'+esc(t.contents)+'</div><nav class="tocnav">'+nav.map((n,i)=>'<a href="'+n[0]+'" class="'+(route===n[2]?'on':'')+'"><span class="rn">'+roman[i]+'.</span><span>'+esc(n[1])+'</span></a>').join('')+'</nav><details class="tocch"'+(S.tocOpen!==false&&(S.tocOpen||innerWidth>=1100)?' open':'')+'><summary class="toch"><span>'+esc(t.chapters)+'</span><b>'+S.meta.chapters.length+'</b></summary>'+groups.map(g=>'<div class="tocg">'+esc(g[0])+'</div>'+S.meta.chapters.filter(g[1]).map(c=>'<a href="#/c/'+c.stem+'" class="tc'+(location.hash.split('?')[0]==='#/c/'+c.stem?' on':'')+'"><span>'+esc(S.lang==='sk'?c.sk:c.en)+'</span><em></em><b>'+c.n+'</b></a>').join('')).join('')+'</details><div class="toch">'+esc(t.more)+'</div>'+soon.map(s=>'<a href="#/soon/'+s[0]+'" class="tc soon">'+esc(s[1])+'</a>').join(''):'';
   }else if(d==='c'){
     top='<div class="cbar"><div class="wrap cbarin">'+brand+'<nav class="cnotes">'+links(false)+'</nav></div><div class="wrap cbar2">'+qs+tools+soonL+'</div></div>';
   }else if(d==='d'){
@@ -100,8 +100,14 @@ function renderChrome(route){
     top='<div class="mast"><div class="wrap mastin"><span class="dateline">'+esc(t.issue)+' · '+esc(t.recipes(nRec))+'</span>'+brand+tools+'</div></div><nav class="mainnav"><div class="wrap navin">'+links(false)+'<span class="navq">'+qs+'</span></div></nav>';
   }
   $('#top').innerHTML=top;$('#toc').innerHTML=toc;
+  fitToc();
   $('#foot').innerHTML='<div class="wrap footin"><span class="fb">'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></span>'+soonL+'<span>'+(S.idx?esc(t.recipes(S.idx.length))+' · '+S.meta.chapters.length+' '+esc(t.chapters.toLowerCase()):'')+'</span></div>';
 }
+// design B: the contents sidebar scrolls with the page and then stays put once its end is in view (no inner scroll area)
+function fitToc(){const el=$('#toc');if(!el)return;if(S.design!=='b'){el.style.removeProperty('--tt');return;}
+  requestAnimationFrame(()=>el.style.setProperty('--tt',(innerWidth<1100?0:Math.min(0,innerHeight-el.offsetHeight))+'px'));}
+window.addEventListener('resize',fitToc);
+document.addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contains('tocch')){S.tocOpen=e.target.open;fitToc();}},true);
 // ---------------- cards ----------------
 function card(r){
   const t=T();
