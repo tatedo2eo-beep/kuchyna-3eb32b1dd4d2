@@ -25,6 +25,7 @@ function applyTheme(design,pal){
   r.style.setProperty('--fh',D.fonts[0]);r.style.setProperty('--fb',D.fonts[1]);
   try{localStorage.setItem('tami.design',D.k);localStorage.setItem('tami.pal',P[0]);}catch(e){}
   if(!$('#palpanel').hidden)renderPal();
+  if(S.idx&&!curRecipe&&(location.hash.replace(/^#\/?/,'')===''))rerender(true);
 }
 function renderPal(){
   const t=T();
@@ -71,27 +72,52 @@ const grid=list=>'<div class="rgrid">'+list.map(card).join('')+'</div>';
 
 // ---------------- views ----------------
 function vHome(){
-  const t=T(),M=S.meta;
-  const pick=['01-fries-potatoes/hasselback-advanced','24-cookies-bars-brownies/brownie-fudgy-or-cakey-brownies','22-breakfast/pancakes-basic','19-appetizers-dips/hummus-basic','02-burgers/smash-burger-basic','14-salads/greek-basic','07-pasta/gnocchi-basic','13-soups/minestrone-basic'];
+  const t=T(),M=S.meta,d=S.design;
+  const pick=['01-fries-potatoes/hasselback-advanced','24-cookies-bars-brownies/brownie-fudgy-or-cakey-brownies','22-breakfast/pancakes-american-basic','19-appetizers-dips/hummus-basic','02-burgers/smash-burger-basic','14-salads/greek-basic','07-pasta/gnocchi-basic','13-soups/minestrone-basic'];
   let feat=pick.map(id=>S.idx.find(r=>r.id===id)).filter(Boolean);
   if(feat.length<8)feat=feat.concat(S.idx.filter(r=>r.img&&!feat.includes(r)).slice(0,8-feat.length));
-  const hero=feat[0];
-  const groups=[[t.savory,c=>c.num<24],[t.sweet,c=>c.num>=24&&c.num<34],[t.drinks,c=>c.num===34]];
-  const catTipR=S.idx.find(r=>r.id==='01-fries-potatoes/wedges-basic');
-  const abs=u=>new URL(u,location.href).href;
-  return '<section class="hero" style="--hero-img:url(&quot;'+abs(hero.img)+'&quot;);--cat-img:url(&quot;'+abs('img/cat-master-final.jpg')+'&quot;)"><div class="heroimg"><img src="'+hero.img+'" alt="'+esc(L(hero.t))+'"></div><div class="sh"></div><div class="wrap heroin"><div class="herotext"><span class="kicker">'+esc(t.heroK)+'</span><h1>'+esc(t.heroH)+'</h1><p>'+esc(t.heroP)+'</p>'+
-   '<form class="sbox big" data-act="qs">'+ICON.search+'<input name="q" type="search" placeholder="'+esc(t.searchPh)+'"><button class="go">'+esc(t.go)+'</button></form>'+
-   '<div class="herostats"><span><b>'+S.idx.length+'</b> '+esc(t.recipes(S.idx.length).replace(/^\d+ /,''))+'</span><span><b>'+M.chapters.length+'</b> '+esc(t.chapters.toLowerCase())+'</span><span><b>15</b> '+esc(t.theme.toLowerCase())+'</span></div></div>'+
-   '<a class="herocard" href="#/r/'+hero.id+'"><span class="kicker">'+esc(t.featured)+'</span><b>'+esc(L(hero.t))+'</b><span>'+esc(chName(hero.ch))+'</span></a></div></section>'+
-   '<section class="sec quick"><div class="wrap"><div class="chips">'+Object.entries(t.types).map(([k,v])=>'<a class="chip" href="#/search?type='+k+'">'+esc(v)+'</a>').join('')+'<a class="chip h" href="#/healthy">'+esc(t.healthy)+'</a><a class="chip" href="#/search?af=1">'+esc(t.af)+'</a></div></div></section>'+
-   '<section class="sec"><div class="wrap"><div class="sh2"><h2>'+esc(t.chapters)+'</h2><span>'+esc(t.recipes(S.idx.length))+'</span></div>'+
-   groups.map(g=>'<div class="grp"><h3>'+esc(g[0])+'</h3></div><div class="tgrid">'+M.chapters.filter(g[1]).map(c=>'<a class="tile" href="#/c/'+c.stem+'"><span class="ti">'+(c.cover?'<img loading="lazy" src="'+c.cover+'" alt="">':'')+'</span><span class="num">'+String(c.num).padStart(2,'0')+'</span><h4>'+esc(S.lang==='sk'?c.sk:c.en)+'</h4><span class="cnt">'+esc(t.recipes(c.n))+'</span></a>').join('')+'</div>').join('')+'</div></section>'+
-   '<section class="sec"><div class="wrap"><div class="sh2"><h2>'+esc(t.featured)+'</h2></div>'+grid(feat.slice(1,7))+'</div></section>';
+  const hero=feat[0];const abs=u=>new URL(u,location.href).href;
+  const byId=id=>S.idx.find(r=>r.id===id);
+  const nRec=S.idx.length,nCh=M.chapters.length;
+  const grpDef=[['savory',t.savory,c=>c.num<24,'01-fries-potatoes/hasselback-advanced'],['sweet',t.sweet,c=>c.num>=24&&c.num<34,'24-cookies-bars-brownies/brownie-fudgy-or-cakey-brownies'],['drinks',t.drinks,c=>c.num===34,'34-drinks/lemonade-basic']];
+  const grpInfo=g=>{const cs=M.chapters.filter(g[2]);const n=cs.reduce((a,c)=>a+c.n,0);const r=byId(g[3]);return {k:g[0],name:g[1],cs:cs.length,n,img:r?r.img:(cs[0]&&cs[0].cover)};};
+  const G=grpDef.map(grpInfo);
+  const chW=n=>S.lang==='sk'?(n==1?'kapitola':n<5?'kapitoly':'kapitol'):(n==1?'chapter':'chapters');
+  const hc=(M.homeCats||[])[d==='g'?1:0]||(M.homeCats||[])[0];
+  const catTile=(cls)=>hc?'<a class="'+cls+'" href="#/r/'+hc.id+'"><img src="'+hc.img+'" alt="'+esc(t.catAlt)+'"><span class="ctb"><span class="pl">'+ICON.cat+esc(t.catTip[hc.type]||t.catTip.tip)+'</span><b>'+esc(L(hc.t))+'</b><em>'+esc(L(hc))+'</em></span></a>':'';
+  const sform=(cls)=>'<form class="sbox '+(cls||'')+'" data-act="qs">'+ICON.search+'<input name="q" type="search" placeholder="'+esc(t.searchPh)+'"><button class="go">'+esc(t.go)+'</button></form>';
+  const quick='<div class="chips qchips"><a class="chip" href="#/search?time=30">'+esc(t.upTo(30))+'</a><a class="chip" href="#/search?af=1">'+esc(t.af)+'</a><a class="chip" href="#/search?no=gluten">'+esc(t.without)+': '+esc(t.al.gluten)+'</a><a class="chip" href="#/search?no=milk">'+esc(t.without)+': '+esc(t.al.milk)+'</a><a class="chip" href="#/search?no=eggs">'+esc(t.without)+': '+esc(t.al.eggs)+'</a><a class="chip" href="#/search?lvl=Basic">'+esc(t.levels.Basic)+'</a><a class="chip" href="#/search?lvl=Advanced">'+esc(t.levels.Advanced)+'</a></div>';
+  const sub=esc(t.recipes(nRec))+' · '+nCh+' '+esc(chW(nCh));
+  let top='';
+  if(d==='b'){
+    top='<section class="bhero wrap"><div><span class="kicker">'+esc(t.heroK)+' · SK / EN</span><h1>'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></h1><p>'+sub+'. '+esc(t.heroP)+'</p></div>'+catTile('catcard')+'</section>'+
+      '<section class="wrap bfind"><h2>'+esc(t.search)+'</h2>'+sform()+quick+'</section>';
+  }else if(d==='c'){
+    const tiles=['01-fries-potatoes/french-fries-double-fried-basic','02-burgers/smash-burger-basic','22-breakfast/pancakes-american-basic','04-meat/pan-seared-steak-basic'].map(byId).filter(Boolean);
+    top='<section class="chero wrap"><div><h1>'+esc(t.heroH).replace(/(\S+)\?$/,'<span>$1</span>?')+'</h1><p>'+sub+'</p>'+sform('big')+quick+'</div>'+catTile('catcard')+'</section>'+
+      '<section class="wrap crow"><a class="ccount" href="#/chapters"><b>'+esc(t.recipes(nRec))+'</b><span>'+esc(t.heroP)+'</span><em>'+esc(t.chapters)+' →</em></a>'+tiles.map(r=>'<a class="cpin" href="#/r/'+r.id+'"><img src="'+r.img+'" alt=""><span>'+esc(chName(r.ch))+'</span><b>'+esc(L(r.t))+'</b></a>').join('')+'</section>';
+  }else if(d==='d'){
+    top='<section class="dhero wrap"><div class="dcat" style="--cat-img:url(&quot;'+abs('img/cat-master-final.jpg')+'&quot;)"></div><div class="dbubble"><span class="kicker">'+esc(t.heroK)+'</span><h1>'+esc(t.heroH)+'</h1><p>'+sub+'</p><div class="dgrps">'+G.map(g=>'<a href="#/chapters?g='+g.k+'"><img src="'+g.img+'" alt=""><b>'+esc(g.name)+'</b><span>'+g.cs+' '+esc(chW(g.cs))+' · '+esc(t.recipes(g.n))+'</span></a>').join('')+'</div>'+sform()+'</div></section>'+
+      '<section class="wrap">'+quick+'</section>';
+  }else if(d==='g'){
+    top='<section class="gbento wrap"><div class="gbig" style="--hero-img:url(&quot;'+abs(byId('22-breakfast/pancakes-american-basic')?byId('22-breakfast/pancakes-american-basic').img:hero.img)+'&quot;)"><div class="glass"><span class="pill">'+esc(S.lang==='sk'?'Ahoj, Tami':'Hi, Tami')+'</span><h1>'+esc(t.heroH)+'</h1><p>'+sub+'</p>'+sform()+'</div></div>'+
+      '<div class="gstat"><span class="kicker">'+esc(t.brand1)+'</span><b>'+nRec+'</b><span>'+esc(t.heroP)+'</span></div>'+
+      G.map(g=>'<a class="gtile" href="#/chapters?g='+g.k+'"><img src="'+g.img+'" alt=""><span class="glab"><b>'+esc(g.name)+'</b><span>'+g.cs+' '+esc(chW(g.cs))+' · '+esc(t.recipes(g.n))+'</span><i>›</i></span></a>').join('')+
+      catTile('gcat')+'<a class="gsm" href="#/healthy"><b>'+esc(t.healthy)+'</b><span>'+esc(t.sugarShort)+' · '+esc(t.caf)+'</span></a><a class="gsm" href="#/countries"><b>'+esc(t.countries)+'</b><span>'+esc(t.countriesP)+'</span></a></section>';
+  }else{
+    top='<section class="hero" style="--hero-img:url(&quot;'+abs(hero.img)+'&quot;)"><div class="heroimg"><img src="'+hero.img+'" alt="'+esc(L(hero.t))+'"></div><div class="sh"></div><div class="wrap heroin"><div class="herotext"><span class="kicker">'+esc(t.heroK)+'</span><h1>'+esc(t.heroH)+'</h1><p>'+esc(t.heroP)+'</p>'+sform('big')+
+     '<div class="herostats"><span><b>'+nRec+'</b> '+esc(t.recipes(nRec).replace(/^\d+ /,''))+'</span><span><b>'+nCh+'</b> '+esc(chW(nCh))+'</span></div></div>'+
+     '<a class="herocard" href="#/r/'+hero.id+'"><span class="kicker">'+esc(t.featured)+'</span><b>'+esc(L(hero.t))+'</b><span>'+esc(chName(hero.ch))+'</span></a></div></section>'+
+     '<section class="sec quick"><div class="wrap"><div class="chips">'+Object.entries(t.types).map(([k,v])=>'<a class="chip" href="#/search?type='+k+'">'+esc(v)+'</a>').join('')+'<a class="chip h" href="#/healthy">'+esc(t.healthy)+'</a><a class="chip" href="#/search?af=1">'+esc(t.af)+'</a></div></div></section>';
+  }
+  return top+chapterGroups()+'<section class="sec"><div class="wrap"><div class="sh2"><h2>'+esc(t.featured)+'</h2></div>'+grid(feat.slice(1,7))+'</div></section>';
 }
-function vChapters(){
-  const t=T();
-  return '<section class="sec"><div class="wrap"><div class="sh2"><h1>'+esc(t.chapters)+'</h1><span>'+esc(t.recipes(S.idx.length))+'</span></div><div class="tgrid">'+S.meta.chapters.map(c=>'<a class="tile" href="#/c/'+c.stem+'"><span class="ti">'+(c.cover?'<img loading="lazy" src="'+c.cover+'" alt="">':'')+'</span><span class="num">'+String(c.num).padStart(2,'0')+'</span><h4>'+esc(S.lang==='sk'?c.sk:c.en)+'</h4><span class="cnt">'+esc(t.recipes(c.n))+'</span></a>').join('')+'</div></div></section>';
+function chapterGroups(only){
+  const t=T(),M=S.meta;const groups=[['savory',t.savory,c=>c.num<24],['sweet',t.sweet,c=>c.num>=24&&c.num<34],['drinks',t.drinks,c=>c.num===34]].filter(g=>!only||g[0]===only);
+  return '<section class="sec"><div class="wrap"><div class="sh2"><h2>'+esc(t.chapters)+'</h2><span>'+esc(t.recipes(S.idx.length))+'</span></div>'+
+   groups.map(g=>'<div class="grp" id="g-'+g[0]+'"><h3>'+esc(g[1])+'</h3></div><div class="tgrid">'+M.chapters.filter(g[2]).map(c=>'<a class="tile" href="#/c/'+c.stem+'"><span class="ti">'+(c.cover?'<img loading="lazy" src="'+c.cover+'" alt="">':'')+'</span><span class="num">'+String(c.num).padStart(2,'0')+'</span><h4>'+esc(S.lang==='sk'?c.sk:c.en)+'</h4><span class="cnt">'+esc(t.recipes(c.n))+'</span></a>').join('')+'</div>').join('')+'</div></section>';
 }
+function vChapters(params){return chapterGroups(params&&params.get('g')||'');}
 function vChapter(stem,params){
   const t=T(),c=S.chMap[stem];if(!c)return vNotFound();
   let list=S.idx.filter(r=>r.ch===stem);const lv=params.get('lvl')||'',so=params.get('sort')||'';
@@ -251,7 +277,7 @@ async function route(){
     await loadIndex();
     let name=parts[0]||'home',html;curRecipe=null;
     if(name==='home')html=vHome();
-    else if(name==='chapters')html=vChapters();
+    else if(name==='chapters')html=vChapters(params);
     else if(name==='c')html=vChapter(parts[1],params);
     else if(name==='search')html=vSearch(params);
     else if(name==='healthy')html=vHealthy();
