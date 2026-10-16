@@ -231,3 +231,4 @@ h1,h2,h3,h4{font-family:var(--fh);font-weight:500;line-height:1.15}
 .foot{border-top:1px solid var(--line);padding:30px 0 36px;color:var(--muted);font-size:14px;margin-top:20px}
 .footin{display:flex;justify-content:space-between;align-items:center}
 .fb{font-family:var(--fh);font-size:24px;color:var(--text)}.fb i{color:var(--accentText)}
+.orignote{border:1px solid var(--accent);background:var(--surface);padding:12px 14px;margin:8px 0 12px;border-radius:var(--r);font-size:14px}.orignote .btn{margin-top:8px}.btn.sm{padding:7px 14px;font-size:13px}

@@ -185,12 +185,14 @@ function vRecipe(r){
   const t=T(),en=S.lang==='en';const ix=S.idx.find(x=>x.id===r.id)||{};
   const base=r.serv||null;const want=S.serv[r.id]||base;const k=base?want/base:1;
   const ver=S.ver;
-  const ingN=ver==='tami'?(L(r.tami.ing)||r.tami.ing.en):L(r.orig.ing);
-  let methN=ver==='tami'?L(r.tami.method).c:(en?r.orig.method.en:(r.orig.method.sk&&r.orig.method.sk.length?r.orig.method.sk:null));
+  const skNoOrig=ver==='orig'&&!en&&!(r.orig.ing.sk&&r.orig.method.sk);
+  const showT=ver==='tami'||skNoOrig;
+  const ingN=showT?(L(r.tami.ing)||r.tami.ing.en):L(r.orig.ing);
+  let methN=showT?L(r.tami.method).c:L(r.orig.method);
   let methNote='';
-  if(!methN||!methN.length){methN=r.tami.method[S.lang].c;if(ver==='orig'&&methN&&methN.length)methNote='<p class="mnote">'+esc(t.skMethNote)+'</p>';}
-  if(!methN||!methN.length)methN=L(r.orig.method)&&L(r.orig.method).length?L(r.orig.method):r.orig.method.en;
-  const tmv=ver==='tami'&&r.tami.method[S.lang].v&&!/^(with|s Tamin)/i.test(r.tami.method[S.lang].v)?'<p class="mnote">'+linkify(r.tami.method[S.lang].v)+'</p>':'';
+  if(!methN||!methN.length)methN=L(r.orig.method)&&L(r.orig.method).length?L(r.orig.method):L(r.tami.method).c;
+  const origNote=skNoOrig?'<div class="orignote"><p>'+esc(t.skNoOrig)+'</p><button class="btn sm" data-act="lang" data-l="en">'+esc(t.showEn)+'</button></div>':'';
+  const tmv=showT&&r.tami.method[S.lang].v&&!/^(with|s Tamin)/i.test(r.tami.method[S.lang].v)?'<p class="mnote">'+linkify(r.tami.method[S.lang].v)+'</p>':'';
   const chg=L(r.tami.chg);
   const mext=L(r.mext)||[];const text=L(r.tami.ext)||[];
   const getK=(arr,re)=>arr.find(f=>re.test(f.k));
@@ -214,10 +216,9 @@ function vRecipe(r){
   h+='<section class="wrap alstrip"><span class="alh">'+esc(t.allergens)+'</span><div class="algrid">'+Object.entries(t.al).map(([a,v])=>'<span class="al'+(r.al.includes(a)?' on':'')+'">'+esc(v)+'</span>').join('')+'</div>'+(nut?'':'<span class="alh">—</span>')+'</section>';
   // body
   h+='<section class="wrap rbody"><div class="col-ing"><h2>'+esc(t.ingredients)+'</h2><p class="unit">'+esc(ver==='tami'?t.tamiV:t.origV)+(k!==1?' · '+esc(t.scaled):'')+'</p>'+tree(ingN,{scale:k,cls:'ing'})+
-   (ver==='orig'&&!en&&r.orig.skgen&&JSON.stringify(ingN).includes('"en":1')?'<p class="mnote">'+esc(t.skOrigNote)+'</p>':'')+
    (chg&&chg.length?'<div class="chgbox"><h4>'+esc(t.changes)+'</h4>'+tree(chg,{tag:true})+'</div>':'')+'</div>'+
    '<div class="col-meth"><h2>'+esc(t.method)+'</h2>'+tmv+methNote+tree(methN)+
-   (extra.length&&ver==='tami'?'<div class="extra"><h3 class="h4s">'+esc(t.moreTami)+'</h3>'+extra.map(f=>'<div class="xf"><h4>'+linkify(labelClean(f.k))+'</h4>'+(f.k!==labelClean(f.k)?'<p class="tsrc">'+linkify(f.k.slice(labelClean(f.k).length).replace(/^\s*\(|\)$/g,''))+'</p>':'')+(f.v?'<p>'+linkify(f.v)+'</p>':'')+tree(f.c,{tag:true})+'</div>').join('')+'</div>':'')+
+   (extra.length&&showT?'<div class="extra"><h3 class="h4s">'+esc(t.moreTami)+'</h3>'+extra.map(f=>'<div class="xf"><h4>'+linkify(labelClean(f.k))+'</h4>'+(f.k!==labelClean(f.k)?'<p class="tsrc">'+linkify(f.k.slice(labelClean(f.k).length).replace(/^\s*\(|\)$/g,''))+'</p>':'')+(f.v?'<p>'+linkify(f.v)+'</p>':'')+tree(f.c,{tag:true})+'</div>').join('')+'</div>':'')+
    '</div><aside class="side">'+catCard(r)+
    ((cafF||sug)?'<div class="infobox"><h4>'+esc(t.caffeine)+' · '+esc(t.sugarShort)+'</h4>'+(cafF?'<div class="caf"><b>'+esc(t.caffeine)+'</b>'+(cafF.v?'<p>'+linkify(cafF.v)+'</p>':'')+tree(cafF.c)+'</div>':'')+sugarBox(sug)+'</div>':'')+
    (L(r.equip)?'<h4>'+esc(t.equipment)+'</h4>'+fieldBlock(L(r.equip),'s'):'')+(L(r.store)?'<h4>'+esc(t.storage)+'</h4>'+fieldBlock(L(r.store),'s'):'')+
