@@ -137,8 +137,8 @@ function vHome(){
   const grpInfo=g=>{const cs=M.chapters.filter(g[2]);const n=cs.reduce((a,c)=>a+c.n,0);const r=byId(g[3]);return {k:g[0],name:g[1],cs:cs.length,n,img:r?r.img:(cs[0]&&cs[0].cover),f:g[2]};};
   const G=grpDef.map(grpInfo);
   const chW=n=>S.lang==='sk'?(n==1?'kapitola':n<5?'kapitoly':'kapitol'):(n==1?'chapter':'chapters');
-  const hc=(M.homeCats||[])[d==='g'?1:0]||(M.homeCats||[])[0];
-  const catTile=(cls)=>hc?'<a class="'+cls+'" href="#/r/'+hc.id+'"><img src="'+hc.img+'" alt="'+esc(t.catAlt)+'"><span class="ctb"><span class="pl">'+ICON.cat+esc(t.catTip[hc.type]||t.catTip.tip)+'</span><b>'+esc(L(hc.t))+'</b><em>'+esc(L(hc))+'</em></span></a>':'';
+  // no cats on the home screen (Joe, 16 Oct): dish pictures only
+  const dishTile=(cls,r)=>r?'<a class="'+cls+'" href="#/r/'+r.id+'"><img src="'+r.img+'" alt=""><span class="ctb"><span class="pl">'+esc(t.featured)+'</span><b>'+esc(L(r.t))+'</b><em>'+esc(chName(r.ch))+'</em></span></a>':'';
   const sform=(cls)=>'<form class="sbox '+(cls||'')+'" data-act="qs">'+ICON.search+'<input name="q" type="search" placeholder="'+esc(t.searchPh)+'"><button class="go">'+esc(t.go)+'</button></form>';
   const quick='<div class="chips qchips"><a class="chip" href="#/search?time=30">'+esc(t.upTo(30))+'</a><a class="chip" href="#/search?af=1">'+esc(t.af)+'</a><a class="chip" href="#/search?no=gluten">'+esc(t.without)+': '+esc(t.al.gluten)+'</a><a class="chip" href="#/search?no=milk">'+esc(t.without)+': '+esc(t.al.milk)+'</a><a class="chip" href="#/search?no=eggs">'+esc(t.without)+': '+esc(t.al.eggs)+'</a><a class="chip" href="#/search?lvl=Basic">'+esc(t.levels.Basic)+'</a><a class="chip" href="#/search?lvl=Advanced">'+esc(t.levels.Advanced)+'</a></div>';
   const sub=esc(t.recipes(nRec))+' · '+nCh+' '+esc(chW(nCh));
@@ -146,15 +146,15 @@ function vHome(){
   if(d==='b'){
     const toc=G.map(g=>'<div class="hctg"><h3>'+esc(g.name)+'</h3><p>'+M.chapters.filter(g.f).map(c=>'<a href="#/c/'+c.stem+'">'+esc(S.lang==='sk'?c.sk:c.en)+'</a>').join('<span class="hsep"> · </span>')+'</p></div>').join('');
     return '<section class="book wrap"><div class="spread single bhome"><div class="page title"><span class="kicker">'+esc(t.heroK)+' · SK / EN</span><h1>'+esc(t.brand1)+' <i>'+esc(t.brand2)+'</i></h1><div class="orn">❦</div><p>'+sub+'. '+esc(t.heroP)+'</p>'+sform()+quick+
-     '<div class="hcont"><div class="runhead"><span>'+esc(t.contents)+'</span><span>'+sub+'</span></div>'+toc+'</div>'+catTile('catcard')+'<span class="folio">i</span></div></div></section>';
+     '<div class="hcont"><div class="runhead"><span>'+esc(t.contents)+'</span><span>'+sub+'</span></div>'+toc+'</div><span class="folio">i</span></div></div></section>';
   }
   if(d==='c'){
     const tiles=['01-fries-potatoes/french-fries-double-fried-basic','02-burgers/smash-burger-basic','22-breakfast/pancakes-american-basic','04-meat/pan-seared-steak-basic'].map(byId).filter(Boolean);
-    return '<section class="chero wrap"><div class="cnote big"><h1>'+esc(t.heroH).replace(/(\S+)\?$/,'<span>$1</span>?')+'</h1><p>'+sub+'</p>'+sform('big')+quick+'</div>'+catTile('catcard')+'</section>'+
+    return '<section class="chero wrap"><div class="cnote big"><h1>'+esc(t.heroH).replace(/(\S+)\?$/,'<span>$1</span>?')+'</h1><p>'+sub+'</p>'+sform('big')+quick+'</div>'+dishTile('catcard dishcard',hero)+'</section>'+
       '<section class="wrap crow"><a class="ccount" href="#/chapters"><b>'+esc(t.recipes(nRec))+'</b><span>'+esc(t.heroP)+'</span><em>'+esc(t.chapters)+' →</em></a>'+tiles.map(r=>'<a class="cpin" href="#/r/'+r.id+'"><img src="'+r.img+'" alt=""><span>'+esc(chName(r.ch))+'</span><b>'+esc(L(r.t))+'</b></a>').join('')+'</section>'+chapterGroups()+featSec();
   }
   if(d==='d'){
-    return '<section class="dhero wrap"><div class="dcat" style="--cat-img:url(&quot;'+abs('img/cat-master-final.jpg')+'&quot;)"></div><div class="dbubble"><span class="kicker">'+esc(t.heroK)+'</span><h1>'+esc(t.heroH)+'</h1><p>'+sub+'</p>'+sform()+'</div></section>'+
+    return '<section class="dhero wrap">'+(()=>{const r=byId('22-breakfast/pancakes-american-basic')||hero;return '<a class="dcat dpic" href="#/r/'+r.id+'" aria-label="'+esc(L(r.t))+'" style="--cat-img:url(&quot;'+abs(r.img)+'&quot;)"></a>';})()+'<div class="dbubble"><span class="kicker">'+esc(t.heroK)+'</span><h1>'+esc(t.heroH)+'</h1><p>'+sub+'</p>'+sform()+'</div></section>'+
       '<section class="wrap dgrps">'+G.map(g=>'<a href="#/chapters?g='+g.k+'"><span class="arch"><img src="'+g.img+'" alt=""></span><b>'+esc(g.name)+'</b><span>'+g.cs+' '+esc(chW(g.cs))+' · '+esc(t.recipes(g.n))+'</span></a>').join('')+'</section>'+
       '<section class="wrap dquick">'+quick+'</section>'+featSec()+chapterGroups();
   }
@@ -162,7 +162,7 @@ function vHome(){
     return '<section class="gbento wrap"><div class="gbig" style="--hero-img:url(&quot;'+abs(byId('22-breakfast/pancakes-american-basic')?byId('22-breakfast/pancakes-american-basic').img:hero.img)+'&quot;)"><div class="glass"><span class="pill">'+esc(S.lang==='sk'?'Ahoj, Tami':'Hi, Tami')+'</span><h1>'+esc(t.heroH)+'</h1><p>'+sub+'</p>'+sform()+'</div></div>'+
       '<div class="gstat"><span class="kicker">'+esc(t.brand1)+'</span><b>'+nRec+'</b><span>'+esc(t.heroP)+'</span></div>'+
       G.map(g=>'<a class="gtile" href="#/chapters?g='+g.k+'"><img src="'+g.img+'" alt=""><span class="glab"><b>'+esc(g.name)+'</b><span>'+g.cs+' '+esc(chW(g.cs))+' · '+esc(t.recipes(g.n))+'</span><i>›</i></span></a>').join('')+
-      catTile('gcat')+'<a class="gsm" href="#/healthy"><b>'+esc(t.healthy)+'</b><span>'+esc(t.sugarShort)+' · '+esc(t.caf)+'</span></a><a class="gsm" href="#/countries"><b>'+esc(t.countries)+'</b><span>'+esc(t.countriesP)+'</span></a></section>'+featSec()+chapterGroups();
+      '<a class="gsm gseas" href="#/seasonal"><span class="kicker">'+esc(t.seasonal)+'</span><b>'+esc(t.months[new Date().getMonth()])+'</b><span>'+esc(t.szIn)+' · '+(S.lang==='sk'?'Slovensko':'Slovakia')+'</span></a><a class="gsm" href="#/healthy"><b>'+esc(t.healthy)+'</b><span>'+esc(t.sugarShort)+' · '+esc(t.caf)+'</span></a><a class="gsm" href="#/countries"><b>'+esc(t.countries)+'</b><span>'+esc(t.countriesP)+'</span></a></section>'+featSec()+chapterGroups();
   }
   // E · magazine
   const issue=feat.slice(1,6);
